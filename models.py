@@ -3,8 +3,8 @@ from flask_sqlalchemy import SQLAlchemy
 import json
 import os
 
-database_path = os.environ['DATABASE_URL']
-# database_path = "postgres://{}:{}@{}/{}".format(os.environ.get('MY_PG_USER'), os.environ.get('MY_PG_PWD'), 'localhost:5432', os.environ['MY_DATABASE_URL'])
+# database_path = os.environ['DATABASE_URL']
+database_path = "postgres://{}:{}@{}/{}".format(os.environ.get('MY_PG_USER'), os.environ.get('MY_PG_PWD'), 'localhost:5432', os.environ['MY_DATABASE_URL'])
 
 # print("\n\ndatabase_path: ", database_path)
 # print("\n\n")
