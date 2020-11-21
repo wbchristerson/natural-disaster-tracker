@@ -69,7 +69,7 @@ Observer
 class Observer(db.Model):
   __tablename__ = 'observers'
 
-  id = Column(Integer, parimary_key=True)
+  id = Column(Integer, primary_key=True)
   username = Column(Integer, primary_key=True)
   photograph_url = Column(String(120), nullable=True)
   witness_reports = relationship('WitnessReport', backref="witness_report_observer",
