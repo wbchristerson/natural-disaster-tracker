@@ -1,5 +1,4 @@
-from sqlalchemy import Column, String, Integer, create_engine, ForeignKey, relationship,
-  Boolean, Enum, DateTime
+from sqlalchemy import Column, String, Integer, create_engine, ForeignKey, relationship, Boolean, Enum, DateTime
 from flask_sqlalchemy import SQLAlchemy
 import json
 import os
