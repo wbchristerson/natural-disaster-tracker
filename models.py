@@ -43,7 +43,7 @@ class Disaster(db.Model):
   official_name = Column(String(100))
   disaster_type = Column('value', Enum(NaturalDisasterEnum))
   witness_reports = relationship('WitnessReport', backref="witness_report_disaster",
-    lazy=True, collection_class=list, cascade="all, delete, delete-orphan")
+    cascade="all, delete, delete-orphan")
   is_ongoing = Column(Boolean, default=True)
   # location
 
@@ -73,7 +73,7 @@ class Observer(db.Model):
   username = Column(Integer, primary_key=True)
   photograph_url = Column(String(120), nullable=True)
   witness_reports = relationship('WitnessReport', backref="witness_report_observer",
-    lazy=True, collection_class=list, cascade="all, delete, delete-orphan")
+    cascade="all, delete, delete-orphan")
 
   def __init__(self, username, photograph_url=None):
     self.username = username
