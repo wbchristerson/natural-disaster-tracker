@@ -70,7 +70,7 @@ class Observer(db.Model):
   __tablename__ = 'observers'
 
   id = Column(Integer, primary_key=True)
-  username = Column(Integer, primary_key=True)
+  username = Column(Integer, nullable=False)
   photograph_url = Column(String(120), nullable=True)
   witness_reports = relationship('WitnessReport', backref="witness_report_observer",
     cascade="all, delete, delete-orphan")
@@ -91,7 +91,7 @@ class Observer(db.Model):
 WitnessReport
 '''
 class WitnessReport(db.Model):
-  __tablename__ = 'WitnessReport'
+  __tablename__ = 'witnessReports'
 
   id = Column(Integer, primary_key=True)
   disaster_id = Column(Integer, ForeignKey('disasters.id'), nullable=False)
