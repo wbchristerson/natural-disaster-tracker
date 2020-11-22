@@ -5,6 +5,7 @@ import json
 import os
 import enum
 
+
 database_path = os.environ['DATABASE_URL']
 db = SQLAlchemy()
 
@@ -41,7 +42,7 @@ class Disaster(db.Model):
   id = Column(Integer, primary_key=True)
   informal_name = Column(String(50))
   official_name = Column(String(100))
-  disaster_type = Column('value', Enum(NaturalDisasterEnum))
+  disaster_type = Column('disaster_type', Enum(NaturalDisasterEnum))
   witness_reports = relationship('WitnessReport', backref="witness_report_disaster",
     cascade="all, delete, delete-orphan")
   is_ongoing = Column(Boolean, default=True)
@@ -103,10 +104,15 @@ class WitnessReport(db.Model):
   people_affected = Column(Integer, default=0)
   # location = Column(, nullable=False)
 
-  def __init__(self, disaster_id, observer_id, event_datetime):
+  def __init__(self, disaster_id, observer_id, event_datetime, severity, image_url, comment,
+    people_affected):
     self.disaster_id = disaster_id
     self.observer_id = observer_id
     self.event_datetime = event_datetime
+    self.severity = severity
+    self.image_url = image_url
+    self.comment = comment
+    self.people_affected = people_affected
 
   def __repr__(self):
     return {
