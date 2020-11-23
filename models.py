@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, create_engine, ForeignKey, Boolean, Enum, DateTime
+from sqlalchemy import Column, String, Integer, create_engine, ForeignKey, Boolean, Enum, DateTime, Float
 from sqlalchemy.orm import relationship
 from flask_sqlalchemy import SQLAlchemy
 import json
@@ -46,13 +46,16 @@ class Disaster(db.Model):
   witness_reports = relationship('WitnessReport', backref="witness_report_disaster",
     cascade="all, delete, delete-orphan")
   is_ongoing = Column(Boolean, default=True)
-  # location
+  location_latitude = Column(Float, nullable=False)
+  location_longitude = Column(Float, nullable=False)
 
-  def __init__(self, informal_name, official_name, disaster_type, is_ongoing):
+  def __init__(self, informal_name, official_name, disaster_type, is_ongoing, location_latitude, location_longitude):
     self.informal_name = informal_name
     self.official_name = official_name
     self.disaster_type = disaster_type
     self.is_ongoing = is_ongoing
+    self.location_latitude = location_latitude
+    self.location_longitude = location_longitude
 
   def format(self):
     return {
@@ -61,6 +64,7 @@ class Disaster(db.Model):
       'official_name': self.official_name,
       'disaster_type': self.disaster_type,
       'is_ongoing': self.is_ongoing,
+      'location': (self.location_latitude, self.location_longitude),
     }
 
 
@@ -102,10 +106,11 @@ class WitnessReport(db.Model):
   image_url = Column(String(120), nullable=True)
   comment = Column(String(500), nullable=True)
   people_affected = Column(Integer, default=0)
-  # location = Column(, nullable=False)
+  location_latitude = Column(Float, nullable=True)
+  location_longitude = Column(Float, nullable=True)
 
   def __init__(self, disaster_id, observer_id, event_datetime, severity, image_url, comment,
-    people_affected):
+    people_affected, location_latitude, location_longitude):
     self.disaster_id = disaster_id
     self.observer_id = observer_id
     self.event_datetime = event_datetime
@@ -113,12 +118,20 @@ class WitnessReport(db.Model):
     self.image_url = image_url
     self.comment = comment
     self.people_affected = people_affected
+    self.location_latitude = location_latitude
+    self.location_longitude = location_longitude
 
-  def __repr__(self):
+  def format(self):
     return {
       'id': self.id,
       'disaster_id': self.disaster_id,
       'observer_id': self.observer_id,
+      'event_datetime': self.event_datetime,
+      'severity': self.severity,
+      'image_url': self.image_url,
+      'comment': self.comment,
+      'people_affected': self.people_affected,
+      'location': (self.location_latitude, self.location_longitude),
     }
 
 
