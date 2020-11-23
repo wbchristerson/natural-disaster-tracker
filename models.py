@@ -30,7 +30,8 @@ class NaturalDisasterEnum(enum.Enum):
   tsunami = 6
   landslide = 7
   avalanche = 8
-  other = 9
+  volcano = 9
+  other = 10
 
 
 '''
