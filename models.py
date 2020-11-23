@@ -33,6 +33,7 @@ class NaturalDisasterEnum(enum.Enum):
   volcano = 9
   other = 10
 
+# insert, update and delete
 
 '''
 Disaster
