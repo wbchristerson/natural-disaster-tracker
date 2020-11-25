@@ -1,3 +1,4 @@
 *.pyc
 setup.sh
 __pycache__
+test_preparation.sh

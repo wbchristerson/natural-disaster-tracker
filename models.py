@@ -21,17 +21,27 @@ def setup_db(app, database_path=database_path):
     db.create_all()
 
 
-class NaturalDisasterEnum(enum.Enum):
-  earthquake = 1
-  flood = 2
-  wildfire = 3
-  tornado = 4
-  hurricane = 5
-  tsunami = 6
-  landslide = 7
-  avalanche = 8
-  volcano = 9
-  other = 10
+class NaturalDisasterEnum(str, enum.Enum):
+  EARTHQUAKE: str="earthquake"
+  FLOOD: str="flood"
+  WILDFIRE: str="wildfire"
+  TORNADO: str="tornado"
+  HURRICANE: str="hurricane"
+  TSUNAMI: str="tsunami"
+  LANDSLIDE: str="landslide"
+  AVALANCHE: str="avalanche"
+  VOLCANO: str="volcano"
+  OTHER: str="other"
+  # earthquake = 1
+  # flood = 2
+  # wildfire = 3
+  # tornado = 4
+  # hurricane = 5
+  # tsunami = 6
+  # landslide = 7
+  # avalanche = 8
+  # volcano = 9
+  # other = 10
 
 # insert, update and delete
 

@@ -38,8 +38,10 @@ observance, the last observance, and the number of people affected).
 @app.route('/disasters')
 def disasters():
     try:
+        formatted_disasters = []
         disasters = Disaster.query.all()
         formatted_disasters = [disaster.format() for disaster in disasters]
+        # X = [disaster.format() for disaster in disasters] 
 
         list_people_affected = []
         # list_people_affected = WitnessReport.query.groupby(WitnessReport.disaster_id).all()
@@ -50,10 +52,13 @@ def disasters():
             'list_people_affected': list_people_affected,
         })
     except Exception as ex:
+        print("\n\n")
+        print(ex)
+        print("\n\n")
         flash('An error occurred.')
         abort(404)
 
-
+app.secret_key = os.environ['SECRET_KEY']
 
 if __name__ == '__main__':
     app.run()

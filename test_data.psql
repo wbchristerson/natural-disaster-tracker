@@ -1,0 +1,32 @@
+--
+-- Name: disasters_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.disasters_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.disasters_id_seq OWNER TO postgres;
+
+--
+-- Name: disasters_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.disasters_id_seq OWNED BY public.disasters.id;
+
+--
+-- Name: disasters id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.disasters ALTER COLUMN id SET DEFAULT nextval('public.disasters_id_seq'::regclass);
+
+--
+-- Name: disasters; Type: TABLE; Schema: public; Owner: postgres
+--
+
+COPY public.disasters (id, informal_name, official_name, disaster_type, is_ongoing, location_latitude, location_longitude) from stdin;
+1   Hurricane Sandy Hurricane Sandy 
