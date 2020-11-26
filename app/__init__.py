@@ -1,9 +1,10 @@
 import os
-from flask import Flask, abort, jsonify, flash
+from flask import Flask, abort, jsonify, flash, request
 from models import setup_db, Disaster, WitnessReport
 from flask_cors import CORS
 from sqlalchemy import func
 
+PAGE_SIZE = 10
 
 def create_app(test_config=None):
 
@@ -27,6 +28,15 @@ def create_app(test_config=None):
 app = create_app()
 
 
+def get_page_of_resource(arr, page):
+    if page <= 0:
+        raise ValueError("A non-positive page is not recognized.")
+
+    start = min((page-1) * PAGE_SIZE, len(arr))
+    end = min(page * PAGE_SIZE, len(arr))
+    return arr[start:end]
+
+
 '''
 A GET endpoint to get all disasters. This endpoint takes no parameters. This endpoint does
 not return any of the witness reports associated with a specific disaster. For each
@@ -34,9 +44,13 @@ disaster, the data in the disaster table is returned along with a random comment
 author of that comment from a witness of the disaster (if any) and some descriptive
 data about the disaster reports per disaster (namely, the number of reports, the first
 observance, the last observance, and the number of people affected).
+
+This endpoint has a page request parameter corresponding to the paginated page to use.
+THe current default for the size of a page is 10.
 '''
 @app.route('/disasters')
 def disasters():
+    page = int(request.args.get("page", "1"))
     try:
         formatted_disasters = []
         disasters = Disaster.query.all()
@@ -45,7 +59,7 @@ def disasters():
 
         list_people_affected = []
         # list_people_affected = WitnessReport.query.groupby(WitnessReport.disaster_id).all()
-        # list_people_affected = WitnessReport.query(func.max(WitnessReport.people_affected).label('people_affected'), WitnessReport.disaster_id).groupby(WitnessReport.disaster_id).all()
+        list_people_affected = WitnessReport.query(func.max(WitnessReport.people_affected).label('people_affected'), WitnessReport.disaster_id).groupby(WitnessReport.disaster_id).all()
 
         return jsonify({
             'disasters': formatted_disasters,

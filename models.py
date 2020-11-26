@@ -108,7 +108,7 @@ class Observer(db.Model):
 WitnessReport
 '''
 class WitnessReport(db.Model):
-  __tablename__ = 'witnessReports'
+  __tablename__ = 'witnessreports'
 
   id = Column(Integer, primary_key=True)
   disaster_id = Column(Integer, ForeignKey('disasters.id'), nullable=False)
