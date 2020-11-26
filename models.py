@@ -32,18 +32,7 @@ class NaturalDisasterEnum(str, enum.Enum):
   AVALANCHE: str="avalanche"
   VOLCANO: str="volcano"
   OTHER: str="other"
-  # earthquake = 1
-  # flood = 2
-  # wildfire = 3
-  # tornado = 4
-  # hurricane = 5
-  # tsunami = 6
-  # landslide = 7
-  # avalanche = 8
-  # volcano = 9
-  # other = 10
 
-# insert, update and delete
 
 '''
 Disaster
@@ -87,8 +76,8 @@ class Observer(db.Model):
   __tablename__ = 'observers'
 
   id = Column(Integer, primary_key=True)
-  username = Column(Integer, nullable=False)
-  photograph_url = Column(String(120), nullable=True)
+  username = Column(String(50), nullable=False)
+  photograph_url = Column(String(200), nullable=True)
   witness_reports = relationship('WitnessReport', backref="witness_report_observer",
     cascade="all, delete, delete-orphan")
 
@@ -115,7 +104,7 @@ class WitnessReport(db.Model):
   observer_id = Column(Integer, ForeignKey('observers.id'), nullable=False)
   event_datetime = Column(DateTime, nullable=False)
   severity = Column(Integer, nullable=True)
-  image_url = Column(String(120), nullable=True)
+  image_url = Column(String(250), nullable=True)
   comment = Column(String(500), nullable=True)
   people_affected = Column(Integer, default=0)
   location_latitude = Column(Float, nullable=True)
