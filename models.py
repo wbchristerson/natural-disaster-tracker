@@ -1,4 +1,5 @@
-from sqlalchemy import Column, String, Integer, create_engine, ForeignKey, Boolean, Enum, DateTime, Float
+from sqlalchemy import Column, String, Integer, create_engine, ForeignKey, Boolean, Enum, \
+    DateTime, Float, func, TIMESTAMP
 from sqlalchemy.orm import relationship
 from flask_sqlalchemy import SQLAlchemy
 import json
@@ -99,16 +100,18 @@ WitnessReport
 class WitnessReport(db.Model):
   __tablename__ = 'witnessreports'
 
+
   id = Column(Integer, primary_key=True)
   disaster_id = Column(Integer, ForeignKey('disasters.id'), nullable=False)
   observer_id = Column(Integer, ForeignKey('observers.id'), nullable=False)
-  event_datetime = Column(DateTime, nullable=False)
+  event_datetime = Column(TIMESTAMP(True), nullable=False)
   severity = Column(Integer, nullable=True)
   image_url = Column(String(250), nullable=True)
   comment = Column(String(500), nullable=True)
   people_affected = Column(Integer, default=0)
   location_latitude = Column(Float, nullable=True)
   location_longitude = Column(Float, nullable=True)
+
 
   def __init__(self, disaster_id, observer_id, event_datetime, severity, image_url, comment,
     people_affected, location_latitude, location_longitude):
@@ -121,6 +124,13 @@ class WitnessReport(db.Model):
     self.people_affected = people_affected
     self.location_latitude = location_latitude
     self.location_longitude = location_longitude
+
+
+  # '''return the maximum number of people affected per disaster id, paired with the disaster's id'''
+  # @staticmethod
+  # def get_maximum_affected_by_disaster():
+  #   subquery = db.session.query(WitnessReport.id, func.max(WitnessReport.people_affected).label('people_affected')).group_by(WitnessReport.id)
+
 
   def format(self):
     return {
