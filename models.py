@@ -69,6 +69,10 @@ class Disaster(db.Model):
       'location': (self.location_latitude, self.location_longitude),
     }
 
+  def delete(self):
+    db.session.delete(self)
+    db.session.commit()
+
 
 '''
 Observer
@@ -92,6 +96,10 @@ class Observer(db.Model):
       'username': self.username,
       'photograph_url': self.photograph_url,
     }
+  
+  def delete(self):
+    db.session.delete(self)
+    db.session.commit()
 
 
 '''
@@ -144,5 +152,9 @@ class WitnessReport(db.Model):
       'people_affected': self.people_affected,
       'location': (self.location_latitude, self.location_longitude),
     }
+
+  def delete(self):
+    db.session.delete(self)
+    db.session.commit()
 
 
