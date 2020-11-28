@@ -3,7 +3,8 @@ psql -c "
     DELETE FROM disasters WHERE true;
     DELETE FROM observers WHERE true;
     INSERT INTO disasters (id, informal_name, official_name, disaster_type, is_ongoing, location_latitude, location_longitude)
-        VALUES (1, 'Hurricane Sandy', 'Hurricane Sandy', 'HURRICANE', false, 33.758884, -77.378128);
+        VALUES (1, 'Hurricane Sandy', 'Hurricane Sandy', 'HURRICANE', false, 33.758884, -77.378128),
+               (2, '2005 Nias-Simeulue Earthquake', '2005 Nias-Simeulue Earthquake', 'EARTHQUAKE', false, 2.09, 97.15);
     INSERT INTO observers (id, username, photograph_url)
         VALUES (1, 'watcher', 'https://www.toocool2betrue.com/content/142065/e473256bce80e755d09b347924d96fd9.jpg'),
                (2, 'weeather report', 'https://cdn.vox-cdn.com/thumbor/tZLxhLAWoEFRpf0pe-CirjvF0XY=/1400x788/filters:format(jpeg)/cdn.vox-cdn.com/uploads/chorus_asset/file/15788040/20150428-cloud-computing.0.1489222360.jpg');

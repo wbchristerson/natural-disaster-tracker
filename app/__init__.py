@@ -1,8 +1,9 @@
 import os
 from flask import Flask, abort, jsonify, flash, request
-from models import setup_db, Disaster, WitnessReport
+from models import setup_db, Disaster, Observer, WitnessReport
 from flask_cors import CORS
 from sqlalchemy import func
+from random import randrange
 
 PAGE_SIZE = 10
 
@@ -37,6 +38,51 @@ def get_page_of_resource(arr, page):
     return arr[start:end]
 
 
+def get_random_report_data(witness_reports):
+    disaster_map = dict()
+    for (disaster_id, observer_id, comment) in witness_reports:
+        if disaster_id not in disaster_map:
+            disaster_map[disaster_id] = list()
+        disaster_map[disaster_id].append((observer_id, comment))
+    
+    random_report_data = dict()
+    for k, v in disaster_map.items():
+        random_report_data[k] = v[randrange(len(v))]
+    return random_report_data
+
+
+def combine_disaster_data(formatted_disasters : list, formatted_affected_people : list,
+    random_report_data : dict, all_users : list) -> dict:
+    affected_map = { A[0]: (A[1], A[2], A[3], A[4], A[5]) for A in formatted_affected_people }
+    user_map = { user["id"] : {"username": user["username"], "photograph_url": user["photograph_url"] } for user in all_users }
+
+    for disaster in formatted_disasters:
+        if disaster["id"] in affected_map:
+            disaster["people_affected"] = affected_map[disaster["id"]][0]
+            disaster["severity"] = affected_map[disaster["id"]][1]
+            disaster["first_observance"] = affected_map[disaster["id"]][2]
+            disaster["last_observance"] = affected_map[disaster["id"]][3]
+            disaster["num_reports"] = affected_map[disaster["id"]][4]
+        else:
+            disaster["people_affected"] = None
+            disaster["severity"] = None
+            disaster["first_observance"] = None
+            disaster["last_observance"] = None
+            disaster["num_reports"] = 0
+
+        if disaster["id"] in random_report_data:
+            user_info = random_report_data[disaster["id"]]
+            disaster["random_observer"] = user_map[user_info[0]]["username"]
+            disaster["random_observer_url"] = user_map[user_info[0]]["photograph_url"]
+            disaster["random_comment"] = user_info[1]
+        else:
+            disaster["random_observer"] = None
+            disaster["random_observer_url"] = None
+            disaster["random_comment"] = None
+    
+    return formatted_disasters
+
+
 '''
 A GET endpoint to get all disasters. This endpoint takes no parameters. This endpoint does
 not return any of the witness reports associated with a specific disaster. For each
@@ -63,18 +109,28 @@ def disasters():
                 func.avg(WitnessReport.severity),
                 func.min(WitnessReport.event_datetime),
                 func.max(WitnessReport.event_datetime),
+                func.count(WitnessReport.disaster_id),
             ).group_by(WitnessReport.disaster_id).all()
+        
+        formatted_affected_people = [(report[0], report[1], float(report[2]), report[3],
+            report[4], report[5]) for report in affected_people]
 
-        formatted_affected_people = [(report[0], report[1], float(report[2]), report[3], report[4]) for report in affected_people]
+        # disaster_id, observer_id, comment
+        all_witness_reports = WitnessReport.query.with_entities(WitnessReport.disaster_id,
+            WitnessReport.observer_id, WitnessReport.comment).all()
+        random_report_data = get_random_report_data(all_witness_reports) # dictionary containing some random report data per disaster
+
+        all_users = [user.format() for user in Observer.query.all()]
 
         print("\n\n\n\n")
+        print(all_witness_reports)
+        print("\n\n")
         print(formatted_affected_people)
         print("\n\n\n\n")
 
         return jsonify({
             'total_disasters': total_disasters,
-            'disasters': formatted_disasters,
-            'list_people_affected': formatted_affected_people,
+            'disasters': combine_disaster_data(formatted_disasters, formatted_affected_people, random_report_data, all_users),
         })
     except Exception as ex:
         print("\n\n")
