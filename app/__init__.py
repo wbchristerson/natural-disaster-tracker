@@ -167,7 +167,7 @@ def resource_not_found(error):
     }), 404
 
 
-@app.errorhander(422)
+@app.errorhandler(422)
 def unprocessable(error):
     return jsonify({
         "success": False,
