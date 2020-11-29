@@ -43,7 +43,7 @@ class Disaster(db.Model):
 
   id = Column(Integer, primary_key=True)
   informal_name = Column(String(50))
-  official_name = Column(String(100))
+  official_name = Column(String(100), unique=True)
   disaster_type = Column('disaster_type', Enum(NaturalDisasterEnum))
   witness_reports = relationship('WitnessReport', backref="witness_report_disaster",
     cascade="all, delete, delete-orphan")
@@ -81,7 +81,7 @@ class Observer(db.Model):
   __tablename__ = 'observers'
 
   id = Column(Integer, primary_key=True)
-  username = Column(String(50), nullable=False)
+  username = Column(String(50), nullable=False, unique=True)
   photograph_url = Column(String(200), nullable=True)
   witness_reports = relationship('WitnessReport', backref="witness_report_observer",
     cascade="all, delete, delete-orphan")
