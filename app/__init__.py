@@ -123,11 +123,11 @@ def create_app(test_config=None):
                 'disasters': combine_disaster_data(formatted_disasters, formatted_affected_people, random_report_data, all_users),
             })
         except Exception as ex:
-            print("\n\n")
-            print(ex)
-            print("\n\n")
+            # print("\n\n")
+            # print(ex)
+            # print("\n\n")
             flash('An error occurred.')
-            abort(404)
+            abort(422)
 
 
     @app.errorhandler(400)

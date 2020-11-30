@@ -6,6 +6,7 @@ from models import setup_db, Observer, Disaster, NaturalDisasterEnum, WitnessRep
 from flask_sqlalchemy import SQLAlchemy
 import json
 from datetime import datetime
+import pytz
 
 
 class SampleWillTestCase(unittest.TestCase):
@@ -15,6 +16,7 @@ class SampleWillTestCase(unittest.TestCase):
         """Define test variables, initialize app; note: much of this code matches an
             earlier project that I completed -- the trivia API project"""
         self.app = create_app()
+        self.app.secret_key = os.environ['SECRET_KEY']
         self.client = self.app.test_client
         self.database_name = "test-capstoneDB"
         self.database_path = "postgres://{}:{}@{}/{}".format(
@@ -49,8 +51,8 @@ class SampleWillTestCase(unittest.TestCase):
                 True, -76.0, 42.0
             )
             self.db.session.add(disaster_2)
-
             self.db.session.commit()
+
             self.disaster_1_data = {
                 "id": disaster_1.id,
                 "informal_name": "The bad hurricane",
@@ -67,6 +69,7 @@ class SampleWillTestCase(unittest.TestCase):
                 "random_comment": None,
                 "random_observer_url": None,
             }
+
             self.disaster_2_data = {
                 "id": disaster_2.id,
                 "informal_name": "The really bad hurricane",
@@ -76,12 +79,8 @@ class SampleWillTestCase(unittest.TestCase):
                 "location": [-76.0, 42.0],
                 "people_affected": 8000,
                 "severity": 7.0,
-
-                "first_observance": datetime.timestamp(datetime(2018, 8, 23, 10, 31, 34)),
-                "last_observance": datetime.timestamp(datetime(2018, 8, 25, 15, 2, 24)),
-                # "first_observance": mock.ANY,
-                # "last_observance": mock.ANY,
-
+                "first_observance": datetime(2018, 8, 23, 18, 31, 34).strftime("%a, %d %b %Y %H:%M:%S") + " GMT",
+                "last_observance": datetime(2018, 8, 25, 23, 2, 24).strftime("%a, %d %b %Y %H:%M:%S") + " GMT",
                 "num_reports": 2,
                 "random_observer": mock.ANY,
                 "random_comment": mock.ANY,
@@ -91,19 +90,18 @@ class SampleWillTestCase(unittest.TestCase):
             self.observer_id_2 = observer_2.id
 
             witness_report_1 = WitnessReport(self.disaster_2_data["id"],
-                self.observer_id_1, datetime(2018, 8, 23, 10, 31, 34), 8,
+                self.observer_id_1, datetime(2018, 8, 23, 14, 31, 34), 8,
                 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgWBUS6RY8tdH1KgycMUKVY8HhvI7C6m_HkQ&usqp=CAU',
                 "The amount of wind is quite severe!", 1200, -80.0, 32.8)
             self.db.session.add(witness_report_1)
 
             witness_report_2 = WitnessReport(self.disaster_2_data["id"],
-                self.observer_id_2, datetime(2018, 8, 25, 15, 2, 24), 6,
+                self.observer_id_2, datetime(2018, 8, 25, 19, 2, 24), 6,
                 'https://s.abcnews.com/images/US/hurricane-laura-11-gty-llr-200827_1598555060545_hpMain_2_4x3_608.jpg',
                 "Many people's homes are destroyed. There is great devastation.", 8000, -80.8, 32.6)
             self.db.session.add(witness_report_2)
 
             self.db.session.commit()
-            # self.witness_report_id_1 = witness_report_1.id
 
 
     def tearDown(self):
@@ -130,7 +128,8 @@ class SampleWillTestCase(unittest.TestCase):
         self.assertTrue(True)
 
     
-    def test_get_disasters_success_simple(self):
+    def test_get_disasters_success(self):
+        """Test for successfully retrieving disasters"""
         res = self.client().get('/disasters')
 
         self.assertEqual(res.status_code, 200)
@@ -139,19 +138,23 @@ class SampleWillTestCase(unittest.TestCase):
 
         self.assertIn("total_disasters", data)
         self.assertIn("disasters", data)
-
         self.assertEqual(2, data["total_disasters"])
-
         self.assertDictEqual(self.disaster_1_data, data["disasters"][0])
         self.assertDictEqual(self.disaster_2_data, data["disasters"][1])
 
-        print("\n\n\n")
-        for k, v in self.disaster_2_data.items():
-            print(str(k) + ": ", v)
-        print("\n\n")
-        for k, v in data['disasters'][1].items():
-            print(str(k) + ": ", v)
-        print("\n\n\n")
+        # print("\n\n\n")
+        # for k, v in self.disaster_2_data.items():
+        #     print(str(k) + ": ", v)
+        # print("\n\n")
+        # for k, v in data['disasters'][1].items():
+        #     print(str(k) + ": ", v)
+        # print("\n\n\n")
+
+    
+    def test_get_disasters_failure(self):
+        """Test for failure to retrieve disasters due to invalid page"""
+        res = self.client().get('/disasters?page=-1')
+        self.assertEqual(res.status_code, 422)
 
 
 # Make tests executable
