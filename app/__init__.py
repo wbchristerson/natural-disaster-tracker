@@ -138,12 +138,28 @@ def create_app(test_config=None):
                 'disasters': combine_disaster_data(formatted_disasters, formatted_affected_people, random_report_data, all_users),
             })
         except AttributeError as ex:
-            # print("\n\n")
-            # print(ex)
-            # print("\n\n")
             flash('An error occurred.')
             abort(404)
         except Exception as ex:
+            flash("An error occurred.")
+            abort(422)
+
+
+    @app.route('/disasters/<disaster_id>')
+    def retrieve_disaster_by_id(disaster_id):
+        page = int(request.args.get("page", "1"))
+        try:
+            if page <= 0:
+                raise ValueError("The request page must be positive.")
+            disaster = Disaster.query.filter(Disaster.id == disaster_id).first()
+            return jsonify(disaster.format())
+        except AttributeError as ex:
+            flash("An attribute error occurreed.")
+            abort(404)
+        except Exception as ex:
+            print("\n\n")
+            print(type(ex).__name__)
+            print("\n\n")
             flash("An error occurred.")
             abort(422)
 
