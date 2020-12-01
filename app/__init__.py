@@ -1,6 +1,6 @@
 import os
 from flask import Flask, abort, jsonify, flash, request
-from models import setup_db, Disaster, Observer, WitnessReport
+from models import setup_db, Disaster, Observer, WitnessReport, NaturalDisasterEnum
 from flask_cors import CORS
 from sqlalchemy import func
 from random import randrange
@@ -80,22 +80,37 @@ def create_app(test_config=None):
 
 
     '''
-    A GET endpoint to get all disasters. This endpoint takes no parameters. This endpoint does
-    not return any of the witness reports associated with a specific disaster. For each
-    disaster, the data in the disaster table is returned along with a random comment and the
-    author of that comment from a witness of the disaster (if any) and some descriptive
+    A GET endpoint to get all disasters or disasters by disaster type. This endpoint takes 
+    an optional parameter 'disaster_type' for the disaster_type. If no disaster_type parameter
+    is provided, then the data for all disasters is returned. If the disaster_type parameter
+    is provided but is not one of the recognized enums, a 404 error is raised.
+
+    The endpoint also has an optional page request parameter corresponding to the paginated
+    page to use. The current default for the size of a page is 10. If the page is non-positive,
+    then a 422 error occurs.
+    
+    This endpoint does not return any of the witness reports associated with a specific disaster.
+    For each disaster, the data in the disaster table is returned along with a random comment
+    and the author of that comment from a witness of the disaster (if any) and some descriptive
     data about the disaster reports per disaster (namely, the number of reports, the first
     observance, the last observance, and the number of people affected).
-
-    This endpoint has a page request parameter corresponding to the paginated page to use.
-    THe current default for the size of a page is 10.
     '''
     @app.route('/disasters')
     def disasters():
         page = int(request.args.get("page", "1"))
+        disaster_type = request.args.get("disaster_type", None)
+
         try:
+            if disaster_type is not None and disaster_type.upper() not in NaturalDisasterEnum.__members__:
+                raise AttributeError("Unrecognized natural disaster type.")
             formatted_disasters = []
-            disasters = Disaster.query.all()
+
+            if disaster_type is None:
+                disasters = Disaster.query.all()
+            else:
+                disasters = Disaster.query.filter(
+                    Disaster.disaster_type == disaster_type.upper()).all()
+
             total_disasters = len(disasters)
             formatted_disasters = get_page_of_resource([disaster.format() for disaster in disasters], page)
 
@@ -122,11 +137,14 @@ def create_app(test_config=None):
                 'total_disasters': total_disasters,
                 'disasters': combine_disaster_data(formatted_disasters, formatted_affected_people, random_report_data, all_users),
             })
-        except Exception as ex:
+        except AttributeError as ex:
             # print("\n\n")
             # print(ex)
             # print("\n\n")
             flash('An error occurred.')
+            abort(404)
+        except Exception as ex:
+            flash("An error occurred.")
             abort(422)
 
 

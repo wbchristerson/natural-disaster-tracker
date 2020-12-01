@@ -51,6 +51,12 @@ class SampleWillTestCase(unittest.TestCase):
                 True, -76.0, 42.0
             )
             self.db.session.add(disaster_2)
+
+            disaster_3 = Disaster(
+                "A terrible tornado", "Tornado-987", NaturalDisasterEnum.TORNADO,
+                False, -80.0, 38.8
+            )
+            self.db.session.add(disaster_3)
             self.db.session.commit()
 
             self.disaster_1_data = {
@@ -86,6 +92,24 @@ class SampleWillTestCase(unittest.TestCase):
                 "random_comment": mock.ANY,
                 "random_observer_url": mock.ANY,
             }
+
+            self.disaster_3_data = {
+                "id": disaster_3.id,
+                "informal_name": "A terrible tornado",
+                "official_name": "Tornado-987",
+                "disaster_type": "tornado",
+                "is_ongoing": False,
+                "location": [-80.0, 38.8],
+                "people_affected": None,
+                "severity": None,
+                "first_observance": None,
+                "last_observance": None,
+                "num_reports": 0,
+                "random_observer": None,
+                "random_comment": None,
+                "random_observer_url": None,
+            }
+
             self.observer_id_1 = observer_1.id
             self.observer_id_2 = observer_2.id
 
@@ -110,6 +134,7 @@ class SampleWillTestCase(unittest.TestCase):
         observer_2 = Observer.query.filter(Observer.id == self.observer_id_2).first()
         disaster_1 = Disaster.query.filter(Disaster.id == self.disaster_1_data["id"]).first()
         disaster_2 = Disaster.query.filter(Disaster.id == self.disaster_2_data["id"]).first()
+        disaster_3 = Disaster.query.filter(Disaster.id == self.disaster_3_data["id"]).first()
 
         if observer_1:
             observer_1.delete()
@@ -123,14 +148,35 @@ class SampleWillTestCase(unittest.TestCase):
         if disaster_2:
             disaster_2.delete()
 
-
-    def test_operations(self):
-        self.assertTrue(True)
+        if disaster_3:
+            disaster_3.delete()
 
     
-    def test_get_disasters_success(self):
+    def test_get_general_disasters_success(self):
         """Test for successfully retrieving disasters"""
         res = self.client().get('/disasters')
+
+        self.assertEqual(res.status_code, 200)
+
+        data = json.loads(res.data)
+
+        self.assertIn("total_disasters", data)
+        self.assertIn("disasters", data)
+        self.assertEqual(3, data["total_disasters"])
+        self.assertDictEqual(self.disaster_1_data, data["disasters"][0])
+        self.assertDictEqual(self.disaster_2_data, data["disasters"][1])
+        self.assertDictEqual(self.disaster_3_data, data["disasters"][2])
+
+    
+    def test_get_general_disasters_failure(self):
+        """Test for failure to retrieve disasters due to invalid page"""
+        res = self.client().get('/disasters?page=-1')
+        self.assertEqual(res.status_code, 422)
+    
+
+    def test_get_disasters_single_disaster_type_success(self):
+        """Test for successfully retrieving disasters of a specific disaster_type"""
+        res = self.client().get('/disasters?disaster_type=hurricane')
 
         self.assertEqual(res.status_code, 200)
 
@@ -142,19 +188,11 @@ class SampleWillTestCase(unittest.TestCase):
         self.assertDictEqual(self.disaster_1_data, data["disasters"][0])
         self.assertDictEqual(self.disaster_2_data, data["disasters"][1])
 
-        # print("\n\n\n")
-        # for k, v in self.disaster_2_data.items():
-        #     print(str(k) + ": ", v)
-        # print("\n\n")
-        # for k, v in data['disasters'][1].items():
-        #     print(str(k) + ": ", v)
-        # print("\n\n\n")
 
-    
-    def test_get_disasters_failure(self):
-        """Test for failure to retrieve disasters due to invalid page"""
-        res = self.client().get('/disasters?page=-1')
-        self.assertEqual(res.status_code, 422)
+    def test_get_disasters_single_disaster_type_failure(self):
+        """Test for failure to retrieve disasters due to an unrecognized disaster_type"""
+        res = self.client().get('/disasters?disaster_type=crisis')
+        self.assertEqual(res.status_code, 404)
 
 
 # Make tests executable
