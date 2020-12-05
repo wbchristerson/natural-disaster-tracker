@@ -223,7 +223,7 @@ def create_app(test_config=None):
             
             return jsonify(combine_single_disaster_data(disaster.format(), formatted_additional_data, formatted_reports, page))
         except AttributeError as ex:
-            flash("An attribute error occurreed.")
+            flash("An attribute error occurred.")
             abort(404)
         except Exception as ex:
             flash("An error occurred.")
@@ -298,3 +298,8 @@ app.secret_key = os.environ['SECRET_KEY']
 
 if __name__ == '__main__':
     app.run()
+
+
+# curl -X POST https://sample-will.herokuapp.com/disasters --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"informal_name": "The Tsunami", "official_name": "Tsunami-1", "disaster_type": "TSUNAMI", "is_ongoing": false, "location_latitude": 8.0, "location_longitude": 130.4 }'
+
+# curl -X POST https://sample-will.herokuapp.com/disasters --header "Content-Type: application/json" --data '{"informal_name": "The Tsunami", "official_name": "Tsunami-1", "disaster_type": "TSUNAMI", "is_ongoing": false, "location_latitude": 8.0, "location_longitude": 130.4 }'
