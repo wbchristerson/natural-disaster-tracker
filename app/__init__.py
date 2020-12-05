@@ -2,8 +2,9 @@ import os
 from flask import Flask, abort, jsonify, flash, request
 from models import setup_db, Disaster, Observer, WitnessReport, NaturalDisasterEnum
 from flask_cors import CORS
-from sqlalchemy import func
+from sqlalchemy import func, join
 from random import randrange
+from copy import copy
 
 PAGE_SIZE = 10
 
@@ -55,13 +56,13 @@ def create_app(test_config=None):
         for disaster in formatted_disasters:
             if disaster["id"] in affected_map:
                 disaster["people_affected"] = affected_map[disaster["id"]][0]
-                disaster["severity"] = affected_map[disaster["id"]][1]
+                disaster["average_severity"] = affected_map[disaster["id"]][1]
                 disaster["first_observance"] = affected_map[disaster["id"]][2]
                 disaster["last_observance"] = affected_map[disaster["id"]][3]
                 disaster["num_reports"] = affected_map[disaster["id"]][4]
             else:
                 disaster["people_affected"] = None
-                disaster["severity"] = None
+                disaster["average_severity"] = None
                 disaster["first_observance"] = None
                 disaster["last_observance"] = None
                 disaster["num_reports"] = 0
@@ -77,6 +78,22 @@ def create_app(test_config=None):
                 disaster["random_comment"] = None
         
         return formatted_disasters
+
+
+    def combine_single_disaster_data(disaster, formatted_additional_data, formatted_reports, page) -> dict:
+        all_data = copy(disaster)
+        all_data["people_affected"] = formatted_additional_data[1]
+        all_data["average_severity"] = formatted_additional_data[2]
+        all_data["first_observance"] = formatted_additional_data[3]
+        all_data["last_observance"] = formatted_additional_data[4]
+        all_data["num_reports"] = formatted_additional_data[5]
+
+        all_data["reports"] = get_page_of_resource(formatted_reports, page)
+
+        for report in all_data["reports"]:
+            del report["disaster_id"]
+
+        return all_data
 
 
     '''
@@ -114,7 +131,7 @@ def create_app(test_config=None):
             total_disasters = len(disasters)
             formatted_disasters = get_page_of_resource([disaster.format() for disaster in disasters], page)
 
-            affected_people = WitnessReport.query.with_entities(
+            additional_data = WitnessReport.query.with_entities(
                     WitnessReport.disaster_id,
                     func.max(WitnessReport.people_affected),
                     func.avg(WitnessReport.severity),
@@ -123,8 +140,8 @@ def create_app(test_config=None):
                     func.count(WitnessReport.disaster_id),
                 ).group_by(WitnessReport.disaster_id).all()
             
-            formatted_affected_people = [(report[0], report[1], float(report[2]), report[3],
-                report[4], report[5]) for report in affected_people]
+            formatted_additional_data = [(report[0], report[1], float(report[2]), report[3],
+                report[4], report[5]) for report in additional_data]
 
             # disaster_id, observer_id, comment
             all_witness_reports = WitnessReport.query.with_entities(WitnessReport.disaster_id,
@@ -135,7 +152,7 @@ def create_app(test_config=None):
 
             return jsonify({
                 'total_disasters': total_disasters,
-                'disasters': combine_disaster_data(formatted_disasters, formatted_affected_people, random_report_data, all_users),
+                'disasters': combine_disaster_data(formatted_disasters, formatted_additional_data, random_report_data, all_users),
             })
         except AttributeError as ex:
             flash('An error occurred.')
@@ -152,14 +169,36 @@ def create_app(test_config=None):
             if page <= 0:
                 raise ValueError("The request page must be positive.")
             disaster = Disaster.query.filter(Disaster.id == disaster_id).first()
-            return jsonify(disaster.format())
+
+            additional_data = WitnessReport.query.filter(WitnessReport.disaster_id == disaster_id).with_entities(
+                    WitnessReport.disaster_id,
+                    func.max(WitnessReport.people_affected),
+                    func.avg(WitnessReport.severity),
+                    func.min(WitnessReport.event_datetime),
+                    func.max(WitnessReport.event_datetime),
+                    func.count(WitnessReport.disaster_id),
+                ).group_by(WitnessReport.disaster_id).first()
+
+            if additional_data:
+                formatted_additional_data = (additional_data[0], additional_data[1], float(additional_data[2]), additional_data[3], additional_data[4], additional_data[5])
+            else:
+                formatted_additional_data = (None, None, None, None, None, 0)
+
+            reports, observer_map = WitnessReport.observer_join(disaster_id)
+            formatted_reports = [report.format() for report in reports]
+            for fr in formatted_reports:
+                fr["username"] = observer_map[fr["observer_id"]][0]
+                fr["user_photograph_url"] = observer_map[fr["observer_id"]][1]
+            
+            return jsonify(combine_single_disaster_data(disaster.format(), formatted_additional_data, formatted_reports, page))
         except AttributeError as ex:
             flash("An attribute error occurreed.")
             abort(404)
         except Exception as ex:
-            print("\n\n")
-            print(type(ex).__name__)
-            print("\n\n")
+            # print("\n\n")
+            # print(type(ex).__name__)
+            # print(ex)
+            # print("\n\n")
             flash("An error occurred.")
             abort(422)
 

@@ -72,7 +72,7 @@ class Disaster(db.Model):
   def delete(self):
     db.session.delete(self)
     db.session.commit()
-
+  
 
 '''
 Observer
@@ -107,7 +107,6 @@ WitnessReport
 '''
 class WitnessReport(db.Model):
   __tablename__ = 'witnessreports'
-
 
   id = Column(Integer, primary_key=True)
   disaster_id = Column(Integer, ForeignKey('disasters.id'), nullable=False)
@@ -156,5 +155,15 @@ class WitnessReport(db.Model):
   def delete(self):
     db.session.delete(self)
     db.session.commit()
+  
 
+  @staticmethod
+  def observer_join(disaster_id):
+    reports = db.session.query(WitnessReport).join(Observer, Observer.id==WitnessReport.observer_id).filter(WitnessReport.disaster_id==disaster_id).all()
+    observers = db.session.query(Observer).join(WitnessReport, Observer.id==WitnessReport.observer_id).filter(WitnessReport.disaster_id==disaster_id).all()
 
+    observer_map = dict()
+    for observer in observers:
+      observer_map[observer.id] = (observer.username, observer.photograph_url)
+
+    return reports, observer_map
