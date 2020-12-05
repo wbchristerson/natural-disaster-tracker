@@ -69,6 +69,10 @@ class Disaster(db.Model):
       'location': (self.location_latitude, self.location_longitude),
     }
 
+  def insert(self):
+    db.session.add(self)
+    db.session.commit()
+
   def delete(self):
     db.session.delete(self)
     db.session.commit()
@@ -96,6 +100,10 @@ class Observer(db.Model):
       'username': self.username,
       'photograph_url': self.photograph_url,
     }
+
+  def insert(self):
+    db.session.add(self)
+    db.session.commit()
   
   def delete(self):
     db.session.delete(self)
@@ -119,7 +127,6 @@ class WitnessReport(db.Model):
   location_latitude = Column(Float, nullable=True)
   location_longitude = Column(Float, nullable=True)
 
-
   def __init__(self, disaster_id, observer_id, event_datetime, severity, image_url, comment,
     people_affected, location_latitude, location_longitude):
     self.disaster_id = disaster_id
@@ -131,13 +138,6 @@ class WitnessReport(db.Model):
     self.people_affected = people_affected
     self.location_latitude = location_latitude
     self.location_longitude = location_longitude
-
-
-  # '''return the maximum number of people affected per disaster id, paired with the disaster's id'''
-  # @staticmethod
-  # def get_maximum_affected_by_disaster():
-  #   subquery = db.session.query(WitnessReport.id, func.max(WitnessReport.people_affected).label('people_affected')).group_by(WitnessReport.id)
-
 
   def format(self):
     return {
@@ -151,6 +151,10 @@ class WitnessReport(db.Model):
       'people_affected': self.people_affected,
       'location': (self.location_latitude, self.location_longitude),
     }
+
+  def insert(self):
+    db.session.add(self)
+    db.session.commit()
 
   def delete(self):
     db.session.delete(self)

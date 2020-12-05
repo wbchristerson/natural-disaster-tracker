@@ -35,32 +35,31 @@ class SampleWillTestCase(unittest.TestCase):
             observer_1 = Observer(
                 "hurricane_tracker",
                 "https://specials-images.forbesimg.com/imageserve/1130415291/960x0.jpg?fit=scale")
-            self.db.session.add(observer_1)
+            observer_1.insert()
 
             observer_2 = Observer(
                 "safety_manager",
                 "https://www.telegraph.co.uk/content/dam/news/2016/09/08/107667228_beech-tree-NEWS_trans_NvBQzQNjv4BqplGOf-dgG3z4gg9owgQTXEmhb5tXCQRHAvHRWfzHzHk.jpg"
             )
-            self.db.session.add(observer_2)
+            observer_2.insert()
 
             disaster_1 = Disaster(
                 "The bad hurricane", "Hurricane-XYZ", NaturalDisasterEnum.HURRICANE,
                 True, 0.0, 0.0
             )
-            self.db.session.add(disaster_1)
+            disaster_1.insert()
 
             disaster_2 = Disaster(
                 "The really bad hurricane", "Hurricane-123", NaturalDisasterEnum.HURRICANE,
                 True, -76.0, 42.0
             )
-            self.db.session.add(disaster_2)
+            disaster_2.insert()
 
             disaster_3 = Disaster(
                 "A terrible tornado", "Tornado-987", NaturalDisasterEnum.TORNADO,
                 False, -80.0, 38.8
             )
-            self.db.session.add(disaster_3)
-            self.db.session.commit()
+            disaster_3.insert()
 
             self.disaster_1_data = {
                 "id": disaster_1.id,
@@ -120,15 +119,14 @@ class SampleWillTestCase(unittest.TestCase):
                 self.observer_1_data["id"], datetime(2018, 8, 23, 14, 31, 34), 8,
                 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgWBUS6RY8tdH1KgycMUKVY8HhvI7C6m_HkQ&usqp=CAU',
                 "The amount of wind is quite severe!", 1200, -80.0, 32.8)
-            self.db.session.add(witness_report_1)
+            witness_report_1.insert()
 
             witness_report_2 = WitnessReport(self.disaster_2_data["id"],
                 self.observer_2_data["id"], datetime(2018, 8, 25, 19, 2, 24), 6,
                 'https://s.abcnews.com/images/US/hurricane-laura-11-gty-llr-200827_1598555060545_hpMain_2_4x3_608.jpg',
                 "Many people's homes are destroyed. There is great devastation.", 8000, -80.8, 32.6)
-            self.db.session.add(witness_report_2)
+            witness_report_2.insert()
 
-            self.db.session.commit()
             self.witness_report_1_data = witness_report_1.format()
             self.witness_report_2_data = witness_report_2.format()
 

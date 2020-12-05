@@ -162,6 +162,37 @@ def create_app(test_config=None):
             abort(422)
 
 
+    '''
+    A GET endpoint to get the details of a single disaster, including:
+        - id (int)
+        - informal_name (str)
+        - official_name (str)
+        - disaster_type (enum str)
+        - is_ongoing (bool)
+        - location (list of pair of floats)
+        - people_affected (maximum over all reports if there exist reports, otherwise None)
+        - average_severity (float)
+        - first_observance (datetime str)
+        - last_observance (datetime str)
+        - num_reports (int; if no reports exist, it is 0)
+        - reports (list)
+    
+    The reports property contains a list of individual witness reports, each including:
+        - id (int)
+        - observer_id (int)
+        - event_datetime (datetime str)
+        - severity (int)
+        - image_url (str)
+        - comment (str)
+        - people_affected (int)
+        - location (list of pair of floats)
+        - username (str)
+        - user_photograph_url (str)
+
+    A page query parameter allows the page setting of the reports with 10 per page; if the
+    page is invalid, a 422 error is returned; otherwise, if the id provided does not correspond
+    to an existing disaster, a 404 error is returned
+    '''
     @app.route('/disasters/<disaster_id>')
     def retrieve_disaster_by_id(disaster_id):
         page = int(request.args.get("page", "1"))
@@ -195,12 +226,32 @@ def create_app(test_config=None):
             flash("An attribute error occurreed.")
             abort(404)
         except Exception as ex:
-            # print("\n\n")
-            # print(type(ex).__name__)
-            # print(ex)
-            # print("\n\n")
             flash("An error occurred.")
             abort(422)
+
+
+    @app.route('/disasters', methods=["POST"])
+    def send_disaster():
+        try:
+            body = request.get_json()
+            disaster = Disaster(
+                body.get("informal_name"),
+                body.get("official_name"),
+                body.get("disaster_type"),
+                body.get("is_ongoing"),
+                body.get("location_latitude"),
+                body.get("location_longitude"),
+            )
+            disaster.insert()
+            return jsonify({ "id": disaster.id })
+
+        except Exception as ex:
+            print("\n\n")
+            print(type(ex).__name__)
+            print(ex)
+            print("\n\n")
+            flash("An error occurred.")
+            abort(400)
 
 
     @app.errorhandler(400)
