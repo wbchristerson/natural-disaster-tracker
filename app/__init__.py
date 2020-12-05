@@ -259,7 +259,7 @@ def create_app(test_config=None):
         return jsonify({
             "success": False,
             "error": 400,
-            "message": "malformed request"
+            "message": "malformed request - " + str(error)
         }), 400
 
 
