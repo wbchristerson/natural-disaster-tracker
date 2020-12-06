@@ -230,6 +230,12 @@ def create_app(test_config=None):
             abort(422)
 
 
+    '''
+    A POST endpoint to insert a disaster into the database. The body for the 
+    request is a dictionary with the following keys:
+
+        - informal_name (str, )
+    '''
     @app.route('/disasters', methods=["POST"])
     def send_disaster():
         try:
@@ -246,10 +252,10 @@ def create_app(test_config=None):
             return jsonify({ "id": disaster.id })
 
         except Exception as ex:
-            print("\n\n")
-            print(type(ex).__name__)
-            print(ex)
-            print("\n\n")
+            # print("\n\n")
+            # print(type(ex).__name__)
+            # print(ex)
+            # print("\n\n")
             flash("An error occurred.")
             abort(400)
 
@@ -303,3 +309,8 @@ if __name__ == '__main__':
 # curl -X POST https://sample-will.herokuapp.com/disasters --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"informal_name": "The Tsunami", "official_name": "Tsunami-1", "disaster_type": "TSUNAMI", "is_ongoing": false, "location_latitude": 8.0, "location_longitude": 130.4 }'
 
 # curl -X POST https://sample-will.herokuapp.com/disasters --header "Content-Type: application/json" --data '{"informal_name": "The Tsunami", "official_name": "Tsunami-1", "disaster_type": "TSUNAMI", "is_ongoing": false, "location_latitude": 8.0, "location_longitude": 130.4 }'
+
+
+# curl -X POST https://sample-will.herokuapp.com/disasters --header "Content-Type: application/json" --data '{"disaster_type": "TSUNAMI", "is_ongoing": false, "location_latitude": 8.0, "location_longitude": 130.4 }'
+
+# curl -X POST http://127.0.0.1:5000/disasters --header "Content-Type: application/json" --data '{"disaster_type": "TSUNAMI", "is_ongoing": false, "location_latitude": 8.0, "location_longitude": 130.4 }'

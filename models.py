@@ -43,8 +43,8 @@ class Disaster(db.Model):
 
   id = Column(Integer, primary_key=True)
   informal_name = Column(String(50))
-  official_name = Column(String(100), unique=True)
-  disaster_type = Column('disaster_type', Enum(NaturalDisasterEnum))
+  official_name = Column(String(100), unique=True, nullable=False)
+  disaster_type = Column('disaster_type', Enum(NaturalDisasterEnum), nullable=False)
   witness_reports = relationship('WitnessReport', backref="witness_report_disaster",
     cascade="all, delete, delete-orphan")
   is_ongoing = Column(Boolean, default=True)

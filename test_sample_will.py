@@ -26,6 +26,7 @@ class SampleWillTestCase(unittest.TestCase):
             os.environ.get('MY_PG_USER'), os.environ.get('MY_PG_PWD'), 'localhost:5432',
             self.database_name)
         setup_db(self.app, self.database_path)
+        self.added_ids = []
 
         with self.app.app_context():
             self.db = SQLAlchemy()
@@ -154,6 +155,10 @@ class SampleWillTestCase(unittest.TestCase):
         if disaster_3:
             disaster_3.delete()
 
+        for id in self.added_ids:
+            inserted_disaster = Disaster.query.filter(Disaster.id == id).first()
+            inserted_disaster.delete()
+
     
     def test_get_general_disasters_success(self):
         """Test for successfully retrieving disasters"""
@@ -248,6 +253,64 @@ class SampleWillTestCase(unittest.TestCase):
         """Test for failure to retrieve details of single disaster"""
         res = self.client().get('/disasters/0')
         self.assertEqual(res.status_code, 404)
+
+
+    def test_insert_disaster_success(self):
+        """Test for successfully inserting a new disaster"""
+        disaster_info = {
+            "informal_name": "Dangerous Volcanic Eruption",
+            "official_name": "Volcano Eruption-1843",
+            "disaster_type": "volcano",
+            "is_ongoing": True,
+            "location_latitude": 20.669765,
+            "location_longitude":  -156.339161,
+        }
+        res = self.client().post('/disasters', data=json.dumps(disaster_info), headers={'Content-Type': 'application/json'})
+        self.assertEqual(200, res.status_code)
+        data = json.loads(res.data)
+
+        self.added_ids.append(data["id"])
+        matching_disaster = Disaster.query.filter(Disaster.id == data["id"]).first()
+
+        self.assertIsNotNone(matching_disaster)
+        self.assertEqual(disaster_info["informal_name"], matching_disaster.informal_name)
+        self.assertEqual(disaster_info["official_name"], matching_disaster.official_name)
+        self.assertEqual(disaster_info["disaster_type"], matching_disaster.disaster_type)
+        self.assertEqual(disaster_info["is_ongoing"], matching_disaster.is_ongoing)
+        self.assertEqual(disaster_info["location_latitude"], matching_disaster.location_latitude)
+        self.assertEqual(disaster_info["location_longitude"], matching_disaster.location_longitude)
+
+
+    def test_insert_disaster_no_location_failure(self):
+        """Test for a failed attempt to insert a disaster due to no latitude or longitude being given"""
+        disaster_info = {
+            "informal_name": "Dangerous Volcanic Eruption",
+            "official_name": "Volcano Eruption-1843",
+            "disaster_type": "volcano",
+            "is_ongoing": True,
+        }
+        res = self.client().post('/disasters', data=json.dumps(disaster_info), headers={'Content-Type': 'application/json'})
+        self.assertEqual(400, res.status_code)
+
+    
+    def test_insert_disaster_duplicate_failure(self):
+        """Test for a failed attempt to insert a disaster due to no latitude or longitude being given"""
+        disaster_info = {
+            "informal_name": "Dangerous Volcanic Eruption",
+            "official_name": "Volcano Eruption-1843",
+            "disaster_type": "volcano",
+            "is_ongoing": True,
+            "location_latitude": 20.669765,
+            "location_longitude":  -156.339161,
+        }
+        res1 = self.client().post('/disasters', data=json.dumps(disaster_info), headers={'Content-Type': 'application/json'})
+        self.assertEqual(200, res1.status_code)
+        data = json.loads(res1.data)
+        self.added_ids.append(data["id"])
+
+        res2 = self.client().post('/disasters', data=json.dumps(disaster_info), headers={'Content-Type': 'application/json'})
+        self.assertEqual(400, res2.status_code)
+
 
 
 # Make tests executable
