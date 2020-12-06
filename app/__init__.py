@@ -234,7 +234,15 @@ def create_app(test_config=None):
     A POST endpoint to insert a disaster into the database. The body for the 
     request is a dictionary with the following keys:
 
-        - informal_name (str, )
+        - informal_name (str)
+        - official_name (str, required, must be unique)
+        - disaster_type (str, disaster enum)
+        - is_ongoing (bool, default True)
+        - location_latitude (float, required)
+        - location_longitude (float, required)
+
+    If the request's disaster data does not meet the conditions of requirmemente described
+    above, a 400 status code error is returned
     '''
     @app.route('/disasters', methods=["POST"])
     def send_disaster():
@@ -250,12 +258,23 @@ def create_app(test_config=None):
             )
             disaster.insert()
             return jsonify({ "id": disaster.id })
-
         except Exception as ex:
-            # print("\n\n")
-            # print(type(ex).__name__)
-            # print(ex)
-            # print("\n\n")
+            flash("An error occurred.")
+            abort(400)
+
+
+    @app.route('/observers', methods=["POST"])
+    def send_user():
+        try:
+            body = request.get_json()
+            observer = Observer(body.get("username"), body.get("photograph_url"))
+            observer.insert()
+            return jsonify({ "id": observer.id })
+        except Exception as ex:
+            print("\n\n")
+            print(type(ex).__name__)
+            print(ex)
+            print("\n\n")
             flash("An error occurred.")
             abort(400)
 
@@ -314,3 +333,7 @@ if __name__ == '__main__':
 # curl -X POST https://sample-will.herokuapp.com/disasters --header "Content-Type: application/json" --data '{"disaster_type": "TSUNAMI", "is_ongoing": false, "location_latitude": 8.0, "location_longitude": 130.4 }'
 
 # curl -X POST http://127.0.0.1:5000/disasters --header "Content-Type: application/json" --data '{"disaster_type": "TSUNAMI", "is_ongoing": false, "location_latitude": 8.0, "location_longitude": 130.4 }'
+
+# curl -X POST http://127.0.0.1:5000/observers --header "Content-Type: application/json" --data '{"username": "disaster_recorder", "photograph_url": "https://ichef.bbci.co.uk/images/ic/960x960/p08634k6.jpg"}'
+
+# curl -X POST https://sample-will.herokuapp.com/observers --header "Content-Type: application/json" --data '{"username": "disaster_recorder", "photograph_url": "https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg"}'
