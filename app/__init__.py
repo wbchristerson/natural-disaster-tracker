@@ -263,6 +263,16 @@ def create_app(test_config=None):
             abort(400)
 
 
+    '''
+    A POST endpoint to insert a username into the database. THe body for the
+    request is a dictionary with the following keys:
+
+        - username (str, required, unique)
+        - photograph_url (str)
+
+    If the request's data does not meet the conditions of requirement described above,
+    then a 400 status code error is returned
+    '''
     @app.route('/observers', methods=["POST"])
     def send_user():
         try:
@@ -271,10 +281,10 @@ def create_app(test_config=None):
             observer.insert()
             return jsonify({ "id": observer.id })
         except Exception as ex:
-            print("\n\n")
-            print(type(ex).__name__)
-            print(ex)
-            print("\n\n")
+            # print("\n\n")
+            # print(type(ex).__name__)
+            # print(ex)
+            # print("\n\n")
             flash("An error occurred.")
             abort(400)
 

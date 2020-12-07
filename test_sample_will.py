@@ -26,7 +26,8 @@ class SampleWillTestCase(unittest.TestCase):
             os.environ.get('MY_PG_USER'), os.environ.get('MY_PG_PWD'), 'localhost:5432',
             self.database_name)
         setup_db(self.app, self.database_path)
-        self.added_ids = []
+        self.added_disaster_ids = []
+        self.added_observer_ids = []
 
         with self.app.app_context():
             self.db = SQLAlchemy()
@@ -155,9 +156,13 @@ class SampleWillTestCase(unittest.TestCase):
         if disaster_3:
             disaster_3.delete()
 
-        for id in self.added_ids:
+        for id in self.added_disaster_ids:
             inserted_disaster = Disaster.query.filter(Disaster.id == id).first()
             inserted_disaster.delete()
+
+        for id in self.added_observer_ids:
+            inserted_observer = Observer.query.filter(Observer.id == id).first()
+            inserted_observer.delete()
 
     
     def test_get_general_disasters_success(self):
@@ -269,7 +274,7 @@ class SampleWillTestCase(unittest.TestCase):
         self.assertEqual(200, res.status_code)
         data = json.loads(res.data)
 
-        self.added_ids.append(data["id"])
+        self.added_disaster_ids.append(data["id"])
         matching_disaster = Disaster.query.filter(Disaster.id == data["id"]).first()
 
         self.assertIsNotNone(matching_disaster)
@@ -295,7 +300,7 @@ class SampleWillTestCase(unittest.TestCase):
     
     def test_insert_disaster_duplicate_failure(self):
         """Test for a failed attempt to insert a disaster due to no latitude or longitude being given"""
-        disaster_info = {
+        disaster_data = {
             "informal_name": "Dangerous Volcanic Eruption",
             "official_name": "Volcano Eruption-1843",
             "disaster_type": "volcano",
@@ -303,14 +308,55 @@ class SampleWillTestCase(unittest.TestCase):
             "location_latitude": 20.669765,
             "location_longitude":  -156.339161,
         }
-        res1 = self.client().post('/disasters', data=json.dumps(disaster_info), headers={'Content-Type': 'application/json'})
+        res1 = self.client().post('/disasters', data=json.dumps(disaster_data), headers={'Content-Type': 'application/json'})
         self.assertEqual(200, res1.status_code)
         data = json.loads(res1.data)
-        self.added_ids.append(data["id"])
+        self.added_disaster_ids.append(data["id"])
 
-        res2 = self.client().post('/disasters', data=json.dumps(disaster_info), headers={'Content-Type': 'application/json'})
+        res2 = self.client().post('/disasters', data=json.dumps(disaster_data), headers={'Content-Type': 'application/json'})
         self.assertEqual(400, res2.status_code)
 
+
+    def test_insert_observer_success(self):
+        """Test for successfully inserting a new observer"""
+        observer_data = {
+            "username": "disaster_recorder",
+            "photograph_url": "https://ichef.bbci.co.uk/images/ic/960x960/p08634k6.jpg"
+        }
+        res = self.client().post('/observers', data=json.dumps(observer_data), headers={'Content-Type': 'application/json'})
+        self.assertEqual(200, res.status_code)
+        data = json.loads(res.data)
+        self.added_observer_ids.append(data["id"])
+
+        matching_observer = Observer.query.filter(Observer.id == data["id"]).first()
+
+        self.assertIsNotNone(matching_observer)
+        self.assertEqual(observer_data["username"], matching_observer.username)
+        self.assertEqual(observer_data["photograph_url"], matching_observer.photograph_url)
+
+
+    def test_insert_observer_no_username_failure(self):
+        """Test for failing to insert a new observer due to the lack of a username"""
+        observer_data = {
+            "photograph_url": "https://www.gardeningknowhow.com/wp-content/uploads/2017/07/hardwood-tree.jpg",
+        }
+        res = self.client().post('/observers', data=json.dumps(observer_data), headers={'Content-Type': 'application/json'})
+        self.assertEqual(400, res.status_code)
+        matching_observer = Observer.query.filter(Observer.photograph_url == observer_data["photograph_url"]).first()
+        self.assertIsNone(matching_observer)
+
+
+    def test_insert_observer_duplicate_failure(self):
+        """Test for failing to insert a new observer due to a duplicate username"""
+        observer_data = {
+            "username": "hurricane_tracker",
+            "photograph_url": "https://www.gardeningknowhow.com/wp-content/uploads/2017/07/hardwood-tree.jpg"
+        }
+        res = self.client().post('/observers', data=json.dumps(observer_data), headers={'Content-Type': 'application/json'})
+        self.assertEqual(400, res.status_code)
+
+
+    
 
 
 # Make tests executable
