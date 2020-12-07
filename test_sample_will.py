@@ -356,6 +356,10 @@ class SampleWillTestCase(unittest.TestCase):
         self.assertEqual(400, res.status_code)
 
 
+    def test_insert_witness_report_success(self):
+        """Test for successfully inserting a new witness report"""
+        # curl -X POST http://127.0.0.1:5000/witnessreports --header "Content-Type: application/json" --data '{"disaster_id": 2,  "observer_id": 1, "event_datetime": "2019-07-31 09:01:47-04", "severity": 3, "image_url": "https://hgtvhome.sndimg.com/content/dam/images/grdn/fullset/2012/8/20/0/0403_051.jpg.rend.hgtvcom.1280.1920.suffix/1452646441575.jpeg", "comment": "The disaster is quite bad", "people_affected": 1300, "location_latitude": 23.4, "location_longitude": -10.3 }'
+        
     
 
 

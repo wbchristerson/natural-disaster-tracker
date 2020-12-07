@@ -281,10 +281,32 @@ def create_app(test_config=None):
             observer.insert()
             return jsonify({ "id": observer.id })
         except Exception as ex:
-            # print("\n\n")
-            # print(type(ex).__name__)
-            # print(ex)
-            # print("\n\n")
+            flash("An error occurred.")
+            abort(400)
+
+
+    @app.route('/witnessreports', methods=["POST"])
+    def send_witness_report():
+        try:
+            body = request.get_json()
+            witness_report = WitnessReport(
+                body.get("disaster_id"),
+                body.get("observer_id"),
+                body.get("event_datetime"),
+                body.get("severity"), # optional
+                body.get("image_url"), # optional
+                body.get("comment"), # optional
+                body.get("people_affected"),
+                body.get("location_latitude"),
+                body.get("location_longitude")
+            )
+            witness_report.insert()
+            return jsonify({ "id": witness_report.id })
+        except Exception as ex:
+            print("\n\n")
+            print(type(ex).__name__)
+            print(ex)
+            print("\n\n")
             flash("An error occurred.")
             abort(400)
 
@@ -347,3 +369,5 @@ if __name__ == '__main__':
 # curl -X POST http://127.0.0.1:5000/observers --header "Content-Type: application/json" --data '{"username": "disaster_recorder", "photograph_url": "https://ichef.bbci.co.uk/images/ic/960x960/p08634k6.jpg"}'
 
 # curl -X POST https://sample-will.herokuapp.com/observers --header "Content-Type: application/json" --data '{"username": "disaster_recorder", "photograph_url": "https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg"}'
+
+# curl -X POST http://127.0.0.1:5000/witnessreports --header "Content-Type: application/json" --data '{"disaster_id": 2,  "observer_id": 1, "event_datetime": "2019-07-31 09:01:47-04", "severity": 3, "image_url": "https://hgtvhome.sndimg.com/content/dam/images/grdn/fullset/2012/8/20/0/0403_051.jpg.rend.hgtvcom.1280.1920.suffix/1452646441575.jpeg", "comment": "The disaster is quite bad", "people_affected": 1300, "location_latitude": 23.4, "location_longitude": -10.3 }'
