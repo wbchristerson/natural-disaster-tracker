@@ -76,6 +76,9 @@ class Disaster(db.Model):
   def delete(self):
     db.session.delete(self)
     db.session.commit()
+
+  def update(self):
+    db.session.commit()
   
 
 '''
@@ -107,6 +110,9 @@ class Observer(db.Model):
   
   def delete(self):
     db.session.delete(self)
+    db.session.commit()
+
+  def update(self):
     db.session.commit()
 
 
@@ -160,6 +166,8 @@ class WitnessReport(db.Model):
     db.session.delete(self)
     db.session.commit()
   
+  def update(self):
+    db.session.commit()
 
   @staticmethod
   def observer_join(disaster_id):

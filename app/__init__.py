@@ -264,7 +264,7 @@ def create_app(test_config=None):
 
 
     '''
-    A POST endpoint to insert a username into the database. THe body for the
+    A POST endpoint to insert a user into the database. THe body for the
     request is a dictionary with the following keys:
 
         - username (str, required, unique)
@@ -285,6 +285,23 @@ def create_app(test_config=None):
             abort(400)
 
 
+    '''
+    A POST endpoint to insert a witness's report into the database. The body
+    for the request is a dictionary with the following keys:
+
+        - disaster_id (int, required)
+        - observer_id (int, required)
+        - event_datetime (datetime str, required)
+        - severity (int)
+        - image_url (str)
+        - comment (str)
+        - people_affected (int, default = 0)
+        - location_latitude (float)
+        - location_longitude (float)
+
+    If the request's data does not meet the conditions of requirement described above,
+    then a 400 status code error is returned
+    '''
     @app.route('/witnessreports', methods=["POST"])
     def send_witness_report():
         try:
@@ -303,12 +320,34 @@ def create_app(test_config=None):
             witness_report.insert()
             return jsonify({ "id": witness_report.id })
         except Exception as ex:
-            print("\n\n")
-            print(type(ex).__name__)
-            print(ex)
-            print("\n\n")
             flash("An error occurred.")
             abort(400)
+
+
+
+
+
+    @app.route('/disasters', methods=["PATCH"])
+    def update_disaster():
+        try:
+            body = request.get_json()
+            disaster = Disaster.query.filter(Disaster.id == body["id"]).first()
+
+            if disaster is None:
+                raise ValueError("Unrecognized disaster id")
+        except ValueError as err:
+            flash(str(err))
+            abort(404)
+        except Exception as err:
+            # print("\n\n")
+            # print(type(ex).__name__)
+            # print(ex)
+            # print("\n\n")
+            flash("An error occurred.")
+            abort(400)
+
+
+
 
 
     @app.errorhandler(400)
@@ -370,4 +409,7 @@ if __name__ == '__main__':
 
 # curl -X POST https://sample-will.herokuapp.com/observers --header "Content-Type: application/json" --data '{"username": "disaster_recorder", "photograph_url": "https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg"}'
 
+# curl -X POST http://127.0.0.1:5000/witnessreports --header "Content-Type: application/json" --data '{"disaster_id": 2,  "observer_id": 1, "event_datetime": "2019-07-31 09:01:47-04", "severity": 3, "image_url": "https://hgtvhome.sndimg.com/content/dam/images/grdn/fullset/2012/8/20/0/0403_051.jpg.rend.hgtvcom.1280.1920.suffix/1452646441575.jpeg", "comment": "The disaster is quite bad", "people_affected": 1300, "location_latitude": 23.4, "location_longitude": -10.3 }'
+
+# Post witness report:
 # curl -X POST http://127.0.0.1:5000/witnessreports --header "Content-Type: application/json" --data '{"disaster_id": 2,  "observer_id": 1, "event_datetime": "2019-07-31 09:01:47-04", "severity": 3, "image_url": "https://hgtvhome.sndimg.com/content/dam/images/grdn/fullset/2012/8/20/0/0403_051.jpg.rend.hgtvcom.1280.1920.suffix/1452646441575.jpeg", "comment": "The disaster is quite bad", "people_affected": 1300, "location_latitude": 23.4, "location_longitude": -10.3 }'

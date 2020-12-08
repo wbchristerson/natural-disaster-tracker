@@ -358,8 +358,52 @@ class SampleWillTestCase(unittest.TestCase):
 
     def test_insert_witness_report_success(self):
         """Test for successfully inserting a new witness report"""
-        # curl -X POST http://127.0.0.1:5000/witnessreports --header "Content-Type: application/json" --data '{"disaster_id": 2,  "observer_id": 1, "event_datetime": "2019-07-31 09:01:47-04", "severity": 3, "image_url": "https://hgtvhome.sndimg.com/content/dam/images/grdn/fullset/2012/8/20/0/0403_051.jpg.rend.hgtvcom.1280.1920.suffix/1452646441575.jpeg", "comment": "The disaster is quite bad", "people_affected": 1300, "location_latitude": 23.4, "location_longitude": -10.3 }'
-        
+        report_data = {
+            "disaster_id": self.disaster_1_data["id"],
+            "observer_id": self.observer_1_data["id"],
+            "event_datetime": "2019-07-31 09:01:47-04",
+            "severity": 9,
+            "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxuuXdroSPZEb_Y9vDdBYpt8daNclg_Vj6bQ&usqp=CAU",
+            "comment": "The damage caused by the hurricane is quite serious.",
+            "people_affected": 12000,
+            "location_latitude": -80.0,
+            "location_longitude": -30.4,
+        }
+        res = self.client().post('/witnessreports', data=json.dumps(report_data), headers={'Content-Type': 'application/json'})
+        self.assertEqual(200, res.status_code)
+
+        data = json.loads(res.data)
+
+        matching_report = WitnessReport.query.filter(WitnessReport.id == data["id"]).first()
+
+        self.assertIsNotNone(matching_report)
+        self.assertEqual(report_data["disaster_id"], matching_report.disaster_id)
+        self.assertEqual(report_data["observer_id"], matching_report.observer_id)
+        self.assertEqual(report_data["event_datetime"], matching_report.event_datetime.strftime("%Y-%m-%d %H:%M:%S%z")[:-2])
+        self.assertEqual(report_data["severity"], matching_report.severity)
+        self.assertEqual(report_data["image_url"], matching_report.image_url)
+        self.assertEqual(report_data["comment"], matching_report.comment)
+        self.assertEqual(report_data["people_affected"], matching_report.people_affected)
+        self.assertEqual(report_data["location_latitude"], matching_report.location_latitude)
+        self.assertEqual(report_data["location_longitude"], matching_report.location_longitude)
+
+
+    def test_insert_witness_report_missing_disaster_id_failure(self):
+        """Test for failing to insert a new witness report because a disaster id has not been provided"""
+        report_data = {
+            "observer_id": self.observer_1_data["id"],
+            "event_datetime": "2019-07-31 09:01:47-04",
+            "severity": 9,
+            "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxuuXdroSPZEb_Y9vDdBYpt8daNclg_Vj6bQ&usqp=CAU",
+            "comment": "The damage caused by the hurricane is quite serious.",
+            "people_affected": 12000,
+            "location_latitude": -80.0,
+            "location_longitude": -30.4,
+        }
+        res = self.client().post('/witnessreports', data=json.dumps(report_data), headers={'Content-Type': 'application/json'})
+        self.assertEqual(400, res.status_code)
+
+    
     
 
 
