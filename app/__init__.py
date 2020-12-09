@@ -230,6 +230,17 @@ def create_app(test_config=None):
             abort(422)
 
 
+    @app.route('/observers', methods=["GET"])
+    def get_all_observers():
+        try:
+            observers = Observer.query.all()
+            return jsonify({"observers": [observer.format() for observer in observers]})
+        except Exception as ex:
+            flash("An error occurred.")
+            abort(422)
+
+
+
     '''
     A POST endpoint to insert a disaster into the database. The body for the 
     request is a dictionary with the following keys:
@@ -451,3 +462,7 @@ if __name__ == '__main__':
 
 # Patch disaster by updating official_name:
 # curl -X PATCH http://127.0.0.1:5000/disasters --header "Content-Type: application/json" --data '{"id": 1, "official_name": "Hurricane Sandy Severe Storm" }'
+
+
+# Post witness report:
+# curl -X POST https://sample-will.herokuapp.com/witnessreports --header "Content-Type: application/json" --data '{"disaster_id": 2,  "observer_id": 1, "event_datetime": "2019-07-31 09:01:47-04", "severity": 3, "image_url": "https://hgtvhome.sndimg.com/content/dam/images/grdn/fullset/2012/8/20/0/0403_051.jpg.rend.hgtvcom.1280.1920.suffix/1452646441575.jpeg", "comment": "The disaster is quite bad", "people_affected": 1300, "location_latitude": 23.4, "location_longitude": -10.3 }'
