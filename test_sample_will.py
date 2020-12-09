@@ -404,7 +404,84 @@ class SampleWillTestCase(unittest.TestCase):
         self.assertEqual(400, res.status_code)
 
     
+    def test_update_disaster_success(self):
+        """Test for successfully updating a disaster"""
+        update_data = {
+            "id": self.disaster_1_data["id"],
+            "informal_name": "The bad tornado",
+            "official_name": "Tornado-XYZ",
+            "disaster_type": "tornado",
+            "is_ongoing": True,
+            "location_latitude": 38.4,
+            "location_longitude": -86.5,
+        }
+        res = self.client().patch('/disasters', data=json.dumps(update_data), headers={'Content-Type': 'application/json'})
+        
+        self.assertEqual(200, res.status_code)
+        data = json.loads(res.data)
+        
+        self.assertEqual(update_data["id"], data["id"])
+        self.assertEqual(update_data["informal_name"], data["informal_name"])
+        self.assertEqual(update_data["official_name"], data["official_name"])
+        self.assertEqual(update_data["disaster_type"], data["disaster_type"])
+        self.assertEqual(update_data["is_ongoing"], data["is_ongoing"])
+        self.assertSequenceEqual((update_data["location_latitude"],
+            update_data["location_longitude"]), data["location"])
+        
+        matching_disaster = Disaster.query.filter(Disaster.id == update_data["id"]).first()
+        
+        self.assertIsNotNone(matching_disaster)
+        self.assertEqual(update_data["id"], matching_disaster.id)
+        self.assertEqual(update_data["informal_name"], matching_disaster.informal_name)
+        self.assertEqual(update_data["official_name"], matching_disaster.official_name)
+        self.assertEqual(update_data["disaster_type"], matching_disaster.disaster_type)
+        self.assertEqual(update_data["is_ongoing"], matching_disaster.is_ongoing)
+        self.assertEqual(update_data["location_latitude"], matching_disaster.location_latitude)
+        self.assertEqual(update_data["location_longitude"], matching_disaster.location_longitude)
     
+
+    def test_update_disaster_failure_no_provided_id(self):
+        """Test for failure to update a disaster because no id is provided in update data"""
+        update_data = {
+            "informal_name": "The bad tornado",
+            "official_name": "Tornado-XYZ",
+            "disaster_type": "tornado",
+            "is_ongoing": True,
+            "location_latitude": 38.4,
+            "location_longitude": -86.5,
+        }
+        res = self.client().patch('/disasters', data=json.dumps(update_data), headers={'Content-Type': 'application/json'})
+        self.assertEqual(400, res.status_code)
+
+
+    def test_update_disaster_failure_no_matching_id(self):
+        """Test for failure to update a disaster because there is no disaster with a matching id"""
+        update_data = {
+            "id": 0,
+            "informal_name": "The bad tornado",
+            "official_name": "Tornado-XYZ",
+            "disaster_type": "tornado",
+            "is_ongoing": True,
+            "location_latitude": 38.4,
+            "location_longitude": -86.5,
+        }
+        res = self.client().patch('/disasters', data=json.dumps(update_data), headers={'Content-Type': 'application/json'})
+        self.assertEqual(404, res.status_code)
+
+
+    def test_update_disaster_failure_invalid_type(self):
+        """Test for failure to update a disaster because the provided type is not valid"""
+        update_data = {
+            "id": self.disaster_1_data["id"],
+            "informal_name": "The bad tornado",
+            "official_name": "Tornado-XYZ",
+            "disaster_type": "power outage",
+            "is_ongoing": True,
+            "location_latitude": 38.4,
+            "location_longitude": -86.5,
+        }
+        res = self.client().patch('/disasters', data=json.dumps(update_data), headers={'Content-Type': 'application/json'})
+        self.assertEqual(422, res.status_code)
 
 
 # Make tests executable
