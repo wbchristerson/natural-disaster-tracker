@@ -230,15 +230,23 @@ def create_app(test_config=None):
             abort(422)
 
 
+    '''
+    A GET endpoint to retrieve a page of the set of observers, including the observers' ids,
+    usernames, and the URLs of their user photographs. The page can be specified as a query
+    parameter and if none is provided, it will be assumed to be 1. The use of an invalid
+    page (i.e. a non-positive page) will cause a status 422 error to be returned.
+    '''
     @app.route('/observers', methods=["GET"])
     def get_all_observers():
+        page = int(request.args.get("page", "1"))
         try:
             observers = Observer.query.all()
-            return jsonify({"observers": [observer.format() for observer in observers]})
+            page_observers = get_page_of_resource(observers, page)
+            formatted_observers = [observer.format() for observer in page_observers]
+            return jsonify({ "observers": formatted_observers })
         except Exception as ex:
             flash("An error occurred.")
             abort(422)
-
 
 
     '''
@@ -347,10 +355,10 @@ def create_app(test_config=None):
         - location_latitude (str)
         - location_longitude (str)
     
-    If no id is provided, then 400 status code error is returned. If an id is provided
+    If no id is provided, then a 400 status code error is returned. If an id is provided
     but it does not match that of any disaster in the database, a 404 status code error
     is returned. Otherwise, if there are any malformed parts of the update data dictionary,
-    then a 422 error is thrown
+    then a 422 error is thrown.
     '''
     @app.route('/disasters', methods=["PATCH"])
     def update_disaster():
@@ -385,15 +393,70 @@ def create_app(test_config=None):
             flash(str(err))
             abort(404)
         except Exception as err:
+            flash("An error occurred.")
+            abort(422)
+
+
+    '''
+    A PATCH endpoint to update a witness report of disaster. The body of the request is a
+    dictionary with the following keys, all of which are optional except for id (all
+    fields except for id represent fields which are being changed):
+
+        - id (int, required)
+        - event_datetime (datetime str)
+        - severity (int)
+        - image_url (str)
+        - comment (str)
+        - people_affected (int)
+        - location_latitude (str)
+        - location_longitude (str)
+    
+    If no id is provided, then a 400 status code error is returned. If an id is provided
+    but it does not match that of any witness report in the database, a 404 status code 
+    error is returned. Otherwise, if there are any malformed parts of the update data 
+    dictionary, then a 422 error is thrown.
+    '''
+    @app.route('/witnessreports', methods=["PATCH"])
+    def update_witness_report():
+        try:
+            body = request.get_json()
+            if "id" not in body:
+                raise AttributeError("id is not present as a property in the sent data.")
+            witness_report = WitnessReport.query.filter(WitnessReport.id == body["id"]).first()
+
+            if witness_report is None:
+                raise ValueError("Unrecognized witness report id")
+
+            if "event_datetime" in body:
+                witness_report.event_datetime = body["event_datetime"]
+            if "severity" in body:
+                witness_report.severity = body["severity"]
+            if "image_url" in body:
+                witness_report.image_url = body["image_url"]
+            if "comment" in body:
+                witness_report.comment = body["comment"]
+            if "people_affected" in body:
+                witness_report.people_affected = body["people_affected"]
+            if "location_latitude" in body:
+                witness_report.location_latitude = body["location_latitude"]
+            if "location_longitude" in body:
+                witness_report.location_longitude = body["location_longitude"]
+
+            witness_report.update()
+            return jsonify(witness_report.format())
+        except AttributeError as err:
+            flash(str(err))
+            abort(400)
+        except ValueError as err:
+            flash(str(err))
+            abort(404)
+        except Exception as err:
             # print("\n\n")
             # print(type(err).__name__)
             # print(err)
             # print("\n\n")
             flash("An error occurred.")
             abort(422)
-
-
-
 
 
     @app.errorhandler(400)
@@ -466,3 +529,7 @@ if __name__ == '__main__':
 
 # Post witness report:
 # curl -X POST https://sample-will.herokuapp.com/witnessreports --header "Content-Type: application/json" --data '{"disaster_id": 2,  "observer_id": 1, "event_datetime": "2019-07-31 09:01:47-04", "severity": 3, "image_url": "https://hgtvhome.sndimg.com/content/dam/images/grdn/fullset/2012/8/20/0/0403_051.jpg.rend.hgtvcom.1280.1920.suffix/1452646441575.jpeg", "comment": "The disaster is quite bad", "people_affected": 1300, "location_latitude": 23.4, "location_longitude": -10.3 }'
+
+
+# Patch witness report:
+# curl -X PATCH http://127.0.0.1:5000/witnessreports --header "Content-Type: application/json" --data '{"id": 2,  "event_datetime": "2019-07-31 09:01:47-04", "severity": 4, "image_url": "https://hgtvhome.sndimg.com/content/dam/images/grdn/fullset/2012/8/20/0/0403_051.jpg.rend.hgtvcom.1280.1920.suffix/1452646441575.jpeg", "comment": "The disaster is quite bad.", "people_affected": 1300, "location_latitude": 23.4, "location_longitude": -10.3 }'

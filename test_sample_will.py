@@ -8,6 +8,7 @@ import json
 from datetime import datetime
 import pytz
 from copy import copy
+import psycopg2
 
 
 class SampleWillTestCase(unittest.TestCase):
@@ -120,13 +121,13 @@ class SampleWillTestCase(unittest.TestCase):
             witness_report_1 = WitnessReport(self.disaster_2_data["id"],
                 self.observer_1_data["id"], datetime(2018, 8, 23, 14, 31, 34), 8,
                 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgWBUS6RY8tdH1KgycMUKVY8HhvI7C6m_HkQ&usqp=CAU',
-                "The amount of wind is quite severe!", 1200, -80.0, 32.8)
+                "The wind speed is quite severe!", 1200, -80.0, 32.8)
             witness_report_1.insert()
 
             witness_report_2 = WitnessReport(self.disaster_2_data["id"],
                 self.observer_2_data["id"], datetime(2018, 8, 25, 19, 2, 24), 6,
                 'https://s.abcnews.com/images/US/hurricane-laura-11-gty-llr-200827_1598555060545_hpMain_2_4x3_608.jpg',
-                "Many people's homes are destroyed. There is great devastation.", 8000, -80.8, 32.6)
+                "Many people's homes are destroyed. There is devastation.", 8000, -80.8, 32.6)
             witness_report_2.insert()
 
             self.witness_report_1_data = witness_report_1.format()
@@ -440,7 +441,7 @@ class SampleWillTestCase(unittest.TestCase):
         self.assertEqual(update_data["location_longitude"], matching_disaster.location_longitude)
     
 
-    def test_update_disaster_failure_no_provided_id(self):
+    def test_update_disaster_no_provided_id_failure(self):
         """Test for failure to update a disaster because no id is provided in update data"""
         update_data = {
             "informal_name": "The bad tornado",
@@ -454,7 +455,7 @@ class SampleWillTestCase(unittest.TestCase):
         self.assertEqual(400, res.status_code)
 
 
-    def test_update_disaster_failure_no_matching_id(self):
+    def test_update_disaster_no_matching_id_failure(self):
         """Test for failure to update a disaster because there is no disaster with a matching id"""
         update_data = {
             "id": 0,
@@ -469,7 +470,7 @@ class SampleWillTestCase(unittest.TestCase):
         self.assertEqual(404, res.status_code)
 
 
-    def test_update_disaster_failure_invalid_type(self):
+    def test_update_disaster_invalid_type_failure(self):
         """Test for failure to update a disaster because the provided type is not valid"""
         update_data = {
             "id": self.disaster_1_data["id"],
@@ -482,6 +483,56 @@ class SampleWillTestCase(unittest.TestCase):
         }
         res = self.client().patch('/disasters', data=json.dumps(update_data), headers={'Content-Type': 'application/json'})
         self.assertEqual(422, res.status_code)
+
+
+    def test_retrieve_observers_success(self):
+        """Test for successfully retrieving the first page of observers"""
+        res = self.client().get('/observers')
+        self.assertEqual(200, res.status_code)
+        data = json.loads(res.data)
+
+        expected_result = {
+            "observers": [ self.observer_1_data, self.observer_2_data ],
+        }
+        self.assertDictEqual(expected_result, data)
+
+
+    def test_retrieve_observers_invalid_page_failure(self):
+        """Test for failure to retrieve data about observers for invalid page"""
+        res = self.client().get('/observers?page=-1')
+        self.assertEqual(422, res.status_code)
+
+
+    def test_update_witness_report_success(self):
+        """Test for successfully updating a witness report"""
+        update_data = {
+            "id": self.witness_report_1_data["id"], 
+            "event_datetime": "2019-07-31 09:01:47-04",
+            "severity": 4,
+            "image_url": "https://hgtvhome.sndimg.com/content/dam/images/grdn/fullset/2012/8/20/0/0403_051.jpg.rend.hgtvcom.1280.1920.suffix/1452646441575.jpeg",
+            "comment": "The disaster is quite bad.",
+            "people_affected": 1300,
+            "location_latitude": 23.4,
+            "location_longitude": -10.3,
+        }
+        res = self.client().patch('/witnessreports', data=json.dumps(update_data), headers={'Content-Type': 'application/json'})
+        self.assertEqual(200, res.status_code)
+
+        update_data["disaster_id"] = self.witness_report_1_data["disaster_id"]
+        update_data["observer_id"] = self.witness_report_1_data["observer_id"]
+        update_data["event_datetime"] = 'Wed, 31 Jul 2019 13:01:47 GMT'
+        update_data["location"] = [update_data["location_latitude"], update_data["location_longitude"]]
+        del update_data["location_latitude"]
+        del update_data["location_longitude"]
+
+        data = json.loads(res.data)
+        self.assertDictEqual(update_data, data)
+
+        matching_witness_report = WitnessReport.query.filter(WitnessReport.id == update_data["id"]).first()
+        update_data["location"] = tuple(update_data["location"])
+        update_data["event_datetime"] = datetime(2019, 7, 31, 9, 1, 47, 0, psycopg2.tz.FixedOffsetTimezone(offset=-240, name=None))
+
+        self.assertDictEqual(update_data, matching_witness_report.format())
 
 
 # Make tests executable
