@@ -451,12 +451,29 @@ def create_app(test_config=None):
             flash(str(err))
             abort(404)
         except Exception as err:
-            # print("\n\n")
-            # print(type(err).__name__)
-            # print(err)
-            # print("\n\n")
             flash("An error occurred.")
             abort(422)
+
+
+    @app.route('/witnessreports/<witness_report_id>', methods=["DELETE"])
+    def remove_witness_report(witness_report_id):
+        try:
+            witness_report = WitnessReport.query.filter(WitnessReport.id == witness_report_id).first()
+            if witness_report is None:
+                raise AttributeError("Entry not found")
+            witness_report.delete()
+            return jsonify({
+                "success": True,
+                "delete": witness_report_id,
+            })
+        except Exception as err:
+            flash(str(err))
+            print("\n\n")
+            print(type(err).__name__)
+            print(err)
+            print("\n\n")
+            flash("An error occurred.")
+            abort(400)
 
 
     @app.errorhandler(400)

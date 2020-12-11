@@ -534,6 +534,37 @@ class SampleWillTestCase(unittest.TestCase):
 
         self.assertDictEqual(update_data, matching_witness_report.format())
 
+    
+    def test_update_witness_report_no_id_failure(self):
+        """Test for failure to update a witness report due to a lack of an id"""
+        update_data = {
+            "event_datetime": "2019-07-31 09:01:47-04",
+            "severity": 4,
+            "image_url": "https://hgtvhome.sndimg.com/content/dam/images/grdn/fullset/2012/8/20/0/0403_051.jpg.rend.hgtvcom.1280.1920.suffix/1452646441575.jpeg",
+            "comment": "The disaster is quite bad.",
+            "people_affected": 1300,
+            "location_latitude": 23.4,
+            "location_longitude": -10.3,
+        }
+        res = self.client().patch('/witnessreports', data=json.dumps(update_data), headers={'Content-Type': 'application/json'})
+        self.assertEqual(400, res.status_code)
+    
+    def test_update_witness_report_no_match_failure(self):
+        """Test for failure to update a witness report due to a lack of a 
+        matching witness report"""
+        update_data = {
+            "id": 0, 
+            "event_datetime": "2019-07-31 09:01:47-04",
+            "severity": 4,
+            "image_url": "https://hgtvhome.sndimg.com/content/dam/images/grdn/fullset/2012/8/20/0/0403_051.jpg.rend.hgtvcom.1280.1920.suffix/1452646441575.jpeg",
+            "comment": "The disaster is quite bad.",
+            "people_affected": 1300,
+            "location_latitude": 23.4,
+            "location_longitude": -10.3,
+        }
+        res = self.client().patch('/witnessreports', data=json.dumps(update_data), headers={'Content-Type': 'application/json'})
+        self.assertEqual(404, res.status_code)
+
 
 # Make tests executable
 if __name__ == "__main__":
