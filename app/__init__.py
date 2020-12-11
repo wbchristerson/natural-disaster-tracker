@@ -468,11 +468,10 @@ def create_app(test_config=None):
             })
         except Exception as err:
             flash(str(err))
-            print("\n\n")
-            print(type(err).__name__)
-            print(err)
-            print("\n\n")
-            flash("An error occurred.")
+            # print("\n\n")
+            # print(type(err).__name__)
+            # print(err)
+            # print("\n\n")
             abort(400)
 
 

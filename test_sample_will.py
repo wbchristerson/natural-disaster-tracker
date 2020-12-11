@@ -565,6 +565,29 @@ class SampleWillTestCase(unittest.TestCase):
         res = self.client().patch('/witnessreports', data=json.dumps(update_data), headers={'Content-Type': 'application/json'})
         self.assertEqual(404, res.status_code)
 
+    
+    def test_delete_witness_report_success(self):
+        """Test for successfully deleting a witness report"""
+        delete_id = self.witness_report_1_data["id"]
+        res = self.client().delete('/witnessreports/' + str(delete_id))
+        self.assertEqual(200, res.status_code)
+
+        data = json.loads(res.data)
+        self.assertIn("success", data)
+        self.assertTrue(data["success"])
+        self.assertIn("delete", data)
+        self.assertEqual(delete_id, int(data["delete"]))
+
+        matching_witness_report = WitnessReport.query.filter(WitnessReport.id == delete_id).first()
+        self.assertIsNone(matching_witness_report)
+
+
+    def test_delete_witness_report_no_matching_id_failure(self):
+        """Test for failure to delete a witness report because there is no matching
+        witness report id"""
+        res = self.client().delete('/witnessreports/0')
+        self.assertEqual(400, res.status_code)
+
 
 # Make tests executable
 if __name__ == "__main__":
