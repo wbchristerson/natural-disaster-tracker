@@ -29,6 +29,7 @@ class SampleWillTestCase(unittest.TestCase):
         setup_db(self.app, self.database_path)
         self.added_disaster_ids = []
         self.added_observer_ids = []
+        self.headers = { 'Authorization': 'bearer ' + os.environ['TOKEN'], 'Content-Type': 'application/json', 'Token': os.environ['TOKEN'] }
 
         with self.app.app_context():
             self.db = SQLAlchemy()
@@ -271,7 +272,7 @@ class SampleWillTestCase(unittest.TestCase):
             "location_latitude": 20.669765,
             "location_longitude":  -156.339161,
         }
-        res = self.client().post('/disasters', data=json.dumps(disaster_info), headers={'Content-Type': 'application/json'})
+        res = self.client().post('/disasters', data=json.dumps(disaster_info), headers=self.headers)
         self.assertEqual(200, res.status_code)
         data = json.loads(res.data)
 
@@ -295,7 +296,7 @@ class SampleWillTestCase(unittest.TestCase):
             "disaster_type": "volcano",
             "is_ongoing": True,
         }
-        res = self.client().post('/disasters', data=json.dumps(disaster_info), headers={'Content-Type': 'application/json'})
+        res = self.client().post('/disasters', data=json.dumps(disaster_info), headers=self.headers)
         self.assertEqual(400, res.status_code)
 
     
@@ -309,12 +310,12 @@ class SampleWillTestCase(unittest.TestCase):
             "location_latitude": 20.669765,
             "location_longitude":  -156.339161,
         }
-        res1 = self.client().post('/disasters', data=json.dumps(disaster_data), headers={'Content-Type': 'application/json'})
+        res1 = self.client().post('/disasters', data=json.dumps(disaster_data), headers=self.headers)
         self.assertEqual(200, res1.status_code)
         data = json.loads(res1.data)
         self.added_disaster_ids.append(data["id"])
 
-        res2 = self.client().post('/disasters', data=json.dumps(disaster_data), headers={'Content-Type': 'application/json'})
+        res2 = self.client().post('/disasters', data=json.dumps(disaster_data), headers=self.headers)
         self.assertEqual(400, res2.status_code)
 
 
@@ -324,7 +325,7 @@ class SampleWillTestCase(unittest.TestCase):
             "username": "disaster_recorder",
             "photograph_url": "https://ichef.bbci.co.uk/images/ic/960x960/p08634k6.jpg"
         }
-        res = self.client().post('/observers', data=json.dumps(observer_data), headers={'Content-Type': 'application/json'})
+        res = self.client().post('/observers', data=json.dumps(observer_data), headers=self.headers)
         self.assertEqual(200, res.status_code)
         data = json.loads(res.data)
         self.added_observer_ids.append(data["id"])
@@ -341,7 +342,7 @@ class SampleWillTestCase(unittest.TestCase):
         observer_data = {
             "photograph_url": "https://www.gardeningknowhow.com/wp-content/uploads/2017/07/hardwood-tree.jpg",
         }
-        res = self.client().post('/observers', data=json.dumps(observer_data), headers={'Content-Type': 'application/json'})
+        res = self.client().post('/observers', data=json.dumps(observer_data), headers=self.headers)
         self.assertEqual(400, res.status_code)
         matching_observer = Observer.query.filter(Observer.photograph_url == observer_data["photograph_url"]).first()
         self.assertIsNone(matching_observer)
@@ -353,7 +354,7 @@ class SampleWillTestCase(unittest.TestCase):
             "username": "hurricane_tracker",
             "photograph_url": "https://www.gardeningknowhow.com/wp-content/uploads/2017/07/hardwood-tree.jpg"
         }
-        res = self.client().post('/observers', data=json.dumps(observer_data), headers={'Content-Type': 'application/json'})
+        res = self.client().post('/observers', data=json.dumps(observer_data), headers=self.headers)
         self.assertEqual(400, res.status_code)
 
 
@@ -370,7 +371,7 @@ class SampleWillTestCase(unittest.TestCase):
             "location_latitude": -80.0,
             "location_longitude": -30.4,
         }
-        res = self.client().post('/witnessreports', data=json.dumps(report_data), headers={'Content-Type': 'application/json'})
+        res = self.client().post('/witnessreports', data=json.dumps(report_data), headers=self.headers)
         self.assertEqual(200, res.status_code)
 
         data = json.loads(res.data)
@@ -401,7 +402,7 @@ class SampleWillTestCase(unittest.TestCase):
             "location_latitude": -80.0,
             "location_longitude": -30.4,
         }
-        res = self.client().post('/witnessreports', data=json.dumps(report_data), headers={'Content-Type': 'application/json'})
+        res = self.client().post('/witnessreports', data=json.dumps(report_data), headers=self.headers)
         self.assertEqual(400, res.status_code)
 
     
@@ -416,7 +417,7 @@ class SampleWillTestCase(unittest.TestCase):
             "location_latitude": 38.4,
             "location_longitude": -86.5,
         }
-        res = self.client().patch('/disasters', data=json.dumps(update_data), headers={'Content-Type': 'application/json'})
+        res = self.client().patch('/disasters', data=json.dumps(update_data), headers=self.headers)
         
         self.assertEqual(200, res.status_code)
         data = json.loads(res.data)
@@ -451,7 +452,7 @@ class SampleWillTestCase(unittest.TestCase):
             "location_latitude": 38.4,
             "location_longitude": -86.5,
         }
-        res = self.client().patch('/disasters', data=json.dumps(update_data), headers={'Content-Type': 'application/json'})
+        res = self.client().patch('/disasters', data=json.dumps(update_data), headers=self.headers)
         self.assertEqual(400, res.status_code)
 
 
@@ -466,7 +467,7 @@ class SampleWillTestCase(unittest.TestCase):
             "location_latitude": 38.4,
             "location_longitude": -86.5,
         }
-        res = self.client().patch('/disasters', data=json.dumps(update_data), headers={'Content-Type': 'application/json'})
+        res = self.client().patch('/disasters', data=json.dumps(update_data), headers=self.headers)
         self.assertEqual(404, res.status_code)
 
 
@@ -481,13 +482,13 @@ class SampleWillTestCase(unittest.TestCase):
             "location_latitude": 38.4,
             "location_longitude": -86.5,
         }
-        res = self.client().patch('/disasters', data=json.dumps(update_data), headers={'Content-Type': 'application/json'})
+        res = self.client().patch('/disasters', data=json.dumps(update_data), headers=self.headers)
         self.assertEqual(422, res.status_code)
 
 
     def test_retrieve_observers_success(self):
         """Test for successfully retrieving the first page of observers"""
-        res = self.client().get('/observers')
+        res = self.client().get('/observers', headers=self.headers)
         self.assertEqual(200, res.status_code)
         data = json.loads(res.data)
 
@@ -499,7 +500,7 @@ class SampleWillTestCase(unittest.TestCase):
 
     def test_retrieve_observers_invalid_page_failure(self):
         """Test for failure to retrieve data about observers for invalid page"""
-        res = self.client().get('/observers?page=-1')
+        res = self.client().get('/observers?page=-1', headers=self.headers)
         self.assertEqual(422, res.status_code)
 
 
@@ -515,7 +516,7 @@ class SampleWillTestCase(unittest.TestCase):
             "location_latitude": 23.4,
             "location_longitude": -10.3,
         }
-        res = self.client().patch('/witnessreports', data=json.dumps(update_data), headers={'Content-Type': 'application/json'})
+        res = self.client().patch('/witnessreports', data=json.dumps(update_data), headers=self.headers)
         self.assertEqual(200, res.status_code)
 
         update_data["disaster_id"] = self.witness_report_1_data["disaster_id"]
@@ -546,9 +547,10 @@ class SampleWillTestCase(unittest.TestCase):
             "location_latitude": 23.4,
             "location_longitude": -10.3,
         }
-        res = self.client().patch('/witnessreports', data=json.dumps(update_data), headers={'Content-Type': 'application/json'})
+        res = self.client().patch('/witnessreports', data=json.dumps(update_data), headers=self.headers)
         self.assertEqual(400, res.status_code)
-    
+
+
     def test_update_witness_report_no_match_failure(self):
         """Test for failure to update a witness report due to a lack of a 
         matching witness report"""
@@ -562,14 +564,14 @@ class SampleWillTestCase(unittest.TestCase):
             "location_latitude": 23.4,
             "location_longitude": -10.3,
         }
-        res = self.client().patch('/witnessreports', data=json.dumps(update_data), headers={'Content-Type': 'application/json'})
+        res = self.client().patch('/witnessreports', data=json.dumps(update_data), headers=self.headers)
         self.assertEqual(404, res.status_code)
 
     
     def test_delete_witness_report_success(self):
         """Test for successfully deleting a witness report"""
         delete_id = self.witness_report_1_data["id"]
-        res = self.client().delete('/witnessreports/' + str(delete_id))
+        res = self.client().delete('/witnessreports/' + str(delete_id), headers=self.headers)
         self.assertEqual(200, res.status_code)
 
         data = json.loads(res.data)
@@ -585,8 +587,71 @@ class SampleWillTestCase(unittest.TestCase):
     def test_delete_witness_report_no_matching_id_failure(self):
         """Test for failure to delete a witness report because there is no matching
         witness report id"""
-        res = self.client().delete('/witnessreports/0')
+        res = self.client().delete('/witnessreports/0', headers=self.headers)
         self.assertEqual(400, res.status_code)
+
+
+    # Authorization tests
+
+    ## disaster administrator tests
+    def test_retrieve_observers_no_authorization_failure(self):
+        """Test for failure to retrieve data about observers due to no authorization 
+        parameter being present"""
+        res = self.client().get('/observers', headers={'Content-Type': 'application/json'})
+        self.assertEqual(401, res.status_code)
+
+
+    def test_retrieve_observers_expired_token_failure(self):
+        """Test for failure to retrieve data about observers due to expired token"""
+        res = self.client().get('/observers', headers={'Content-Type': 'application/json', 
+            'Authorization': 'bearer ' + 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im4yWlN4YWR2T1F4V2xzMkxPTF9DRCJ9.eyJpc3MiOiJodHRwczovL2Rldi05eG81Z2RmYy51cy5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWY3ZmE3YmY2YmM3OTIwMDY4MjdmMzNhIiwiYXVkIjoiZGlzYXN0ZXJhcGkiLCJpYXQiOjE2MDc4NzM1MzEsImV4cCI6MTYwNzg4MDczMSwiYXpwIjoiUkd1U2I4aHJhODlVeWRVaFZjanZKQXczblpIdEJEZFgiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTp3aXRuZXNzcmVwb3J0cyIsImdldDpvYnNlcnZlcnMiLCJwYXRjaDpkaXNhc3RlcnMiLCJwYXRjaDp3aXRuZXNzcmVwb3J0cyIsInBvc3Q6ZGlzYXN0ZXJzIiwicG9zdDp3aXRuZXNzcmVwb3J0cyJdfQ.PN60BoZqcxYzy7OuGIa9zqXQj7dmKdYqQXCfFWWBRFoMSb91DQVmt_gkwi9tVfMAe2YSjkp5Adb5gABCKGonC2cEVZtG_T9ok5soVRHgmuoCG2gGRQEQNn6r1yzcE9g_yGMlYzEV8w52git9KSD8cDnXxSAbX4gsF-Cbx_X9UJDwSGXOwgyu1qfHjdXQm4C9_s9IzhnKjcs8vBC0-erewMNs7subjbHEoEDVyflu8rC0Y419KuGFe_9fwEg-PBeGPrxnxTMBPOmh1cJnpwwq9cSWLCi__AbpxdNWSc3ir9hLMDKq9xw6LTYb556BuSj9swS4FZ1mSTOl9BtQykHRCg'})
+        self.assertEqual(401, res.status_code)
+
+
+    ## disaster reporter tests
+    def test_retrieve_observers_insufficient_authorization_failure(self):
+        """Test for failure to retrieve data about observers due to provided token
+        belonging to disaster reporter when authorization requires user to be
+        disaster administrator"""
+        res = self.client().get(
+            '/observers',
+            headers={'Content-Type': 'application/json','Authorization': 'bearer ' + os.environ["REPORTER_TOKEN"]}
+        )
+        self.assertEqual(403, res.status_code)
+    
+
+    def test_update_witness_report_disaster_reporter_authorization_success(self):
+        """Test for successfully updating a witness report as a disaster
+        reporter"""
+        update_data = {
+            "id": self.witness_report_1_data["id"], 
+            "event_datetime": "2019-07-31 09:01:47-04",
+            "severity": 4,
+            "image_url": "https://hgtvhome.sndimg.com/content/dam/images/grdn/fullset/2012/8/20/0/0403_051.jpg.rend.hgtvcom.1280.1920.suffix/1452646441575.jpeg",
+            "comment": "The disaster is quite bad.",
+            "people_affected": 1300,
+            "location_latitude": 23.4,
+            "location_longitude": -10.3,
+        }
+        res = self.client().patch('/witnessreports',
+            data=json.dumps(update_data), headers={'Content-Type': 'application/json', 'Authorization': 'bearer ' + os.environ["REPORTER_TOKEN"]})
+        self.assertEqual(200, res.status_code)
+
+        update_data["disaster_id"] = self.witness_report_1_data["disaster_id"]
+        update_data["observer_id"] = self.witness_report_1_data["observer_id"]
+        update_data["event_datetime"] = 'Wed, 31 Jul 2019 13:01:47 GMT'
+        update_data["location"] = [update_data["location_latitude"], update_data["location_longitude"]]
+        del update_data["location_latitude"]
+        del update_data["location_longitude"]
+
+        data = json.loads(res.data)
+        self.assertDictEqual(update_data, data)
+
+        matching_witness_report = WitnessReport.query.filter(WitnessReport.id == update_data["id"]).first()
+        update_data["location"] = tuple(update_data["location"])
+        update_data["event_datetime"] = datetime(2019, 7, 31, 9, 1, 47, 0, psycopg2.tz.FixedOffsetTimezone(offset=-240, name=None))
+
+        self.assertDictEqual(update_data, matching_witness_report.format())
 
 
 # Make tests executable

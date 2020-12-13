@@ -5,14 +5,17 @@ from flask_cors import CORS
 from sqlalchemy import func, join
 from random import randrange
 from copy import copy
+from authentication_utils import requires_auth
 
 PAGE_SIZE = 10
+
 
 def create_app(test_config=None):
 
     app = Flask(__name__)
     setup_db(app)
     CORS(app)
+
 
     @app.route('/')
     def get_greeting():
@@ -237,7 +240,8 @@ def create_app(test_config=None):
     page (i.e. a non-positive page) will cause a status 422 error to be returned.
     '''
     @app.route('/observers', methods=["GET"])
-    def get_all_observers():
+    @requires_auth('get:observers')
+    def get_all_observers(payload):
         page = int(request.args.get("page", "1"))
         try:
             observers = Observer.query.all()
@@ -264,7 +268,8 @@ def create_app(test_config=None):
     above, a 400 status code error is returned
     '''
     @app.route('/disasters', methods=["POST"])
-    def send_disaster():
+    @requires_auth('post:disasters')
+    def send_disaster(payload):
         try:
             body = request.get_json()
             disaster = Disaster(
@@ -322,7 +327,8 @@ def create_app(test_config=None):
     then a 400 status code error is returned
     '''
     @app.route('/witnessreports', methods=["POST"])
-    def send_witness_report():
+    @requires_auth('post:witnessreports')
+    def send_witness_report(payload):
         try:
             body = request.get_json()
             witness_report = WitnessReport(
@@ -361,7 +367,8 @@ def create_app(test_config=None):
     then a 422 error is thrown.
     '''
     @app.route('/disasters', methods=["PATCH"])
-    def update_disaster():
+    @requires_auth('patch:witnessreports')
+    def update_disaster(payload):
         try:
             body = request.get_json()
             if "id" not in body:
@@ -417,7 +424,8 @@ def create_app(test_config=None):
     dictionary, then a 422 error is thrown.
     '''
     @app.route('/witnessreports', methods=["PATCH"])
-    def update_witness_report():
+    @requires_auth('patch:witnessreports')
+    def update_witness_report(payload):
         try:
             body = request.get_json()
             if "id" not in body:
@@ -456,7 +464,8 @@ def create_app(test_config=None):
 
 
     @app.route('/witnessreports/<witness_report_id>', methods=["DELETE"])
-    def remove_witness_report(witness_report_id):
+    @requires_auth('delete:witnessreports')
+    def remove_witness_report(payload, witness_report_id):
         try:
             witness_report = WitnessReport.query.filter(WitnessReport.id == witness_report_id).first()
             if witness_report is None:
