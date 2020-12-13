@@ -468,10 +468,6 @@ def create_app(test_config=None):
             })
         except Exception as err:
             flash(str(err))
-            # print("\n\n")
-            # print(type(err).__name__)
-            # print(err)
-            # print("\n\n")
             abort(400)
 
 
@@ -519,6 +515,22 @@ app.secret_key = os.environ['SECRET_KEY']
 
 if __name__ == '__main__':
     app.run()
+
+
+# TEST heroku endpoint:
+
+# curl -X GET https://sample-will.herokuapp.com/disasters
+# curl -X GET https://sample-will.herokuapp.com/disasters/2
+# curl -X POST https://sample-will.herokuapp.com/disasters --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"informal_name": "The Big Avalanche", "official_name": "Avalanche-202012110821", "disaster_type": "AVALANCHE", "is_ongoing": false, "location_latitude": 28.632662, "location_longitude": 83.833038 }'
+# curl -X GET https://sample-will.herokuapp.com/observers
+# curl -X POST https://sample-will.herokuapp.com/observers --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"username": "test_disaster_observer", "photograph_url": "https://www.incimages.com/uploaded_files/image/1920x1080/getty_844768902_299186.jpg"}'
+# curl -X POST https://sample-will.herokuapp.com/witnessreports --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"disaster_id": 2, "observer_id": 2, "event_datetime": "2019-08-01 05:41:14-04", "image_url": "https://media4.s-nbcnews.com/i/newscms/2018_49/2669406/181204-japan-tsunami-earthquake-cs-920a_075a953d76eb5447a6bf4fd422e45244.jpg", "comment": "The waves are enormous and causing a lot of damage.", "people_affected": 15000, "location_latitude": 50.8, "location_longitude": 65.2}'
+# curl -X PATCH https://sample-will.herokuapp.com/disasters --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"id": 2, "informal_name": "The Terrible Tsunami", "location_latitude": 8.1, "location_longitude": 130.5}'
+# curl -X PATCH https://sample-will.herokuapp.com/witnessreports --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"id": 4, "severity": 8, "event_datetime": "2019-08-02 06:45:11-04", "people_affected": 16000}'
+# curl -X DELETE https://sample-will.herokuapp.com/witnessreports/4
+
+
+
 
 
 # curl -X POST https://sample-will.herokuapp.com/disasters --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"informal_name": "The Tsunami", "official_name": "Tsunami-1", "disaster_type": "TSUNAMI", "is_ongoing": false, "location_latitude": 8.0, "location_longitude": 130.4 }'
