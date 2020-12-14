@@ -526,7 +526,7 @@ if __name__ == '__main__':
     app.run()
 
 
-# TEST heroku endpoint:
+# TEST heroku endpoints:
 
 # curl -X GET https://sample-will.herokuapp.com/disasters
 # curl -X GET https://sample-will.herokuapp.com/disasters/2
@@ -537,6 +537,15 @@ if __name__ == '__main__':
 # curl -X PATCH https://sample-will.herokuapp.com/disasters --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"id": 2, "informal_name": "The Terrible Tsunami", "location_latitude": 8.1, "location_longitude": 130.5}'
 # curl -X PATCH https://sample-will.herokuapp.com/witnessreports --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"id": 4, "severity": 8, "event_datetime": "2019-08-02 06:45:11-04", "people_affected": 16000}'
 # curl -X DELETE https://sample-will.herokuapp.com/witnessreports/4
+
+
+# curl -X GET https://sample-will.herokuapp.com/observers --header "Authorization: bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im4yWlN4YWR2T1F4V2xzMkxPTF9DRCJ9.eyJpc3MiOiJodHRwczovL2Rldi05eG81Z2RmYy51cy5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWY3ZmE3YmY2YmM3OTIwMDY4MjdmMzNhIiwiYXVkIjoiZGlzYXN0ZXJhcGkiLCJpYXQiOjE2MDc4OTE2NjIsImV4cCI6MTYwNzk3ODA2MiwiYXpwIjoiUkd1U2I4aHJhODlVeWRVaFZjanZKQXczblpIdEJEZFgiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTp3aXRuZXNzcmVwb3J0cyIsImdldDpvYnNlcnZlcnMiLCJwYXRjaDpkaXNhc3RlcnMiLCJwYXRjaDp3aXRuZXNzcmVwb3J0cyIsInBvc3Q6ZGlzYXN0ZXJzIiwicG9zdDp3aXRuZXNzcmVwb3J0cyJdfQ.lsDjioNljG1J5ciw7yTmqNgwWo32owboYHQmYXLobgQX2P5VpggxtYlJDDmkSnfH2UpMPJD_3LGiG5hMayDOY8_MLxZbw7E_eu3kOtqpH-o0QsCZvwh6yoXHUqcAgd4-qf5-euOJnhAhzsp4gxaRJ_l0dc3-IPL9ayfkUm9nREstfIEZVVLsWgk2szGTdPxMvE-4tSB6iIrM-j7ftf5WaG3fCQHaHuOtdPIXLSe24RBAbJf45dN_QL6j1GICxUZ6b7jaNq7A0xPN20PULD99DIfsZPlGJgfAJzrpKqr2_us5BNFDstulNIf5UG2sJbRg2oAtAwLaR-d3mSKSZKJpJQ"
+
+
+
+# curl -X GET http://127.0.0.1:5000/observers --header "Authorization: bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im4yWlN4YWR2T1F4V2xzMkxPTF9DRCJ9.eyJpc3MiOiJodHRwczovL2Rldi05eG81Z2RmYy51cy5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWY3ZmE3YmY2YmM3OTIwMDY4MjdmMzNhIiwiYXVkIjoiZGlzYXN0ZXJhcGkiLCJpYXQiOjE2MDc4OTE2NjIsImV4cCI6MTYwNzk3ODA2MiwiYXpwIjoiUkd1U2I4aHJhODlVeWRVaFZjanZKQXczblpIdEJEZFgiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTp3aXRuZXNzcmVwb3J0cyIsImdldDpvYnNlcnZlcnMiLCJwYXRjaDpkaXNhc3RlcnMiLCJwYXRjaDp3aXRuZXNzcmVwb3J0cyIsInBvc3Q6ZGlzYXN0ZXJzIiwicG9zdDp3aXRuZXNzcmVwb3J0cyJdfQ.lsDjioNljG1J5ciw7yTmqNgwWo32owboYHQmYXLobgQX2P5VpggxtYlJDDmkSnfH2UpMPJD_3LGiG5hMayDOY8_MLxZbw7E_eu3kOtqpH-o0QsCZvwh6yoXHUqcAgd4-qf5-euOJnhAhzsp4gxaRJ_l0dc3-IPL9ayfkUm9nREstfIEZVVLsWgk2szGTdPxMvE-4tSB6iIrM-j7ftf5WaG3fCQHaHuOtdPIXLSe24RBAbJf45dN_QL6j1GICxUZ6b7jaNq7A0xPN20PULD99DIfsZPlGJgfAJzrpKqr2_us5BNFDstulNIf5UG2sJbRg2oAtAwLaR-d3mSKSZKJpJQ"
+
+
 
 
 

@@ -19,11 +19,11 @@ def get_token_auth_header():
 
     if not auth:
         abort(401)
-    
+
     parts = auth.split()
     if parts[0].lower() != 'bearer' or len(parts) != 2:
         abort(401)
-    
+
     token = parts[1]
 
     return token
@@ -98,6 +98,7 @@ def requires_auth(permission=""):
                 payload = verify_decode_jwt(token)
             except Exception:
                 abort(401)
+
             check_permissions(permission, payload)
 
             return f(payload, *args, **kwargs)
