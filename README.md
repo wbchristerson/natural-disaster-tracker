@@ -11,9 +11,9 @@ The purpose of this application is to provide a website for listing natural disa
 - tsunamis
 - landslides
 - avalanches
-- volcano
+- volcanoes
 
-Currently, there is only a back-end and database for the application, hosted on heroku. The third-party authorization service Auth0 is used to allow log-in. Any user may view disasters and witness reports for any disaster. Users with the role of "disaster reporter" can also post witness reports of disasters and edit (i.e. patch) witness reports of disasters. Finally, users with the role of "disaster administrator" can do all things that disaster reporters can do but can also get a list of all users, post a new disaster, and delete a disaster report.
+Currently, there is only a back-end and database for the application hosted on [heroku](https://www.heroku.com/). The third-party authorization service [Auth0](https://auth0.com/) is used to allow log-in. Any user may view disasters and witness reports for any disaster. Users with the role of "disaster-reporter" can also post witness reports of disasters and edit (i.e. patch) witness reports of disasters. Finally, users with the role of "disaster-admin" can do all things that disaster-reporters can do but can also get a list of all users, post a new disaster listing, edit a disaster listing, and delete a disaster report.
 
 The login page can be found [here
 ](https://dev-9xo5gdfc.us.auth0.com/authorize?audience=disasterapi&response_type=token&client_id=RGuSb8hra89UydUhVcjvJAw3nZHtBDdX&redirect_uri=https://sample-will.herokuapp.com/). Upon creating an account and logging in, the user is directed [here](https://sample-will.herokuapp.com/) to a basic endpoint which returns the string `"Hello"`.
@@ -312,8 +312,9 @@ The API returns four error types when requests fail:
 **GET '/observers'**
 
 - A GET endpoint to retrieve a page of the set of observers, including the observers' ids, usernames, and the URLs of their user photographs. The page can be specified as a query parameter and if none is provided, it will be assumed to be 1. The use of an invalid page (i.e. a non-positive page) will cause a status 422 error to be returned.
+- Role: disaster-admin
 - Query parameters: optional `page` number
-- Sample: curl -X GET https://sample-will.herokuapp.com/observers --header "Authorization: bearer <token>" (token omitted due to length)
+- Sample: `curl -X GET https://sample-will.herokuapp.com/observers --header "Authorization: bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im4yWlN4YWR2T1F4V2xzMkxPTF9DRCJ9.eyJpc3MiOiJodHRwczovL2Rldi05eG81Z2RmYy51cy5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWY3ZmE3YmY2YmM3OTIwMDY4MjdmMzNhIiwiYXVkIjoiZGlzYXN0ZXJhcGkiLCJpYXQiOjE2MDc4OTE2NjIsImV4cCI6MTYwNzk3ODA2MiwiYXpwIjoiUkd1U2I4aHJhODlVeWRVaFZjanZKQXczblpIdEJEZFgiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTp3aXRuZXNzcmVwb3J0cyIsImdldDpvYnNlcnZlcnMiLCJwYXRjaDpkaXNhc3RlcnMiLCJwYXRjaDp3aXRuZXNzcmVwb3J0cyIsInBvc3Q6ZGlzYXN0ZXJzIiwicG9zdDp3aXRuZXNzcmVwb3J0cyJdfQ.lsDjioNljG1J5ciw7yTmqNgwWo32owboYHQmYXLobgQX2P5VpggxtYlJDDmkSnfH2UpMPJD_3LGiG5hMayDOY8_MLxZbw7E_eu3kOtqpH-o0QsCZvwh6yoXHUqcAgd4-qf5-euOJnhAhzsp4gxaRJ_l0dc3-IPL9ayfkUm9nREstfIEZVVLsWgk2szGTdPxMvE-4tSB6iIrM-j7ftf5WaG3fCQHaHuOtdPIXLSe24RBAbJf45dN_QL6j1GICxUZ6b7jaNq7A0xPN20PULD99DIfsZPlGJgfAJzrpKqr2_us5BNFDstulNIf5UG2sJbRg2oAtAwLaR-d3mSKSZKJpJQ"`
 - Response:
 
     ```json
@@ -332,3 +333,154 @@ The API returns four error types when requests fail:
         ]
     }
     ```
+
+**POST '/disasters'**
+
+- A POST endpoint to insert a disaster into the database. The body for the request is a dictionary with the following keys:
+
+    - informal_name (str)
+    - official_name (str, required, must be unique)
+    - disaster_type (str, disaster enum)
+    - is_ongoing (bool, default True)
+    - location_latitude (float, required)
+    - location_longitude (float, required)
+
+If the request's disaster data does not meet the conditions of requirement described above, a 400 status code error is returned.
+
+- Role: disaster-admin, disaster-reporter
+- Sample: `curl -X POST https://sample-will.herokuapp.com/disasters --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"informal_name": "The Medium Avalanche", "official_name": "Avalanche-202012140936", "disaster_type": "AVALANCHE", "is_ongoing": false, "location_latitude": 28.632662, "location_longitude": 83.833038 }' --header "Authorization: bearer <token>"` (token omitted because of length)
+- Response:
+
+    ```json
+    {
+        "id":8
+    }
+    ```
+
+**POST '/observers'**
+
+- A POST endpoint to insert a user into the database. THe body for the
+    request is a dictionary with the following keys:
+
+    - username (`str`, required, unique)
+    - photograph_url (`str`)
+
+    If the request's data does not meet the conditions of requirement described above,
+    then a 400 status code error is returned.
+- Role: None required
+- Sample: `curl -X POST https://sample-will.herokuapp.com/observers --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"username": "another_disaster_observer", "photograph_url": "https://www.incimages.com/uploaded_files/image/1920x1080/getty_844768902_299186.jpg"}'`
+- Response: 
+    ```json
+    {
+        "id":3
+    }
+    ```
+
+**POST '/witnessreports'**
+
+- A POST endpoint to insert a witness's report into the database. The body
+    for the request is a dictionary with the following keys:
+
+        - disaster_id (int, required)
+        - observer_id (int, required)
+        - event_datetime (datetime str, required)
+        - severity (int)
+        - image_url (str)
+        - comment (str)
+        - people_affected (int, default = 0)
+        - location_latitude (float)
+        - location_longitude (float)
+
+    If the request's data does not meet the conditions of requirement described above,
+    then a 400 status code error is returned.
+
+- Sample: `curl -X POST https://sample-will.herokuapp.com/witnessreports --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"disaster_id": 8, "observer_id": 2, "event_datetime": "2019-08-01 05:41:14-04", "image_url": "https://media4.s-nbcnews.com/i/newscms/2018_49/2669406/181204-japan-tsunami-earthquake-cs-920a_075a953d76eb5447a6bf4fd422e45244.jpg", "comment": "The waves are enormous and causing a lot of damage.", "people_affected": 15000, "location_latitude": 50.8, "location_longitude": 65.2}' --header "Authorization: bearer <token>"` (token omitted because of length)
+- Response:
+    ```json
+    {
+        "id":5
+    }
+    ```
+
+
+**PATCH '/disasters'**
+
+- A PATCH endpoint to update a disaster. The body of the request is a dictionary with
+    the following keys, all of which are optional except for id:
+
+        - id (int)
+        - informal_name (str)
+        - official_name (str)
+        - disaster_type (str)
+        - is_ongoing (str)
+        - location_latitude (str)
+        - location_longitude (str)
+    
+    If no `id` is provided, then a 400 status code error is returned. If an id is provided but it does not match that of any disaster in the database, a 404 status code error is returned. Otherwise, if there are any malformed parts of the update data dictionary, then a 422 error is thrown.
+- Role: disaster-admin
+- Sample: `curl -X PATCH https://sample-will.herokuapp.com/disasters --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"id": 4, "informal_name": "The Very Terrible Avalanche", "location_latitude": 8.1, "location_longitude": 130.5}' --header "Authorization: bearer <token>"` (token omitted due to length)
+- Response:
+    ```json
+    {
+        "disaster_type": "avalanche",
+        "id": 4,
+        "informal_name": "The Very Terrible Avalanche",
+        "is_ongoing": false,
+        "location": [8.1,130.5],
+        "official_name": "Avalanche-202012110821"
+    }
+    ```
+
+**PATCH '/witnessreports'**
+
+- A PATCH endpoint to update a witness report of disaster. The body of the request is a
+    dictionary with the following keys, all of which are optional except for id (all
+    fields except for id represent fields which are being changed):
+
+        - id (int, required)
+        - event_datetime (datetime str)
+        - severity (int)
+        - image_url (str)
+        - comment (str)
+        - people_affected (int)
+        - location_latitude (str)
+        - location_longitude (str)
+    
+    If no id is provided, then a 400 status code error is returned. If an id is provided
+    but it does not match that of any witness report in the database, a 404 status code 
+    error is returned. Otherwise, if there are any malformed parts of the update data 
+    dictionary, then a 422 error is thrown.
+- Role: disaster-reporter, disaster-admin
+- Sample: `curl -X PATCH https://sample-will.herokuapp.com/witnessreports --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"id": 2, "severity": 9, "event_datetime": "2019-08-02 07:20:11-04", "people_affected": 16000}' --header "Authorization: bearer <token>"` (token omitted due to length)
+- Response:
+    ```json
+    {
+        "comment": "The disaster is quite bad",
+        "disaster_id": 2,
+        "event_datetime": "Fri, 02 Aug 2019 11:20:11 GMT",
+        "id": 2,
+        "image_url": "https://hgtvhome.sndimg.com/content/dam/images/grdn/fullset/2012/8/20/0/0403_051.jpg.rend.hgtvcom.1280.1920.suffix/1452646441575.jpeg",
+        "location":[
+            23.4,
+            -10.3
+        ],
+        "observer_id": 1,
+        "people_affected": 16000,
+        "severity": 9
+    }
+    ```
+
+
+**DELETE '/witnessreports'**
+
+- A DELETE endpoint for deleting a witness report. If the listed id does not exist among witness reports, a 400 status error is returned.
+- Role: disaster-admin
+- Sample: `curl -X DELETE https://sample-will.herokuapp.com/witnessreports/5 --header "Authorization: bearer <token>"` (token omitted due to length)
+- Result:
+    ```json
+    {
+        "delete":"5",
+        "success":true
+    }
+    ```
+
