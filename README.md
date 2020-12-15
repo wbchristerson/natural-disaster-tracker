@@ -314,7 +314,7 @@ The API returns four error types when requests fail:
 - A GET endpoint to retrieve a page of the set of observers, including the observers' ids, usernames, and the URLs of their user photographs. The page can be specified as a query parameter and if none is provided, it will be assumed to be 1. The use of an invalid page (i.e. a non-positive page) will cause a status 422 error to be returned.
 - Role: disaster-admin
 - Query parameters: optional `page` number
-- Sample: `curl -X GET https://sample-will.herokuapp.com/observers --header "Authorization: bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im4yWlN4YWR2T1F4V2xzMkxPTF9DRCJ9.eyJpc3MiOiJodHRwczovL2Rldi05eG81Z2RmYy51cy5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWY3ZmE3YmY2YmM3OTIwMDY4MjdmMzNhIiwiYXVkIjoiZGlzYXN0ZXJhcGkiLCJpYXQiOjE2MDc4OTE2NjIsImV4cCI6MTYwNzk3ODA2MiwiYXpwIjoiUkd1U2I4aHJhODlVeWRVaFZjanZKQXczblpIdEJEZFgiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTp3aXRuZXNzcmVwb3J0cyIsImdldDpvYnNlcnZlcnMiLCJwYXRjaDpkaXNhc3RlcnMiLCJwYXRjaDp3aXRuZXNzcmVwb3J0cyIsInBvc3Q6ZGlzYXN0ZXJzIiwicG9zdDp3aXRuZXNzcmVwb3J0cyJdfQ.lsDjioNljG1J5ciw7yTmqNgwWo32owboYHQmYXLobgQX2P5VpggxtYlJDDmkSnfH2UpMPJD_3LGiG5hMayDOY8_MLxZbw7E_eu3kOtqpH-o0QsCZvwh6yoXHUqcAgd4-qf5-euOJnhAhzsp4gxaRJ_l0dc3-IPL9ayfkUm9nREstfIEZVVLsWgk2szGTdPxMvE-4tSB6iIrM-j7ftf5WaG3fCQHaHuOtdPIXLSe24RBAbJf45dN_QL6j1GICxUZ6b7jaNq7A0xPN20PULD99DIfsZPlGJgfAJzrpKqr2_us5BNFDstulNIf5UG2sJbRg2oAtAwLaR-d3mSKSZKJpJQ"`
+- Sample: `curl -X GET https://sample-will.herokuapp.com/observers --header "Authorization: bearer <token>"` (token omitted because of length)
 - Response:
 
     ```json
