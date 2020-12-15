@@ -190,7 +190,10 @@ The API returns four error types when requests fail:
 - Request arguments: None
 - Query parameters: optional `page` number
 - Returns: This endpoint does not return any of the witness reports associated with a specific disaster. For each disaster, the data in the disaster table is returned along with a random comment and the author of that comment from a witness of the disaster (if any) and some descriptive data about the disaster reports per disaster (namely, the number of reports, the first observance, the last observance, and the number of people affected).
-- Sample: `curl -X GET https://sample-will.herokuapp.com/disasters`
+- Sample: 
+    ```bash
+    curl -X GET https://sample-will.herokuapp.com/disasters
+    ```
 - Response:
 
     ```json
@@ -269,7 +272,10 @@ The API returns four error types when requests fail:
 - Role: None required
 - Request arguments: None
 - Query parameters: optional `page` number
-- Sample: `curl -X GET https://sample-will.herokuapp.com/disasters/2`
+- Sample:
+    ```bash
+    curl -X GET https://sample-will.herokuapp.com/disasters/2
+    ```
 - Response:
 
     ```json
@@ -314,7 +320,10 @@ The API returns four error types when requests fail:
 - A GET endpoint to retrieve a page of the set of observers, including the observers' ids, usernames, and the URLs of their user photographs. The page can be specified as a query parameter and if none is provided, it will be assumed to be 1. The use of an invalid page (i.e. a non-positive page) will cause a status 422 error to be returned.
 - Role: disaster-admin
 - Query parameters: optional `page` number
-- Sample: `curl -X GET https://sample-will.herokuapp.com/observers --header "Authorization: bearer <token>"` (token omitted because of length)
+- Sample (`<token>` omitted because of length):
+    ```bash
+    curl -X GET https://sample-will.herokuapp.com/observers --header "Authorization: bearer <token>"
+    ``` 
 - Response:
 
     ```json
@@ -348,7 +357,10 @@ The API returns four error types when requests fail:
 If the request's disaster data does not meet the conditions of requirement described above, a 400 status code error is returned.
 
 - Role: disaster-admin, disaster-reporter
-- Sample: `curl -X POST https://sample-will.herokuapp.com/disasters --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"informal_name": "The Medium Avalanche", "official_name": "Avalanche-202012140936", "disaster_type": "AVALANCHE", "is_ongoing": false, "location_latitude": 28.632662, "location_longitude": 83.833038 }' --header "Authorization: bearer <token>"` (token omitted because of length)
+- Sample (`<token>` omitted because of length):
+    ```bash
+    curl -X POST https://sample-will.herokuapp.com/disasters --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"informal_name": "The Medium Avalanche", "official_name": "Avalanche-202012140936", "disaster_type": "AVALANCHE", "is_ongoing": false, "location_latitude": 28.632662, "location_longitude": 83.833038 }' --header "Authorization: bearer <token>"
+    ```
 - Response:
 
     ```json
@@ -368,7 +380,10 @@ If the request's disaster data does not meet the conditions of requirement descr
     If the request's data does not meet the conditions of requirement described above,
     then a 400 status code error is returned.
 - Role: None required
-- Sample: `curl -X POST https://sample-will.herokuapp.com/observers --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"username": "another_disaster_observer", "photograph_url": "https://www.incimages.com/uploaded_files/image/1920x1080/getty_844768902_299186.jpg"}'`
+- Sample:
+    ```bash
+    curl -X POST https://sample-will.herokuapp.com/observers --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"username": "another_disaster_observer", "photograph_url": "https://www.incimages.com/uploaded_files/image/1920x1080/getty_844768902_299186.jpg"}'
+    ```
 - Response: 
     ```json
     {
@@ -381,20 +396,23 @@ If the request's disaster data does not meet the conditions of requirement descr
 - A POST endpoint to insert a witness's report into the database. The body
     for the request is a dictionary with the following keys:
 
-        - disaster_id (int, required)
-        - observer_id (int, required)
-        - event_datetime (datetime str, required)
-        - severity (int)
-        - image_url (str)
-        - comment (str)
-        - people_affected (int, default = 0)
-        - location_latitude (float)
-        - location_longitude (float)
+    - disaster_id (int, required)
+    - observer_id (int, required)
+    - event_datetime (datetime str, required)
+    - severity (int)
+    - image_url (str)
+    - comment (str)
+    - people_affected (int, default = 0)
+    - location_latitude (float)
+    - location_longitude (float)
 
     If the request's data does not meet the conditions of requirement described above,
     then a 400 status code error is returned.
 
-- Sample: `curl -X POST https://sample-will.herokuapp.com/witnessreports --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"disaster_id": 8, "observer_id": 2, "event_datetime": "2019-08-01 05:41:14-04", "image_url": "https://media4.s-nbcnews.com/i/newscms/2018_49/2669406/181204-japan-tsunami-earthquake-cs-920a_075a953d76eb5447a6bf4fd422e45244.jpg", "comment": "The waves are enormous and causing a lot of damage.", "people_affected": 15000, "location_latitude": 50.8, "location_longitude": 65.2}' --header "Authorization: bearer <token>"` (token omitted because of length)
+- Sample (`<token>` omitted because of length):
+    ```bash
+    curl -X POST https://sample-will.herokuapp.com/witnessreports --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"disaster_id": 8, "observer_id": 2, "event_datetime": "2019-08-01 05:41:14-04", "image_url": "https://media4.s-nbcnews.com/i/newscms/2018_49/2669406/181204-japan-tsunami-earthquake-cs-920a_075a953d76eb5447a6bf4fd422e45244.jpg", "comment": "The waves are enormous and causing a lot of damage.", "people_affected": 15000, "location_latitude": 50.8, "location_longitude": 65.2}' --header "Authorization: bearer <token>"
+    ```
 - Response:
     ```json
     {
@@ -408,17 +426,20 @@ If the request's disaster data does not meet the conditions of requirement descr
 - A PATCH endpoint to update a disaster. The body of the request is a dictionary with
     the following keys, all of which are optional except for id:
 
-        - id (int)
-        - informal_name (str)
-        - official_name (str)
-        - disaster_type (str)
-        - is_ongoing (str)
-        - location_latitude (str)
-        - location_longitude (str)
+    - id (int)
+    - informal_name (str)
+    - official_name (str)
+    - disaster_type (str)
+    - is_ongoing (str)
+    - location_latitude (str)
+    - location_longitude (str)
     
     If no `id` is provided, then a 400 status code error is returned. If an id is provided but it does not match that of any disaster in the database, a 404 status code error is returned. Otherwise, if there are any malformed parts of the update data dictionary, then a 422 error is thrown.
 - Role: disaster-admin
-- Sample: `curl -X PATCH https://sample-will.herokuapp.com/disasters --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"id": 4, "informal_name": "The Very Terrible Avalanche", "location_latitude": 8.1, "location_longitude": 130.5}' --header "Authorization: bearer <token>"` (token omitted due to length)
+- Sample (`<token>` omitted due to length):
+    ```bash
+    curl -X PATCH https://sample-will.herokuapp.com/disasters --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"id": 4, "informal_name": "The Very Terrible Avalanche", "location_latitude": 8.1, "location_longitude": 130.5}' --header "Authorization: bearer <token>"
+    ```
 - Response:
     ```json
     {
@@ -437,21 +458,24 @@ If the request's disaster data does not meet the conditions of requirement descr
     dictionary with the following keys, all of which are optional except for id (all
     fields except for id represent fields which are being changed):
 
-        - id (int, required)
-        - event_datetime (datetime str)
-        - severity (int)
-        - image_url (str)
-        - comment (str)
-        - people_affected (int)
-        - location_latitude (str)
-        - location_longitude (str)
+    - id (int, required)
+    - event_datetime (datetime str)
+    - severity (int)
+    - image_url (str)
+    - comment (str)
+    - people_affected (int)
+    - location_latitude (str)
+    - location_longitude (str)
     
     If no id is provided, then a 400 status code error is returned. If an id is provided
     but it does not match that of any witness report in the database, a 404 status code 
     error is returned. Otherwise, if there are any malformed parts of the update data 
     dictionary, then a 422 error is thrown.
 - Role: disaster-reporter, disaster-admin
-- Sample: `curl -X PATCH https://sample-will.herokuapp.com/witnessreports --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"id": 2, "severity": 9, "event_datetime": "2019-08-02 07:20:11-04", "people_affected": 16000}' --header "Authorization: bearer <token>"` (token omitted due to length)
+- Sample (`<token>` omitted due to length):
+    ```bash
+    curl -X PATCH https://sample-will.herokuapp.com/witnessreports --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"id": 2, "severity": 9, "event_datetime": "2019-08-02 07:20:11-04", "people_affected": 16000}' --header "Authorization: bearer <token>"
+    ```
 - Response:
     ```json
     {
@@ -475,7 +499,10 @@ If the request's disaster data does not meet the conditions of requirement descr
 
 - A DELETE endpoint for deleting a witness report. If the listed id does not exist among witness reports, a 400 status error is returned.
 - Role: disaster-admin
-- Sample: `curl -X DELETE https://sample-will.herokuapp.com/witnessreports/5 --header "Authorization: bearer <token>"` (token omitted due to length)
+- Sample (`<token>` omitted due to length):
+    ```bash
+    curl -X DELETE https://sample-will.herokuapp.com/witnessreports/5 --header "Authorization: bearer <token>"
+    ```
 - Result:
     ```json
     {
