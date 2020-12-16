@@ -11,9 +11,9 @@ The purpose of this application is to provide a website for listing natural disa
 - tsunamis
 - landslides
 - avalanches
-- volcanoes
+- volcano eruptions
 
-Currently, there is only a back-end and database for the application hosted on [heroku](https://www.heroku.com/). The third-party authorization service [Auth0](https://auth0.com/) is used to allow log-in. Any user may view disasters and witness reports for any disaster. Users with the role of "disaster-reporter" can also post witness reports of disasters and edit (i.e. patch) witness reports of disasters. Finally, users with the role of "disaster-admin" can do all things that disaster-reporters can do but can also get a list of all users, post a new disaster listing, edit a disaster listing, and delete a disaster report.
+Currently, there is only a back-end and database for the application hosted on [Heroku](https://www.heroku.com/). The third-party authorization service [Auth0](https://auth0.com/) is used to allow log-in. Any user may view disasters and witness reports for any disaster. Users with the role of **"disaster-reporter"** can also post witness reports of disasters and edit (i.e. patch) witness reports of disasters. Finally, users with the role of **"disaster-admin"** can do all things that disaster-reporters can do but can also get a list of all users, post a new disaster listing, edit a disaster listing, and delete a disaster report.
 
 The login page can be found [here
 ](https://dev-9xo5gdfc.us.auth0.com/authorize?audience=disasterapi&response_type=token&client_id=RGuSb8hra89UydUhVcjvJAw3nZHtBDdX&redirect_uri=https://sample-will.herokuapp.com/). Upon creating an account and logging in, the user is directed [here](https://sample-will.herokuapp.com/) to a basic endpoint which returns the string `"Hello"`.
@@ -151,7 +151,7 @@ All tests are present in `test_sample_will.py`. These tests include both tests f
 ### General Notes
 
 - This project can be run locally as described above using the base URL `http://localhost:5000`.
-- It is also hosted remotely through heroku, for which the base URL is `https://sample-will.herokuapp.com/`. For endpoints which require authentication, the corresponding authentication token can be set. With cURL, this can be done by appending the string `'--header "Authorization: bearer '` followed by the bearer token value.
+- It is also hosted remotely through Heroku, for which the base URL is `https://sample-will.herokuapp.com/`. For endpoints which require authentication, the corresponding authentication token can be set. With cURL, this can be done by appending the string `'--header "Authorization: bearer '` followed by the bearer token value.
 
 ### Error Handling
 
@@ -172,6 +172,8 @@ The API returns four error types when requests fail:
 - 422: unprocessable
 
 ### Endpoints
+
+The following endpoints are supported by the server, discussed in detail below: 
 
 - GET '/disasters'
 - GET '/disasters/<disaster_id>'
@@ -354,7 +356,7 @@ The API returns four error types when requests fail:
     - location_latitude (float, required)
     - location_longitude (float, required)
 
-If the request's disaster data does not meet the conditions of requirement described above, a 400 status code error is returned.
+    If the request's disaster data does not meet the conditions of requirement described above, a 400 status code error is returned.
 
 - Role: disaster-admin, disaster-reporter
 - Sample (`<token>` omitted because of length):
@@ -365,7 +367,7 @@ If the request's disaster data does not meet the conditions of requirement descr
 
     ```json
     {
-        "id":8
+        "id": 8
     }
     ```
 
@@ -387,7 +389,7 @@ If the request's disaster data does not meet the conditions of requirement descr
 - Response: 
     ```json
     {
-        "id":3
+        "id": 3
     }
     ```
 
@@ -416,7 +418,7 @@ If the request's disaster data does not meet the conditions of requirement descr
 - Response:
     ```json
     {
-        "id":5
+        "id": 5
     }
     ```
 
@@ -506,8 +508,8 @@ If the request's disaster data does not meet the conditions of requirement descr
 - Result:
     ```json
     {
-        "delete":"5",
-        "success":true
+        "delete": "5",
+        "success": true
     }
     ```
 

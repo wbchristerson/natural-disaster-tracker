@@ -5,9 +5,6 @@ import json
 import os
 from functools import wraps
 
-ALGORITHMS = ['RS256']
-API_AUDIENCE = "disasterapi"
-
 
 def get_token_auth_header():
     """Gets access token from authorization header
@@ -58,8 +55,8 @@ def verify_decode_jwt(token):
             return jwt.decode(
                 token,
                 rsa_key,
-                algorithms=ALGORITHMS,
-                audience=API_AUDIENCE,
+                algorithms=[os.environ["ALGORITHM"]],
+                audience=os.environ["API_AUDIENCE"],
                 issuer='https://' + os.environ["AUTH0_DOMAIN"] + '/'
             )
         except jwt.ExpiredSignatureError:
