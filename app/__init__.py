@@ -559,6 +559,14 @@ def create_app(test_config=None):
             "message": "authorization issue - " + str(error)
         }), 401
 
+    @app.errorhandler(403)
+    def authorization_incorrect_permission(error):
+        return jsonify({
+            "success": False,
+            "error": 403,
+            "message": "authorization incorrect permission - " + str(error)
+        }), 403
+
     @app.errorhandler(404)
     def resource_not_found(error):
         return jsonify({

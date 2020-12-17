@@ -15,8 +15,7 @@ The purpose of this application is to provide a website for listing natural disa
 
 Currently, there is only a back-end and database for the application hosted on [Heroku](https://www.heroku.com/). The third-party authorization service [Auth0](https://auth0.com/) is used to allow log-in. Any user may view disasters and witness reports for any disaster. Users with the role of **"disaster-reporter"** can also post witness reports of disasters and edit (i.e. patch) witness reports of disasters. Finally, users with the role of **"disaster-admin"** can do all things that disaster-reporters can do but can also get a list of all users, post a new disaster listing, edit a disaster listing, and delete a disaster report.
 
-The login page can be found [here
-](https://dev-9xo5gdfc.us.auth0.com/authorize?audience=disasterapi&response_type=token&client_id=RGuSb8hra89UydUhVcjvJAw3nZHtBDdX&redirect_uri=https://sample-will.herokuapp.com/). Upon creating an account and logging in, the user is directed [here](https://sample-will.herokuapp.com/) to a basic endpoint which returns the string `"Hello"`.
+The login page can be found [S](https://dev-9xo5gdfc.us.auth0.com/authorize?audience=disasterapi&response_type=token&client_id=RGuSb8hra89UydUhVcjvJAw3nZHtBDdX&redirect_uri=https://sample-will.herokuapp.com/). Upon creating an account and logging in, the user is directed [here](https://sample-will.herokuapp.com/) to a basic endpoint which returns the string `"Hello"`.
 
 
 ## Getting Started
@@ -75,13 +74,13 @@ bash setup.sh
 
 If you have set up the local database as described above in the "Database Set Up" section, then you next need tokens for the disaster administrator role and the disaster reporter role. These can be obtained by navigating to [this endpoint](https://dev-9xo5gdfc.us.auth0.com/authorize?audience=disasterapi&response_type=token&client_id=RGuSb8hra89UydUhVcjvJAw3nZHtBDdX&redirect_uri=https://sample-will.herokuapp.com/) and either:
 
-1) creating your own account with a password and contacting me to enable you as one of the two roles described above
-2) follow these steps for the three kinds of users (warning - as the passwords used are being provided, do not upload sensitive information to this application):
+- creating your own account with a password and contacting me to enable you as one of the two roles described above
+- following these steps for the three kinds of users (warning - as the passwords used are being provided, do not upload sensitive information to this application):
     - create your own account at the above endpoint for a regular user
     - log in as will0000@mailinator.com with password azAZ09!@ for a disaster reporter role
     - log in as will-admin@mailinator.com with password azAZ09!@ for a disaster admin role
 
-In the above three cases, upon logging in you will be re-directed from Auth0 to the application, which will include a bearer token in the URL. Take the value of the token for the disaster admin account and set that value for the `TOKEN` variable in `set_envVars.sh`. Similarly, take the value of the token for the disaster reporter account and set that value for the `REPORTER_TOKEN` in `set_envVars.sh`.
+In the above three cases of the second option, upon logging in you will be re-directed from Auth0 to the application, which will include a bearer token in the URL. Take the value of the token for the disaster admin account and set that value for the `TOKEN` variable in `set_envVars.sh`. Similarly, take the value of the token for the disaster reporter account and set that value for the `REPORTER_TOKEN` in `set_envVars.sh`.
 
 Having set the tokens, now run
 
@@ -165,9 +164,10 @@ Errors are returned as JSON objects in the following format:
 }
 ```
 
-The API returns four error types when requests fail:
+The API returns five error types when requests fail:
 - 400: malformed request
 - 401: authorization issue
+- 403: authorization incorrect permission
 - 404: resource not found
 - 422: unprocessable
 
