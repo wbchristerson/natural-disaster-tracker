@@ -26,11 +26,9 @@ def create_app(test_config=None):
 
     app = Flask(__name__)
     setup_db(app)
-
-    CORS(app)
-    # CORS(app, resources={
-    #      r"*": {"origins": ["127.0.0.1",
-    #                         "https://sample-will.herokuapp.com/"]}})
+    CORS(app, resources={
+         r"*": {"origins": ["127.0.0.1",
+                            "https://sample-will.herokuapp.com/"]}})
 
     @app.route('/')
     def get_greeting():
