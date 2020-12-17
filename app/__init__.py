@@ -26,7 +26,9 @@ def create_app(test_config=None):
 
     app = Flask(__name__)
     setup_db(app)
-    CORS(app, resources={r"*": {"origins": ["127.0.0.1", "https://sample-will.herokuapp.com/"]}})
+    CORS(app, resources={
+         r"*": {"origins": ["127.0.0.1",
+                            "https://sample-will.herokuapp.com/"]}})
 
     @app.route('/')
     def get_greeting():
@@ -70,7 +72,10 @@ def create_app(test_config=None):
         user_map = {
             user["id"]: {
                 "username": user["username"],
-                "photograph_url": user["photograph_url"]} for user in all_users}
+                "photograph_url": user["photograph_url"]
+            }
+            for user in all_users
+        }
 
         for disaster in formatted_disasters:
             if disaster["id"] in affected_map:
@@ -88,7 +93,8 @@ def create_app(test_config=None):
 
             if disaster["id"] in random_report_data:
                 user_info = random_report_data[disaster["id"]]
-                disaster["random_observer"] = user_map[user_info[0]]["username"]
+                disaster["random_observer"] = \
+                    user_map[user_info[0]]["username"]
                 disaster["random_observer_url"] = user_map[user_info[0]
                                                            ]["photograph_url"]
                 disaster["random_comment"] = user_info[1]
@@ -119,19 +125,21 @@ def create_app(test_config=None):
         return all_data
 
     '''
-    A GET endpoint to get all disasters or disasters by disaster type. This endpoint takes
-    an optional parameter 'disaster_type' for the disaster_type. If no disaster_type parameter
-    is provided, then the data for all disasters is returned. If the disaster_type parameter
-    is provided but is not one of the recognized enums, a 404 error is raised.
+    A GET endpoint to get all disasters or disasters by disaster type. This
+    endpoint takes an optional parameter 'disaster_type' for the disaster_type.
+    If no disaster_type parameter is provided, then the data for all disasters
+    is returned. If the disaster_type parameter is provided but is not one of
+    the recognized enums, a 404 error is raised.
 
-    The endpoint also has an optional page request parameter corresponding to the paginated
-    page to use. The current default for the size of a page is 10. If the page is non-positive,
-    then a 422 error occurs.
+    The endpoint also has an optional page request parameter corresponding to
+    the paginated page to use. The current default for the size of a page is
+    10. If the page is non-positive, then a 422 error occurs.
 
-    This endpoint does not return any of the witness reports associated with a specific disaster.
-    For each disaster, the data in the disaster table is returned along with a random comment
-    and the author of that comment from a witness of the disaster (if any) and some descriptive
-    data about the disaster reports per disaster (namely, the number of reports, the first
+    This endpoint does not return any of the witness reports associated with a
+    specific disaster. For each disaster, the data in the disaster table is
+    returned along with a random comment and the author of that comment from a
+    witness of the disaster (if any) and some descriptive data about the
+    disaster reports per disaster (namely, the number of reports, the first
     observance, the last observance, and the number of people affected).
     '''
     @app.route('/disasters')
@@ -175,14 +183,22 @@ def create_app(test_config=None):
 
             # disaster_id, observer_id, comment
             all_witness_reports = WitnessReport.query.with_entities(
-                WitnessReport.disaster_id, WitnessReport.observer_id, WitnessReport.comment).all()
+                WitnessReport.disaster_id, WitnessReport.observer_id,
+                WitnessReport.comment).all()
+
             # dictionary containing some random report data per disaster
             random_report_data = get_random_report_data(all_witness_reports)
 
             all_users = [user.format() for user in Observer.query.all()]
 
-            return jsonify({'total_disasters': total_disasters, 'disasters': combine_disaster_data(
-                formatted_disasters, formatted_additional_data, random_report_data, all_users), })
+            return jsonify(
+                {
+                    'total_disasters': total_disasters,
+                    'disasters': combine_disaster_data(
+                        formatted_disasters, formatted_additional_data,
+                        random_report_data, all_users
+                    ),
+                })
         except AttributeError as ex:
             flash('An error occurred.')
             abort(404)
@@ -198,14 +214,16 @@ def create_app(test_config=None):
         - disaster_type (enum str)
         - is_ongoing (bool)
         - location (list of pair of floats)
-        - people_affected (maximum over all reports if there exist reports, otherwise None)
+        - people_affected (maximum over all reports if there exist reports,
+            otherwise None)
         - average_severity (float)
         - first_observance (datetime str)
         - last_observance (datetime str)
         - num_reports (int; if no reports exist, it is 0)
         - reports (list)
 
-    The reports property contains a list of individual witness reports, each including:
+    The reports property contains a list of individual witness reports, each
+        including:
         - id (int)
         - observer_id (int)
         - event_datetime (datetime str)
@@ -217,9 +235,10 @@ def create_app(test_config=None):
         - username (str)
         - user_photograph_url (str)
 
-    A page query parameter allows the page setting of the reports with 10 per page; if the
-    page is invalid, a 422 error is returned; otherwise, if the id provided does not correspond
-    to an existing disaster, a 404 error is returned
+    A page query parameter allows the page setting of the reports with 10 per
+    page; if the page is invalid, a 422 error is returned; otherwise, if the id
+    provided does not correspond to an existing disaster, a 404 error is
+    returned
     '''
     @app.route('/disasters/<disaster_id>')
     def retrieve_disaster_by_id(disaster_id):
@@ -272,10 +291,11 @@ def create_app(test_config=None):
             abort(422)
 
     '''
-    A GET endpoint to retrieve a page of the set of observers, including the observers' ids,
-    usernames, and the URLs of their user photographs. The page can be specified as a query
-    parameter and if none is provided, it will be assumed to be 1. The use of an invalid
-    page (i.e. a non-positive page) will cause a status 422 error to be returned.
+    A GET endpoint to retrieve a page of the set of observers, including the
+    observers' ids, usernames, and the URLs of their user photographs. The page
+    can be specified as a query parameter and if none is provided, it will be
+    assumed to be 1. The use of an invalid page (i.e. a non-positive page) will
+    cause a status 422 error to be returned.
     '''
     @app.route('/observers', methods=["GET"])
     @requires_auth('get:observers')
@@ -302,8 +322,8 @@ def create_app(test_config=None):
         - location_latitude (float, required)
         - location_longitude (float, required)
 
-    If the request's disaster data does not meet the conditions of requirement described
-    above, a 400 status code error is returned
+    If the request's disaster data does not meet the conditions of requirement
+    described above, a 400 status code error is returned
     '''
     @app.route('/disasters', methods=["POST"])
     @requires_auth('post:disasters')
@@ -331,8 +351,8 @@ def create_app(test_config=None):
         - username (str, required, unique)
         - photograph_url (str)
 
-    If the request's data does not meet the conditions of requirement described above,
-    then a 400 status code error is returned
+    If the request's data does not meet the conditions of requirement described
+    above, then a 400 status code error is returned
     '''
     @app.route('/observers', methods=["POST"])
     def send_user():
@@ -360,8 +380,8 @@ def create_app(test_config=None):
         - location_latitude (float)
         - location_longitude (float)
 
-    If the request's data does not meet the conditions of requirement described above,
-    then a 400 status code error is returned
+    If the request's data does not meet the conditions of requirement described
+    above, then a 400 status code error is returned
     '''
     @app.route('/witnessreports', methods=["POST"])
     @requires_auth('post:witnessreports')
@@ -386,8 +406,9 @@ def create_app(test_config=None):
             abort(400)
 
     '''
-    A PATCH endpoint to update a disaster. The body of the request is a dictionary with
-    the following keys, all of which are optional except for id:
+    A PATCH endpoint to update a disaster. The body of the request is a
+    dictionary with the following keys, all of which are optional except for
+    id:
 
         - id (int)
         - informal_name (str)
@@ -397,10 +418,10 @@ def create_app(test_config=None):
         - location_latitude (str)
         - location_longitude (str)
 
-    If no id is provided, then a 400 status code error is returned. If an id is provided
-    but it does not match that of any disaster in the database, a 404 status code error
-    is returned. Otherwise, if there are any malformed parts of the update data dictionary,
-    then a 422 error is thrown.
+    If no id is provided, then a 400 status code error is returned. If an id is
+    provided but it does not match that of any disaster in the database, a 404
+    status code error is returned. Otherwise, if there are any malformed parts
+    of the update data dictionary, then a 422 error is thrown.
     '''
     @app.route('/disasters', methods=["PATCH"])
     @requires_auth('patch:witnessreports')
@@ -441,9 +462,10 @@ def create_app(test_config=None):
             abort(422)
 
     '''
-    A PATCH endpoint to update a witness report of disaster. The body of the request is a
-    dictionary with the following keys, all of which are optional except for id (all
-    fields except for id represent fields which are being changed):
+    A PATCH endpoint to update a witness report of disaster. The body of the
+    request is a dictionary with the following keys, all of which are optional
+    except for id (all fields except for id represent fields which are being
+    changed):
 
         - id (int, required)
         - event_datetime (datetime str)
@@ -454,10 +476,10 @@ def create_app(test_config=None):
         - location_latitude (str)
         - location_longitude (str)
 
-    If no id is provided, then a 400 status code error is returned. If an id is provided
-    but it does not match that of any witness report in the database, a 404 status code
-    error is returned. Otherwise, if there are any malformed parts of the update data
-    dictionary, then a 422 error is thrown.
+    If no id is provided, then a 400 status code error is returned. If an id is
+    provided but it does not match that of any witness report in the database,
+    a 404 status code error is returned. Otherwise, if there are any malformed
+    parts of the update data dictionary, then a 422 error is thrown.
     '''
     @app.route('/witnessreports', methods=["PATCH"])
     @requires_auth('patch:witnessreports')
@@ -501,8 +523,8 @@ def create_app(test_config=None):
             abort(422)
 
     '''
-    A DELETE endpoint for deleting a witness report. If the listed id does not exist
-    among witness reports, a 400 status error is returned.
+    A DELETE endpoint for deleting a witness report. If the listed id does not
+    exist among witness reports, a 400 status error is returned.
     '''
     @app.route('/witnessreports/<witness_report_id>', methods=["DELETE"])
     @requires_auth('delete:witnessreports')

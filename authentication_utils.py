@@ -9,8 +9,9 @@ from functools import wraps
 def get_token_auth_header():
     """Gets access token from authorization header
 
-    Note: this function is largely based on the authorization function provided in the
-    BasicFlaskAuth folder from the course on authentication taught by Gabriel Ruttner
+    Note: this function is largely based on the authorization function provided
+    in the BasicFlaskAuth folder from the course on authentication taught by
+    Gabriel Ruttner
     """
     auth = request.headers.get('Authorization', None)
 
@@ -28,18 +29,19 @@ def get_token_auth_header():
 
 def verify_decode_jwt(token):
     """
-    Note: this function is largely based on the verification and decoding function for 
-    jwts in the BasicFlaskAuth folder from the course on authentication taught by Gabriel 
-    Ruttner
+    Note: this function is largely based on the verification and decoding
+    function for jwts in the BasicFlaskAuth folder from the course on
+    authentication taught by Gabriel Ruttner
     """
-    jsonurl = urlopen(f'https://{os.environ["AUTH0_DOMAIN"]}/.well-known/jwks.json')
+    jsonurl = urlopen(
+        f'https://{os.environ["AUTH0_DOMAIN"]}/.well-known/jwks.json')
     jwks = json.loads(jsonurl.read())
     unverified_header = jwt.get_unverified_header(token)
     rsa_key = {}
 
     if 'kid' not in unverified_header:
         abort(401)
-    
+
     for key in jwks['keys']:
         if key['kid'] == unverified_header['kid']:
             rsa_key = {
@@ -49,7 +51,7 @@ def verify_decode_jwt(token):
                 'n': key['n'],
                 'e': key['e']
             }
-    
+
     if rsa_key:
         try:
             return jwt.decode(
@@ -70,22 +72,24 @@ def verify_decode_jwt(token):
 
 def check_permissions(permission, payload):
     """
-    Note: this function is largely based on the function for checking permission in the
-    BasicFlaskAuth folder from the course on authentication taught by Gabriel Ruttner
+    Note: this function is largely based on the function for checking
+    permission in the BasicFlaskAuth folder from the course on authentication
+    taught by Gabriel Ruttner
     """
     if 'permissions' not in payload:
         abort(400)
 
     if permission not in payload['permissions']:
         abort(403)
-    
+
     return True
 
 
 def requires_auth(permission=""):
     """
-    Note: this function is largely based on the authorization wrapper header from the
-    BasicFlaskAuth folder from the course on authentication taught by Gabriel Ruttner
+    Note: this function is largely based on the authorization wrapper header
+    from the BasicFlaskAuth folder from the course on authentication taught by
+    Gabriel Ruttner
     """
     def requires_auth_decorator(f):
         @wraps(f)
