@@ -269,7 +269,7 @@ def create_app(test_config=None):
                     additional_data[0],
                     additional_data[1],
                     float(
-                        additional_data[2]),
+                        additional_data[2]) if additional_data[2] else None,
                     additional_data[3],
                     additional_data[4],
                     additional_data[5])
