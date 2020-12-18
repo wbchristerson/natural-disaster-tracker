@@ -33,19 +33,14 @@ def verify_decode_jwt(token):
     function for jwts in the BasicFlaskAuth folder from the course on
     authentication taught by Gabriel Ruttner
     """
-    print("\n1\n")
     jsonurl = urlopen(
         f'https://{os.environ["AUTH0_DOMAIN"]}/.well-known/jwks.json')
     jwks = json.loads(jsonurl.read())
-    print("\n2\n")
     unverified_header = jwt.get_unverified_header(token)
     rsa_key = {}
-    print("\n3\n")
 
     if 'kid' not in unverified_header:
         abort(401)
-
-    print("\n4\n")
 
     for key in jwks['keys']:
         if key['kid'] == unverified_header['kid']:
@@ -56,14 +51,9 @@ def verify_decode_jwt(token):
                 'n': key['n'],
                 'e': key['e']
             }
-    
-    print("\n5\n")
 
     if rsa_key:
-        print("\n6\n")
-
         try:
-            print("\n7\n")
             return jwt.decode(
                 token,
                 rsa_key,
@@ -71,18 +61,13 @@ def verify_decode_jwt(token):
                 audience=os.environ["API_AUDIENCE"],
                 issuer='https://' + os.environ["AUTH0_DOMAIN"] + '/'
             )
-            print("\n8\n")
         except jwt.ExpiredSignatureError:
-            print("\n9\n")
             abort(401)
         except jwt.JWTClaimsError:
-            print("\n10\n")
             abort(401)
         except Exception:
-            print("\n11\n")
             abort(400)
     
-    print("\n12\n")
     abort(400)
 
 
