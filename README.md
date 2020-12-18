@@ -15,7 +15,7 @@ The purpose of this application is to provide a website for listing natural disa
 
 Currently, there is only a back-end and database for the application hosted on [Heroku](https://www.heroku.com/). The third-party authorization service [Auth0](https://auth0.com/) is used to allow log-in. Any user may view disasters and witness reports for any disaster. Users with the role of **"disaster-reporter"** can also post witness reports of disasters and edit (i.e. patch) witness reports of disasters. Finally, users with the role of **"disaster-admin"** can do all things that disaster-reporters can do but can also get a list of all users, post a new disaster listing, edit a disaster listing, and delete a disaster report.
 
-The login page can be found [S](https://dev-9xo5gdfc.us.auth0.com/authorize?audience=disasterapi&response_type=token&client_id=RGuSb8hra89UydUhVcjvJAw3nZHtBDdX&redirect_uri=https://sample-will.herokuapp.com/). Upon creating an account and logging in, the user is directed [here](https://sample-will.herokuapp.com/) to a basic endpoint which returns the string `"Hello"`.
+The login page can be found [here](https://dev-9xo5gdfc.us.auth0.com/authorize?audience=disasterapi&response_type=token&client_id=RGuSb8hra89UydUhVcjvJAw3nZHtBDdX&redirect_uri=https://sample-will.herokuapp.com/). Upon creating an account and logging in, the user is directed [here](https://sample-will.herokuapp.com/) to a basic endpoint which returns the string `"Hello"`.
 
 
 ## Getting Started
