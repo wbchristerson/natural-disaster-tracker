@@ -260,9 +260,6 @@ def create_app(test_config=None):
                         WitnessReport.event_datetime), func.count(
                             WitnessReport.disaster_id), ).group_by(
                                 WitnessReport.disaster_id).first()
-
-            print("\nadditional_data: ", additional_data)
-            print("\n")
             
             if additional_data:
                 formatted_additional_data = (
@@ -292,7 +289,6 @@ def create_app(test_config=None):
             flash("An attribute error occurred.")
             abort(404)
         except Exception as ex:
-            print("\n\nerror:" , str(ex))
             flash("An error occurred.")
             abort(422)
 
