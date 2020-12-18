@@ -243,7 +243,7 @@ def create_app(test_config=None):
     @app.route('/disasters/<disaster_id>')
     def retrieve_disaster_by_id(disaster_id):
         page = int(request.args.get("page", "1"))
-        
+
         try:
             if page <= 0:
                 raise ValueError("The request page must be positive.")
@@ -292,6 +292,7 @@ def create_app(test_config=None):
             flash("An attribute error occurred.")
             abort(404)
         except Exception as ex:
+            print("\n\nerror:" , str(ex))
             flash("An error occurred.")
             abort(422)
 
