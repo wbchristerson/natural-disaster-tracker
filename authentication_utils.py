@@ -73,11 +73,16 @@ def verify_decode_jwt(token):
             )
             print("\n8\n")
         except jwt.ExpiredSignatureError:
+            print("\n9\n")
             abort(401)
         except jwt.JWTClaimsError:
+            print("\n10\n")
             abort(401)
         except Exception:
+            print("\n11\n")
             abort(400)
+    
+    print("\n12\n")
     abort(400)
 
 
