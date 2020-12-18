@@ -244,21 +244,12 @@ def create_app(test_config=None):
     def retrieve_disaster_by_id(disaster_id):
         page = int(request.args.get("page", "1"))
         
-        print("\n1\n")
-        
         try:
-            
-            print("\n2\n")
-            
             if page <= 0:
                 raise ValueError("The request page must be positive.")
             
-            print("\n3\n")
-            
             disaster = Disaster.query.filter(
                 Disaster.id == disaster_id).first()
-
-            print("\n4\n")
 
             additional_data = WitnessReport.query.filter(
                 WitnessReport.disaster_id == disaster_id).with_entities(
@@ -270,7 +261,8 @@ def create_app(test_config=None):
                             WitnessReport.disaster_id), ).group_by(
                                 WitnessReport.disaster_id).first()
 
-            print("\n5\n")
+            print("\nadditional_data: ", additional_data)
+            print("\n")
             
             if additional_data:
                 formatted_additional_data = (
@@ -283,17 +275,13 @@ def create_app(test_config=None):
                     additional_data[5])
             else:
                 formatted_additional_data = (None, None, None, None, None, 0)
-
-            print("\n6\n")
-
+            
             reports, observer_map = WitnessReport.observer_join(disaster_id)
             formatted_reports = [report.format() for report in reports]
             for fr in formatted_reports:
                 fr["username"] = observer_map[fr["observer_id"]][0]
                 fr["user_photograph_url"] = observer_map[fr["observer_id"]][1]
-
-            print("\n7\n")
-
+            
             return jsonify(
                 combine_single_disaster_data(
                     disaster.format(),
@@ -304,9 +292,6 @@ def create_app(test_config=None):
             flash("An attribute error occurred.")
             abort(404)
         except Exception as ex:
-    
-            print("\n8\n")
-
             flash("An error occurred.")
             abort(422)
 
