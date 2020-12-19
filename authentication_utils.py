@@ -67,7 +67,7 @@ def verify_decode_jwt(token):
             abort(401)
         except Exception:
             abort(400)
-    
+
     abort(400)
 
 

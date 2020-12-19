@@ -20,13 +20,25 @@ The login page can be found [here](https://dev-9xo5gdfc.us.auth0.com/authorize?a
 
 ## Getting Started
 
+### Data Modeling
+
+The schema describing the data models and helper functions to manipulate objects of those models are defined `models.py`. For complete details, please refer to that file. Below are some important points:
+
+- The database currently consists of three tables: Disaster, Observer, and WitnessReport.
+- The Disaster table is meant to add natural disasters to the system, which would then be available for reports by witnesses of disasters (those with the role disaster-reporter).
+- The Observer table is meant to list basic information for users who have been registered as disaster-reporters and therefore who are able to write witness reports of natural disasters.
+- The WitnessReport table represents the data included by an Observer object when providing an account of a Disaster object.
+- The WitnessReport table includes two foreign keys: one for the id of the associated disaster (about which the witness report is written) and one for the id of the associated observer (who writes the report).
 
 ### Dependencies
+
+#### Optional Virtual Enviornment
+If you wish to work within a virtual environment to keep your dependencies for each project separate and organized, instructions for setting up a virual enviornment for your platform can be found in the [python docs](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/).
 
 All dependencies are listed in `requirements.txt` and can be installed with the following command, which should be run in the top-level of this project's directory:
 
 ```
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 Note the use of Python 3.7. If you do not have this version of Python installed, follow instructions to install the latest version of python for your platform in the [python docs](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/).
@@ -37,7 +49,7 @@ Note the use of Python 3.7. If you do not have this version of Python installed,
 
 - [SQLAlchemy](https://www.sqlalchemy.org/) is the Python SQL toolkit and ORM (object relational mapping) I used to handle the database. Most of the logic is set up in `app/__init__.py` and references `models.py`.
 
-<!-- - [Flask-CORS](https://flask-cors.readthedocs.io/en/latest/#) is the extension I used to handle cross origin requests from the frontend server. -->
+- [Flask-CORS](https://flask-cors.readthedocs.io/en/latest/#) is the extension I used to handle cross origin requests, which I expect to eventually require when supporting a front-end.
 
 ### Database Set Up
 
@@ -124,16 +136,32 @@ All tests are present in `test_sample_will.py`. These tests include both tests f
 
 4) Set the environment variable `MY_PG_USER` for the `<user>` used above to create the test database with the following command:
 
+    For MacOS- and Linux-based systems, use the following command:
+
     ```bash
     export MY_PG_USER=<user>
+    ```
+
+    For Windows-based syteems, use the following command:
+
+    ```bash
+    set MY_PG_USER=<user>
     ```
 
     where `<user>` is replaced by the user name used to create the test database.
 
 5) Set the environment variable `MY_PG_PWD` for the password of the `<user>` used above to create the database with the following command:
 
+    For MacOS- and Linux-based systems, use the following command:
+
     ```bash
     export MY_PG_PWD=<pwd>
+    ```
+
+    For Windows-based syteems, use the following command:
+
+    ```bash
+    set MY_PG_PWD=<pwd>
     ```
 
     where `<pwd>` is the password of the user used to create the test database.

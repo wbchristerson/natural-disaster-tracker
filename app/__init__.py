@@ -247,7 +247,7 @@ def create_app(test_config=None):
         try:
             if page <= 0:
                 raise ValueError("The request page must be positive.")
-            
+
             disaster = Disaster.query.filter(
                 Disaster.id == disaster_id).first()
 
@@ -260,7 +260,7 @@ def create_app(test_config=None):
                         WitnessReport.event_datetime), func.count(
                             WitnessReport.disaster_id), ).group_by(
                                 WitnessReport.disaster_id).first()
-            
+
             if additional_data:
                 formatted_additional_data = (
                     additional_data[0],
@@ -272,13 +272,13 @@ def create_app(test_config=None):
                     additional_data[5])
             else:
                 formatted_additional_data = (None, None, None, None, None, 0)
-            
+
             reports, observer_map = WitnessReport.observer_join(disaster_id)
             formatted_reports = [report.format() for report in reports]
             for fr in formatted_reports:
                 fr["username"] = observer_map[fr["observer_id"]][0]
                 fr["user_photograph_url"] = observer_map[fr["observer_id"]][1]
-            
+
             return jsonify(
                 combine_single_disaster_data(
                     disaster.format(),
