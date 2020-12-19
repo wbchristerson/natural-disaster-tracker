@@ -48,12 +48,30 @@ class NaturalDisasterEnum(str, enum.Enum):
     OTHER: str = "other"
 
 
+
+'''
+Base class including common functionality of all models
+'''
+class DisasterData(db.Model):
+    __abstract__ = True
+
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def update(self):
+        db.session.commit()
+
+
 '''
 Disaster
 '''
 
-
-class Disaster(db.Model):
+class Disaster(DisasterData):
     __tablename__ = 'disasters'
 
     id = Column(Integer, primary_key=True)
@@ -88,24 +106,12 @@ class Disaster(db.Model):
             'location': (self.location_latitude, self.location_longitude),
         }
 
-    def insert(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def delete(self):
-        db.session.delete(self)
-        db.session.commit()
-
-    def update(self):
-        db.session.commit()
-
 
 '''
 Observer
 '''
 
-
-class Observer(db.Model):
+class Observer(DisasterData):
     __tablename__ = 'observers'
 
     id = Column(Integer, primary_key=True)
@@ -126,24 +132,12 @@ class Observer(db.Model):
             'photograph_url': self.photograph_url,
         }
 
-    def insert(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def delete(self):
-        db.session.delete(self)
-        db.session.commit()
-
-    def update(self):
-        db.session.commit()
-
 
 '''
 WitnessReport
 '''
 
-
-class WitnessReport(db.Model):
+class WitnessReport(DisasterData):
     __tablename__ = 'witnessreports'
 
     id = Column(Integer, primary_key=True)
@@ -182,17 +176,6 @@ class WitnessReport(db.Model):
             'people_affected': self.people_affected,
             'location': (self.location_latitude, self.location_longitude),
         }
-
-    def insert(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def delete(self):
-        db.session.delete(self)
-        db.session.commit()
-
-    def update(self):
-        db.session.commit()
 
     @staticmethod
     def observer_join(disaster_id):

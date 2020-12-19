@@ -18,9 +18,11 @@ Currently, there is only a back-end and database for the application hosted on [
 The login page can be found [here](https://dev-9xo5gdfc.us.auth0.com/authorize?audience=disasterapi&response_type=token&client_id=RGuSb8hra89UydUhVcjvJAw3nZHtBDdX&redirect_uri=https://sample-will.herokuapp.com/). Upon creating an account and logging in, the user is directed [here](https://sample-will.herokuapp.com/) to a basic endpoint which returns the string `"Hello"`.
 
 
-## Getting Started
+## Local Development
 
-### Data Modeling
+### Getting Started
+
+#### Data Modeling
 
 The schema describing the data models and helper functions to manipulate objects of those models are defined `models.py`. For complete details, please refer to that file. Below are some important points:
 
@@ -30,9 +32,9 @@ The schema describing the data models and helper functions to manipulate objects
 - The WitnessReport table represents the data included by an Observer object when providing an account of a Disaster object.
 - The WitnessReport table includes two foreign keys: one for the id of the associated disaster (about which the witness report is written) and one for the id of the associated observer (who writes the report).
 
-### Dependencies
+#### Dependencies
 
-#### Optional Virtual Enviornment
+##### Optional Virtual Enviornment
 If you wish to work within a virtual environment to keep your dependencies for each project separate and organized, instructions for setting up a virual enviornment for your platform can be found in the [python docs](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/).
 
 All dependencies are listed in `requirements.txt` and can be installed with the following command, which should be run in the top-level of this project's directory:
@@ -44,7 +46,7 @@ pip3 install -r requirements.txt
 Note the use of Python 3.7. If you do not have this version of Python installed, follow instructions to install the latest version of python for your platform in the [python docs](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/).
 
 
-#### Key Dependencies
+##### Key Dependencies
 - [Flask](https://flask.palletsprojects.com/en/1.1.x/) is a lightweight backend microservices framework. Flask is required to handle requests and responses.
 
 - [SQLAlchemy](https://www.sqlalchemy.org/) is the Python SQL toolkit and ORM (object relational mapping) I used to handle the database. Most of the logic is set up in `app/__init__.py` and references `models.py`.
@@ -53,14 +55,33 @@ Note the use of Python 3.7. If you do not have this version of Python installed,
 
 ### Database Set Up
 
-As mentioned above, the application's database is handled by heroku; however, for local development, you must set up a postgresql database. Assuming that you have postgres installed and the psql command line tool, create the database to use for development with:
+As mentioned above, the application's database is handled by heroku; however, for local development, you must set up a postgresql database. Follow the steps below:
 
+1) Assuming that you have postgres installed and the psql command line tool, create the database to use for development with:
 
-```bash
-psql -U <user> createdb sample-capstoneDB
-```
+    ```bash
+    psql -U <user> createdb sample-capstoneDB
+    ```
 
-where <user> is replaced by a user account for psql. You may be prompted for the corresponding password for this user. This will create the database.
+    where `<user>` is replaced by a user account for psql. You may be prompted for the corresponding password for this user. This will create the database. 
+
+2) To obtain all necessary environment variables, run one of the following commands, depending on your operating system:
+
+    - MacOS, Linux:
+        ```bash
+        source set_env_vars_mac_linux.sh
+        ```
+    - Windows:
+        ```bash
+        source set_env_vars_windows.sh
+        ```
+3) Make the initial migration by running the following commands:
+
+    ```bash
+    python3 manage.py db init
+    python3 manage.py db migrate
+    python3 manage.py db upgrade
+    ```
 
 To add sample data to the database for ad hoc testing, first update the last line of `setup.sh` from
 
