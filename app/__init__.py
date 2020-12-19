@@ -18,6 +18,7 @@ from sqlalchemy import func, join
 from random import randrange
 from copy import copy
 from authentication_utils import requires_auth
+import sys
 
 PAGE_SIZE = 10
 
@@ -126,10 +127,10 @@ def create_app(test_config=None):
 
     '''
     A GET endpoint to get all disasters or disasters by disaster type. This
-    endpoint takes an optional parameter 'disaster_type' for the disaster_type.
-    If no disaster_type parameter is provided, then the data for all disasters
-    is returned. If the disaster_type parameter is provided but is not one of
-    the recognized enums, a 404 error is raised.
+    endpoint takes an optional parameter 'disaster_type' to filter by the
+    disaster_type. If no disaster_type parameter is provided, then the data
+    for all disasters is returned. If the disaster_type parameter is provided
+    but is not one of the recognized enums, a 404 error is raised.
 
     The endpoint also has an optional page request parameter corresponding to
     the paginated page to use. The current default for the size of a page is
@@ -145,7 +146,7 @@ def create_app(test_config=None):
     @app.route('/disasters')
     def disasters():
         page = int(request.args.get("page", "1"))
-        disaster_type = request.args.get("disaster_type", None)
+        disaster_type = request.args.get("disaster_type")
 
         try:
             if disaster_type is not None and disaster_type.upper(
@@ -153,11 +154,9 @@ def create_app(test_config=None):
                 raise AttributeError("Unrecognized natural disaster type.")
             formatted_disasters = []
 
-            if disaster_type is None:
-                disasters = Disaster.query.all()
-            else:
-                disasters = Disaster.query.filter(
-                    Disaster.disaster_type == disaster_type.upper()).all()
+            disasters = Disaster.query.filter(
+                Disaster.disaster_type == disaster_type.upper()) \
+                .all() if disaster_type else Disaster.query.all()
 
             total_disasters = len(disasters)
             formatted_disasters = get_page_of_resource(
@@ -201,9 +200,11 @@ def create_app(test_config=None):
                 })
         except AttributeError as ex:
             flash('An error occurred.')
+            print(sys.exc_info())
             abort(404)
         except Exception as ex:
             flash("An error occurred.")
+            print(sys.exc_info())
             abort(422)
 
     '''
@@ -287,9 +288,11 @@ def create_app(test_config=None):
                     page))
         except AttributeError as ex:
             flash("An attribute error occurred.")
+            print(sys.exc_info())
             abort(404)
         except Exception as ex:
             flash("An error occurred.")
+            print(sys.exc_info())
             abort(422)
 
     '''
@@ -311,6 +314,7 @@ def create_app(test_config=None):
             return jsonify({"observers": formatted_observers})
         except Exception as ex:
             flash("An error occurred.")
+            print(sys.exc_info())
             abort(422)
 
     '''
@@ -344,6 +348,7 @@ def create_app(test_config=None):
             return jsonify({"id": disaster.id})
         except Exception as ex:
             flash("An error occurred.")
+            print(sys.exc_info())
             abort(400)
 
     '''
@@ -366,6 +371,7 @@ def create_app(test_config=None):
             return jsonify({"id": observer.id})
         except Exception as ex:
             flash("An error occurred.")
+            print(sys.exc_info())
             abort(400)
 
     '''
@@ -405,6 +411,7 @@ def create_app(test_config=None):
             return jsonify({"id": witness_report.id})
         except Exception as ex:
             flash("An error occurred.")
+            print(sys.exc_info())
             abort(400)
 
     '''
@@ -455,12 +462,15 @@ def create_app(test_config=None):
             return jsonify(disaster.format())
         except AttributeError as err:
             flash(str(err))
+            print(sys.exc_info())
             abort(400)
         except ValueError as err:
             flash(str(err))
+            print(sys.exc_info())
             abort(404)
         except Exception as err:
             flash("An error occurred.")
+            print(sys.exc_info())
             abort(422)
 
     '''
@@ -516,12 +526,15 @@ def create_app(test_config=None):
             return jsonify(witness_report.format())
         except AttributeError as err:
             flash(str(err))
+            print(sys.exc_info())
             abort(400)
         except ValueError as err:
             flash(str(err))
+            print(sys.exc_info())
             abort(404)
         except Exception as err:
             flash("An error occurred.")
+            print(sys.exc_info())
             abort(422)
 
     '''
@@ -543,6 +556,7 @@ def create_app(test_config=None):
             })
         except Exception as err:
             flash(str(err))
+            print(sys.exc_info())
             abort(400)
 
     @app.errorhandler(400)

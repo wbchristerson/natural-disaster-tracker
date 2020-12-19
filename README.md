@@ -169,9 +169,10 @@ All tests are present in `test_sample_will.py`. These tests include both tests f
 6) Run the following command to now run all tests:
 
     ```bash
-    python3 test_sample_will.py
+    python3 test_sample_will.py -b
     ```
 
+    (The `-b` option suppresses print statements from the code, for example, system messages upon errors.)
 
 ## API Referencee
 
