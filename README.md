@@ -195,7 +195,13 @@ All tests are present in `test_sample_will.py`. These tests include both tests f
 
     (The `-b` option suppresses print statements from the code, for example, system messages upon errors.)
 
-## API Referencee
+    You should see results similar to this:
+
+    <p align="center">
+        <img src="./documentation-images/natural-disaster-test-results.png" alt="Introductory screen showing results of search for 'Spring'">
+    </p>
+
+## API Reference
 
 ### General Notes
 
