@@ -48,10 +48,11 @@ class NaturalDisasterEnum(str, enum.Enum):
     OTHER: str = "other"
 
 
-
 '''
 Base class including common functionality of all models
 '''
+
+
 class DisasterData(db.Model):
     __abstract__ = True
 
@@ -70,6 +71,7 @@ class DisasterData(db.Model):
 '''
 Disaster
 '''
+
 
 class Disaster(DisasterData):
     __tablename__ = 'disasters'
@@ -111,6 +113,7 @@ class Disaster(DisasterData):
 Observer
 '''
 
+
 class Observer(DisasterData):
     __tablename__ = 'observers'
 
@@ -136,6 +139,7 @@ class Observer(DisasterData):
 '''
 WitnessReport
 '''
+
 
 class WitnessReport(DisasterData):
     __tablename__ = 'witnessreports'
