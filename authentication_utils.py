@@ -14,16 +14,12 @@ def get_token_auth_header():
     Gabriel Ruttner
     """
     auth = request.headers.get('Authorization', None)
-
     if not auth:
         abort(401)
-
     parts = auth.split()
     if parts[0].lower() != 'bearer' or len(parts) != 2:
         abort(401)
-
     token = parts[1]
-
     return token
 
 
