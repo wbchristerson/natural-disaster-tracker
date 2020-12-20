@@ -174,11 +174,10 @@ def create_app(test_config=None):
             formatted_additional_data = [
                 (report[0],
                  report[1],
-                    float(
-                    report[2]),
-                    report[3],
-                    report[4],
-                    report[5]) for report in additional_data]
+                 float(report[2]) if report[2] else None,
+                 report[3],
+                 report[4],
+                 report[5]) for report in additional_data]
 
             # disaster_id, observer_id, comment
             all_witness_reports = WitnessReport.query.with_entities(
