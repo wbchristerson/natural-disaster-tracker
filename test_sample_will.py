@@ -198,7 +198,7 @@ class SampleWillTestCase(unittest.TestCase):
 
     def test_get_general_disasters_success(self):
         """Test for successfully retrieving disasters"""
-        res = self.client().get('/disasters')
+        res = self.client().get('/api/disasters')
 
         self.assertEqual(res.status_code, 200)
 
@@ -213,14 +213,14 @@ class SampleWillTestCase(unittest.TestCase):
 
     def test_get_general_disasters_failure(self):
         """Test for failure to retrieve disasters due to invalid page"""
-        res = self.client().get('/disasters?page=-1')
+        res = self.client().get('/api/disasters?page=-1')
         self.assertEqual(res.status_code, 422)
 
     def test_get_disasters_single_type_success(self):
         """Test for successfully retrieving disasters of a specific
         disaster_type
         """
-        res = self.client().get('/disasters?disaster_type=hurricane')
+        res = self.client().get('/api/disasters?disaster_type=hurricane')
         self.assertEqual(res.status_code, 200)
         data = json.loads(res.data)
 
@@ -234,14 +234,14 @@ class SampleWillTestCase(unittest.TestCase):
         """Test for failure to retrieve disasters due to an unrecognized
         disaster_type
         """
-        res = self.client().get('/disasters?disaster_type=crisis')
+        res = self.client().get('/api/disasters?disaster_type=crisis')
         self.assertEqual(res.status_code, 404)
 
     def test_get_single_disaster_no_reports_success(self):
         """Test for successfully retrieving the details of a specific disaster
         which has no reports"""
         res = self.client().get(
-            '/disasters/' + str(self.disaster_1_data["id"]))
+            '/api/disasters/' + str(self.disaster_1_data["id"]))
         self.assertEqual(res.status_code, 200)
         data = json.loads(res.data)
 
@@ -257,7 +257,7 @@ class SampleWillTestCase(unittest.TestCase):
         """Test for successfully retrieving the details of a specific disaster
         which includes reports"""
         res = self.client().get(
-            '/disasters/' + str(self.disaster_2_data["id"]))
+            '/api/disasters/' + str(self.disaster_2_data["id"]))
         self.assertEqual(res.status_code, 200)
         data = json.loads(res.data)
 
@@ -295,7 +295,7 @@ class SampleWillTestCase(unittest.TestCase):
 
     def test_get_single_disaster_failure(self):
         """Test for failure to retrieve details of single disaster"""
-        res = self.client().get('/disasters/0')
+        res = self.client().get('/api/disasters/0')
         self.assertEqual(res.status_code, 404)
 
     def test_insert_disaster_success(self):
@@ -309,7 +309,8 @@ class SampleWillTestCase(unittest.TestCase):
             "location_longitude": -156.339161,
         }
         res = self.client().post(
-            '/disasters', data=json.dumps(disaster_info), headers=self.headers)
+            '/api/disasters', data=json.dumps(disaster_info),
+            headers=self.headers)
         self.assertEqual(200, res.status_code)
         data = json.loads(res.data)
 
@@ -343,7 +344,8 @@ class SampleWillTestCase(unittest.TestCase):
             "is_ongoing": True,
         }
         res = self.client().post(
-            '/disasters', data=json.dumps(disaster_info), headers=self.headers)
+            '/api/disasters', data=json.dumps(disaster_info),
+            headers=self.headers)
         self.assertEqual(400, res.status_code)
 
     def test_insert_disaster_duplicate_failure(self):
@@ -358,13 +360,15 @@ class SampleWillTestCase(unittest.TestCase):
             "location_longitude": -156.339161,
         }
         res1 = self.client().post(
-            '/disasters', data=json.dumps(disaster_data), headers=self.headers)
+            '/api/disasters', data=json.dumps(disaster_data),
+            headers=self.headers)
         self.assertEqual(200, res1.status_code)
         data = json.loads(res1.data)
         self.added_disaster_ids.append(data["id"])
 
         res2 = self.client().post(
-            '/disasters', data=json.dumps(disaster_data), headers=self.headers)
+            '/api/disasters', data=json.dumps(disaster_data),
+            headers=self.headers)
         self.assertEqual(400, res2.status_code)
 
     def test_insert_observer_success(self):
@@ -375,7 +379,8 @@ class SampleWillTestCase(unittest.TestCase):
             "p08634k6.jpg"
         }
         res = self.client().post(
-            '/observers', data=json.dumps(observer_data), headers=self.headers)
+            '/api/observers', data=json.dumps(observer_data),
+            headers=self.headers)
         self.assertEqual(200, res.status_code)
         data = json.loads(res.data)
         self.added_observer_ids.append(data["id"])
@@ -396,7 +401,8 @@ class SampleWillTestCase(unittest.TestCase):
             "uploads/2017/07/hardwood-tree.jpg",
         }
         res = self.client().post(
-            '/observers', data=json.dumps(observer_data), headers=self.headers)
+            '/api/observers', data=json.dumps(observer_data),
+            headers=self.headers)
         self.assertEqual(400, res.status_code)
         matching_observer = Observer.query.filter(
             Observer.photograph_url == observer_data["photograph_url"]).first()
@@ -411,7 +417,8 @@ class SampleWillTestCase(unittest.TestCase):
             "uploads/2017/07/hardwood-tree.jpg"
         }
         res = self.client().post(
-            '/observers', data=json.dumps(observer_data), headers=self.headers)
+            '/api/observers', data=json.dumps(observer_data),
+            headers=self.headers)
         self.assertEqual(400, res.status_code)
 
     def test_insert_witness_report_success(self):
@@ -428,7 +435,7 @@ class SampleWillTestCase(unittest.TestCase):
             "location_latitude": -80.0,
             "location_longitude": -30.4,
         }
-        res = self.client().post('/witnessreports',
+        res = self.client().post('/api/witnessreports',
                                  data=json.dumps(report_data),
                                  headers=self.headers)
         self.assertEqual(200, res.status_code)
@@ -472,7 +479,7 @@ class SampleWillTestCase(unittest.TestCase):
             "location_latitude": -80.0,
             "location_longitude": -30.4,
         }
-        res = self.client().post('/witnessreports',
+        res = self.client().post('/api/witnessreports',
                                  data=json.dumps(report_data),
                                  headers=self.headers)
         self.assertEqual(400, res.status_code)
@@ -489,7 +496,8 @@ class SampleWillTestCase(unittest.TestCase):
             "location_longitude": -86.5,
         }
         res = self.client().patch(
-            '/disasters', data=json.dumps(update_data), headers=self.headers)
+            '/api/disasters', data=json.dumps(update_data),
+            headers=self.headers)
 
         self.assertEqual(200, res.status_code)
         data = json.loads(res.data)
@@ -534,7 +542,8 @@ class SampleWillTestCase(unittest.TestCase):
             "location_longitude": -86.5,
         }
         res = self.client().patch(
-            '/disasters', data=json.dumps(update_data), headers=self.headers)
+            '/api/disasters', data=json.dumps(update_data),
+            headers=self.headers)
         self.assertEqual(400, res.status_code)
 
     def test_update_disaster_no_matching_id_failure(self):
@@ -550,7 +559,8 @@ class SampleWillTestCase(unittest.TestCase):
             "location_longitude": -86.5,
         }
         res = self.client().patch(
-            '/disasters', data=json.dumps(update_data), headers=self.headers)
+            '/api/disasters', data=json.dumps(update_data),
+            headers=self.headers)
         self.assertEqual(404, res.status_code)
 
     def test_update_disaster_invalid_type_failure(self):
@@ -566,12 +576,13 @@ class SampleWillTestCase(unittest.TestCase):
             "location_longitude": -86.5,
         }
         res = self.client().patch(
-            '/disasters', data=json.dumps(update_data), headers=self.headers)
+            '/api/disasters', data=json.dumps(update_data),
+            headers=self.headers)
         self.assertEqual(422, res.status_code)
 
     def test_retrieve_observers_success(self):
         """Test for successfully retrieving the first page of observers"""
-        res = self.client().get('/observers', headers=self.headers)
+        res = self.client().get('/api/observers', headers=self.headers)
         self.assertEqual(200, res.status_code)
         data = json.loads(res.data)
 
@@ -583,7 +594,7 @@ class SampleWillTestCase(unittest.TestCase):
     def test_retrieve_observers_invalid_page_failure(self):
         """Test for failure to retrieve data about observers for invalid page
         """
-        res = self.client().get('/observers?page=-1', headers=self.headers)
+        res = self.client().get('/api/observers?page=-1', headers=self.headers)
         self.assertEqual(422, res.status_code)
 
     def test_update_witness_report_success(self):
@@ -600,7 +611,7 @@ class SampleWillTestCase(unittest.TestCase):
             "location_latitude": 23.4,
             "location_longitude": -10.3,
         }
-        res = self.client().patch('/witnessreports',
+        res = self.client().patch('/api/witnessreports',
                                   data=json.dumps(update_data),
                                   headers=self.headers)
         self.assertEqual(200, res.status_code)
@@ -641,7 +652,7 @@ class SampleWillTestCase(unittest.TestCase):
             "location_latitude": 23.4,
             "location_longitude": -10.3,
         }
-        res = self.client().patch('/witnessreports',
+        res = self.client().patch('/api/witnessreports',
                                   data=json.dumps(update_data),
                                   headers=self.headers)
         self.assertEqual(400, res.status_code)
@@ -661,7 +672,7 @@ class SampleWillTestCase(unittest.TestCase):
             "location_latitude": 23.4,
             "location_longitude": -10.3,
         }
-        res = self.client().patch('/witnessreports',
+        res = self.client().patch('/api/witnessreports',
                                   data=json.dumps(update_data),
                                   headers=self.headers)
         self.assertEqual(404, res.status_code)
@@ -670,7 +681,7 @@ class SampleWillTestCase(unittest.TestCase):
         """Test for successfully deleting a witness report"""
         delete_id = self.witness_report_1_data["id"]
         res = self.client().delete(
-            '/witnessreports/' + str(delete_id),
+            '/api/witnessreports/' + str(delete_id),
             headers=self.headers)
         self.assertEqual(200, res.status_code)
 
@@ -687,7 +698,8 @@ class SampleWillTestCase(unittest.TestCase):
     def test_delete_witness_report_no_matching_id_failure(self):
         """Test for failure to delete a witness report because there is no
         matching witness report id"""
-        res = self.client().delete('/witnessreports/0', headers=self.headers)
+        res = self.client().delete(
+            '/api/witnessreports/0', headers=self.headers)
         self.assertEqual(400, res.status_code)
 
     # Authorization tests
@@ -698,13 +710,13 @@ class SampleWillTestCase(unittest.TestCase):
         """Test for failure to retrieve data about observers due to no
         authorization parameter being present"""
         res = self.client().get(
-            '/observers', headers={'Content-Type': 'application/json'})
+            '/api/observers', headers={'Content-Type': 'application/json'})
         self.assertEqual(401, res.status_code)
 
     def test_retrieve_observers_expired_token_failure(self):
         """Test for failure to retrieve data about observers due to expired
         token"""
-        res = self.client().get('/observers', headers={
+        res = self.client().get('/api/observers', headers={
             'Content-Type': 'application/json',
             'Authorization': 'bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsI' +
             'mtpZCI6Im4yWlN4YWR2T1F4V2xzMkxPTF9DRCJ9.eyJpc3MiOiJodHRwc' +
@@ -731,7 +743,7 @@ class SampleWillTestCase(unittest.TestCase):
         token belonging to disaster reporter when authorization requires user
         to be disaster administrator"""
         res = self.client().get(
-            '/observers',
+            '/api/observers',
             headers={'Content-Type': 'application/json',
                      'Authorization': 'bearer ' + os.environ["REPORTER_TOKEN"]}
         )
@@ -753,7 +765,7 @@ class SampleWillTestCase(unittest.TestCase):
             "location_latitude": 23.4,
             "location_longitude": -10.3,
         }
-        res = self.client().patch('/witnessreports',
+        res = self.client().patch('/api/witnessreports',
                                   data=json.dumps(update_data),
                                   headers={'Content-Type': 'application/json',
                                            'Authorization': 'bearer ' +

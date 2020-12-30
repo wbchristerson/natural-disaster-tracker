@@ -29,9 +29,20 @@ def create_app(test_config=None):
     setup_db(app)
     CORS(app, resources={
          r"*": {"origins": ["127.0.0.1",
-                            "https://sample-will.herokuapp.com/"]}})
+                            "127.0.0.1/api/"
+                            "https://sample-will.herokuapp.com/",
+                            "https://sample-will.herokuapp.com/api"]}})
 
-    @app.route('/')
+    # @app.route('/')
+    # def get_greeting():
+    #     excited = os.environ['EXCITED']
+    #     greeting = "Hello"
+    #     if excited == 'true':
+    #         greeting = greeting + "!!!!!"
+    #     return greeting
+
+
+    @app.route('/api')
     def get_greeting():
         excited = os.environ['EXCITED']
         greeting = "Hello"
@@ -39,7 +50,8 @@ def create_app(test_config=None):
             greeting = greeting + "!!!!!"
         return greeting
 
-    @app.route('/coolkids')
+
+    @app.route('/api/coolkids')
     def be_cool():
         return "Be cool, man, be coooool! You're almost an FSND grad!"
 
@@ -143,7 +155,7 @@ def create_app(test_config=None):
     disaster reports per disaster (namely, the number of reports, the first
     observance, the last observance, and the number of people affected).
     '''
-    @app.route('/disasters')
+    @app.route('/api/disasters')
     def disasters():
         page = int(request.args.get("page", "1"))
         disaster_type = request.args.get("disaster_type")
@@ -240,7 +252,7 @@ def create_app(test_config=None):
     provided does not correspond to an existing disaster, a 404 error is
     returned
     '''
-    @app.route('/disasters/<disaster_id>')
+    @app.route('/api/disasters/<disaster_id>')
     def retrieve_disaster_by_id(disaster_id):
         page = int(request.args.get("page", "1"))
 
@@ -301,7 +313,7 @@ def create_app(test_config=None):
     assumed to be 1. The use of an invalid page (i.e. a non-positive page) will
     cause a status 422 error to be returned.
     '''
-    @app.route('/observers', methods=["GET"])
+    @app.route('/api/observers', methods=["GET"])
     @requires_auth('get:observers')
     def get_all_observers(payload):
         page = int(request.args.get("page", "1"))
@@ -330,7 +342,7 @@ def create_app(test_config=None):
     If the request's disaster data does not meet the conditions of requirement
     described above, a 400 status code error is returned
     '''
-    @app.route('/disasters', methods=["POST"])
+    @app.route('/api/disasters', methods=["POST"])
     @requires_auth('post:disasters')
     def send_disaster(payload):
         try:
@@ -360,7 +372,7 @@ def create_app(test_config=None):
     If the request's data does not meet the conditions of requirement described
     above, then a 400 status code error is returned
     '''
-    @app.route('/observers', methods=["POST"])
+    @app.route('/api/observers', methods=["POST"])
     def send_user():
         try:
             body = request.get_json()
@@ -390,7 +402,7 @@ def create_app(test_config=None):
     If the request's data does not meet the conditions of requirement described
     above, then a 400 status code error is returned
     '''
-    @app.route('/witnessreports', methods=["POST"])
+    @app.route('/api/witnessreports', methods=["POST"])
     @requires_auth('post:witnessreports')
     def send_witness_report(payload):
         try:
@@ -431,7 +443,7 @@ def create_app(test_config=None):
     status code error is returned. Otherwise, if there are any malformed parts
     of the update data dictionary, then a 422 error is thrown.
     '''
-    @app.route('/disasters', methods=["PATCH"])
+    @app.route('/api/disasters', methods=["PATCH"])
     @requires_auth('patch:witnessreports')
     def update_disaster(payload):
         try:
@@ -492,7 +504,7 @@ def create_app(test_config=None):
     a 404 status code error is returned. Otherwise, if there are any malformed
     parts of the update data dictionary, then a 422 error is thrown.
     '''
-    @app.route('/witnessreports', methods=["PATCH"])
+    @app.route('/api/witnessreports', methods=["PATCH"])
     @requires_auth('patch:witnessreports')
     def update_witness_report(payload):
         try:
@@ -540,7 +552,7 @@ def create_app(test_config=None):
     A DELETE endpoint for deleting a witness report. If the listed id does not
     exist among witness reports, a 400 status error is returned.
     '''
-    @app.route('/witnessreports/<witness_report_id>', methods=["DELETE"])
+    @app.route('/api/witnessreports/<witness_report_id>', methods=["DELETE"])
     @requires_auth('delete:witnessreports')
     def remove_witness_report(payload, witness_report_id):
         try:
