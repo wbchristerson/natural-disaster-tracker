@@ -231,17 +231,17 @@ The API returns five error types when requests fail:
 
 The following endpoints are supported by the server, discussed in detail below: 
 
-- GET '/disasters'
-- GET '/disasters/<disaster_id>'
-- GET '/observers'
-- POST '/disasters'
-- POST '/observers'
-- POST '/witnessreports'
-- PATCH '/disasters'
-- PATCH '/witnessreports'
-- DELETE '/witnessreports/<witness_report_id>'
+- GET '/api/disasters'
+- GET '/api/disasters/<disaster_id>'
+- GET '/api/observers'
+- POST '/api/disasters'
+- POST '/api/observers'
+- POST '/api/witnessreports'
+- PATCH '/api/disasters'
+- PATCH '/api/witnessreports'
+- DELETE '/api/witnessreports/<witness_report_id>'
 
-**GET '/disasters'**
+**GET '/api/disasters'**
 
 - A GET endpoint to get all disasters or disasters by disaster type. This endpoint takes an optional parameter 'disaster_type' for the disaster_type. If no disaster_type parameter is provided, then the data for all disasters is returned. If the disaster_type parameter is provided but is not one of the recognized enums, a 404 error is raised.
 - Role: None required
@@ -250,7 +250,7 @@ The following endpoints are supported by the server, discussed in detail below:
 - Returns: This endpoint does not return any of the witness reports associated with a specific disaster. For each disaster, the data in the disaster table is returned along with a random comment and the author of that comment from a witness of the disaster (if any) and some descriptive data about the disaster reports per disaster (namely, the number of reports, the first observance, the last observance, and the number of people affected).
 - Sample: 
     ```bash
-    curl -X GET https://sample-will.herokuapp.com/disasters
+    curl -X GET https://sample-will.herokuapp.com/api/disasters
     ```
 - Response:
 
@@ -301,7 +301,7 @@ The following endpoints are supported by the server, discussed in detail below:
     ```
 
 
-**GET '/disasters/<disaster_id>'**
+**GET '/api/disasters/<disaster_id>'**
 
 - A GET endpoint to get the details of a single disaster, including:
     - id (int)
@@ -332,7 +332,7 @@ The following endpoints are supported by the server, discussed in detail below:
 - Query parameters: optional `page` number
 - Sample:
     ```bash
-    curl -X GET https://sample-will.herokuapp.com/disasters/2
+    curl -X GET https://sample-will.herokuapp.com/api/disasters/2
     ```
 - Response:
 
@@ -373,14 +373,14 @@ The following endpoints are supported by the server, discussed in detail below:
     ```
 
 
-**GET '/observers'**
+**GET '/api/observers'**
 
 - A GET endpoint to retrieve a page of the set of observers, including the observers' ids, usernames, and the URLs of their user photographs. The page can be specified as a query parameter and if none is provided, it will be assumed to be 1. The use of an invalid page (i.e. a non-positive page) will cause a status 422 error to be returned.
 - Role: disaster-admin
 - Query parameters: optional `page` number
 - Sample (`<token>` omitted because of length):
     ```bash
-    curl -X GET https://sample-will.herokuapp.com/observers --header "Authorization: bearer <token>"
+    curl -X GET https://sample-will.herokuapp.com/api/observers --header "Authorization: bearer <token>"
     ``` 
 - Response:
 
@@ -401,7 +401,7 @@ The following endpoints are supported by the server, discussed in detail below:
     }
     ```
 
-**POST '/disasters'**
+**POST '/api/disasters'**
 
 - A POST endpoint to insert a disaster into the database. The body for the request is a dictionary with the following keys:
 
@@ -417,7 +417,7 @@ The following endpoints are supported by the server, discussed in detail below:
 - Role: disaster-admin, disaster-reporter
 - Sample (`<token>` omitted because of length):
     ```bash
-    curl -X POST https://sample-will.herokuapp.com/disasters --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"informal_name": "The Medium Avalanche", "official_name": "Avalanche-202012140936", "disaster_type": "AVALANCHE", "is_ongoing": false, "location_latitude": 28.632662, "location_longitude": 83.833038 }' --header "Authorization: bearer <token>"
+    curl -X POST https://sample-will.herokuapp.com/api/disasters --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"informal_name": "The Medium Avalanche", "official_name": "Avalanche-202012140936", "disaster_type": "AVALANCHE", "is_ongoing": false, "location_latitude": 28.632662, "location_longitude": 83.833038 }' --header "Authorization: bearer <token>"
     ```
 - Response:
 
@@ -440,7 +440,7 @@ The following endpoints are supported by the server, discussed in detail below:
 - Role: None required
 - Sample:
     ```bash
-    curl -X POST https://sample-will.herokuapp.com/observers --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"username": "another_disaster_observer", "photograph_url": "https://www.incimages.com/uploaded_files/image/1920x1080/getty_844768902_299186.jpg"}'
+    curl -X POST https://sample-will.herokuapp.com/api/observers --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"username": "another_disaster_observer", "photograph_url": "https://www.incimages.com/uploaded_files/image/1920x1080/getty_844768902_299186.jpg"}'
     ```
 - Response: 
     ```json
@@ -449,7 +449,7 @@ The following endpoints are supported by the server, discussed in detail below:
     }
     ```
 
-**POST '/witnessreports'**
+**POST '/api/witnessreports'**
 
 - A POST endpoint to insert a witness's report into the database. The body
     for the request is a dictionary with the following keys:
@@ -469,7 +469,7 @@ The following endpoints are supported by the server, discussed in detail below:
 
 - Sample (`<token>` omitted because of length):
     ```bash
-    curl -X POST https://sample-will.herokuapp.com/witnessreports --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"disaster_id": 8, "observer_id": 2, "event_datetime": "2019-08-01 05:41:14-04", "image_url": "https://media4.s-nbcnews.com/i/newscms/2018_49/2669406/181204-japan-tsunami-earthquake-cs-920a_075a953d76eb5447a6bf4fd422e45244.jpg", "comment": "The waves are enormous and causing a lot of damage.", "people_affected": 15000, "location_latitude": 50.8, "location_longitude": 65.2}' --header "Authorization: bearer <token>"
+    curl -X POST https://sample-will.herokuapp.com/api/witnessreports --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"disaster_id": 8, "observer_id": 2, "event_datetime": "2019-08-01 05:41:14-04", "image_url": "https://media4.s-nbcnews.com/i/newscms/2018_49/2669406/181204-japan-tsunami-earthquake-cs-920a_075a953d76eb5447a6bf4fd422e45244.jpg", "comment": "The waves are enormous and causing a lot of damage.", "people_affected": 15000, "location_latitude": 50.8, "location_longitude": 65.2}' --header "Authorization: bearer <token>"
     ```
 - Response:
     ```json
@@ -479,7 +479,7 @@ The following endpoints are supported by the server, discussed in detail below:
     ```
 
 
-**PATCH '/disasters'**
+**PATCH '/api/disasters'**
 
 - A PATCH endpoint to update a disaster. The body of the request is a dictionary with
     the following keys, all of which are optional except for id:
@@ -496,7 +496,7 @@ The following endpoints are supported by the server, discussed in detail below:
 - Role: disaster-admin
 - Sample (`<token>` omitted due to length):
     ```bash
-    curl -X PATCH https://sample-will.herokuapp.com/disasters --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"id": 4, "informal_name": "The Very Terrible Avalanche", "location_latitude": 8.1, "location_longitude": 130.5}' --header "Authorization: bearer <token>"
+    curl -X PATCH https://sample-will.herokuapp.com/api/disasters --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"id": 4, "informal_name": "The Very Terrible Avalanche", "location_latitude": 8.1, "location_longitude": 130.5}' --header "Authorization: bearer <token>"
     ```
 - Response:
     ```json
@@ -510,7 +510,7 @@ The following endpoints are supported by the server, discussed in detail below:
     }
     ```
 
-**PATCH '/witnessreports'**
+**PATCH '/api/witnessreports'**
 
 - A PATCH endpoint to update a witness report of disaster. The body of the request is a
     dictionary with the following keys, all of which are optional except for id (all
@@ -532,7 +532,7 @@ The following endpoints are supported by the server, discussed in detail below:
 - Role: disaster-reporter, disaster-admin
 - Sample (`<token>` omitted due to length):
     ```bash
-    curl -X PATCH https://sample-will.herokuapp.com/witnessreports --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"id": 2, "severity": 9, "event_datetime": "2019-08-02 07:20:11-04", "people_affected": 16000}' --header "Authorization: bearer <token>"
+    curl -X PATCH https://sample-will.herokuapp.com/api/witnessreports --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3" --data '{"id": 2, "severity": 9, "event_datetime": "2019-08-02 07:20:11-04", "people_affected": 16000}' --header "Authorization: bearer <token>"
     ```
 - Response:
     ```json
@@ -553,13 +553,13 @@ The following endpoints are supported by the server, discussed in detail below:
     ```
 
 
-**DELETE '/witnessreports'**
+**DELETE '/api/witnessreports'**
 
 - A DELETE endpoint for deleting a witness report. If the listed id does not exist among witness reports, a 400 status error is returned.
 - Role: disaster-admin
 - Sample (`<token>` omitted due to length):
     ```bash
-    curl -X DELETE https://sample-will.herokuapp.com/witnessreports/5 --header "Authorization: bearer <token>"
+    curl -X DELETE https://sample-will.herokuapp.com/api/witnessreports/5 --header "Authorization: bearer <token>"
     ```
 - Result:
     ```json
