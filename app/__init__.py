@@ -26,7 +26,7 @@ PAGE_SIZE = 10
 
 def create_app(test_config=None):
 
-    app = Flask(__name__, static_folder='../client/build',static_url_path='')
+    app = Flask(__name__, static_folder='client/build',static_url_path='')
     setup_db(app)
     CORS(app, resources={
          r"*": {"origins": ["127.0.0.1",
