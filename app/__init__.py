@@ -36,8 +36,8 @@ def create_app(test_config=None):
 
     @app.route('/')
     def serve():
-        return app.static_folder
-        # return send_from_directory(app.static_folder, 'index.html')
+        # return app.static_folder
+        return send_from_directory(app.static_folder, 'index.html')
 
 
     @app.route('/api')
