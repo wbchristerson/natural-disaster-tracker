@@ -25,7 +25,7 @@ PAGE_SIZE = 10
 
 def create_app(test_config=None):
 
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder='../client/build',static_url_path='')
     setup_db(app)
     CORS(app, resources={
          r"*": {"origins": ["127.0.0.1",
@@ -33,13 +33,9 @@ def create_app(test_config=None):
                             "https://sample-will.herokuapp.com/",
                             "https://sample-will.herokuapp.com/api"]}})
 
-    # @app.route('/')
-    # def get_greeting():
-    #     excited = os.environ['EXCITED']
-    #     greeting = "Hello"
-    #     if excited == 'true':
-    #         greeting = greeting + "!!!!!"
-    #     return greeting
+    @app.route('/')
+    def serve():
+        return send_from_directory(app.static_folder, 'index.html')
 
 
     @app.route('/api')
