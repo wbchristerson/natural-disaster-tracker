@@ -25,10 +25,11 @@ PAGE_SIZE = 10
 
 
 def create_app(test_config=None):
-    directory_up_two_levels = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+    # directory_up_two_levels = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     # app = Flask(__name__, static_folder=(directory_up_two_levels + '/client/build'), static_url_path='')
+
     # app = Flask(__name__, static_folder='client/build', static_url_path='')
+
     app = Flask(__name__, static_folder='../client/build', static_url_path='/')
     setup_db(app)
     CORS(app, resources={
@@ -41,8 +42,8 @@ def create_app(test_config=None):
     def serve():
         try:
             # return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            return send_from_directory(app.static_folder, 'index.html')
-            # return app.static_folder
+            # return send_from_directory(app.static_folder, 'index.html')
+            return app.static_folder
             # return "hello"
         except Exception as ex:
             flash("An error occurred.")
