@@ -46,8 +46,8 @@ def create_app(test_config=None):
             # return "hello"
 
             # return str(os.listdir(app.static_folder))
-            return os.path.dirname(app.static_folder)
-            
+            return os.path.dirname(os.path.dirname(os.path.dirname(app.static_folder)))
+
         except Exception as ex:
             flash("An error occurred.")
             print(sys.exc_info())
