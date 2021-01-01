@@ -38,10 +38,16 @@ def create_app(test_config=None):
 
     @app.route('/')
     def serve():
-        # return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        return send_from_directory(app.static_folder, 'index.html')
-        # return app.static_folder
-        # return "hello"
+        try:
+            # return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            return send_from_directory(app.static_folder, 'index.html')
+            # return app.static_folder
+            # return "hello"
+        except Exception as ex:
+            flash("An error occurred.")
+            print(sys.exc_info())
+            # abort(422)
+            abort(ex.args[0][0]["code"])
 
 
     @app.route('/api')
