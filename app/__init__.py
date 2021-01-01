@@ -46,7 +46,10 @@ def create_app(test_config=None):
             # return "hello"
 
             # return str(os.listdir(app.static_folder))
-            return str(os.listdir(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(app.static_folder)))) + "/client"))
+            # return str(os.listdir(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(app.static_folder)))) + "/client/build"))
+
+            my_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(app.static_folder)))) + "/client/build"
+            return send_from_directory(my_path, 'index.html')
 
         except Exception as ex:
             flash("An error occurred.")
