@@ -46,8 +46,8 @@ def create_app(test_config=None):
         except Exception as ex:
             flash("An error occurred.")
             print(sys.exc_info())
-            # abort(422)
-            abort(ex.args[0][0]["code"])
+            abort(404)
+            # abort(ex.args[0][0]["code"])
 
 
     @app.route('/api')
