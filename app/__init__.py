@@ -43,7 +43,7 @@ def create_app(test_config=None):
         try:
             # return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             # return send_from_directory(app.static_folder, 'index.html')
-            return os.listdir(app.static_folder)
+            return str(os.listdir(app.static_folder))
             # return "hello"
         except Exception as ex:
             flash("An error occurred.")
