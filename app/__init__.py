@@ -30,7 +30,7 @@ def create_app(test_config=None):
 
     # app = Flask(__name__, static_folder='client/build', static_url_path='')
 
-    app = Flask(__name__, static_folder='../client/build', static_url_path='/')
+    app = Flask(__name__, static_folder='../client/build', static_url_path='')
     setup_db(app)
     CORS(app, resources={
          r"*": {"origins": ["127.0.0.1",
@@ -48,8 +48,10 @@ def create_app(test_config=None):
             # return str(os.listdir(app.static_folder))
             # return str(os.listdir(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(app.static_folder)))) + "/client/build"))
 
-            my_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(app.static_folder)))) + "/client/build"
-            return send_from_directory(my_path, 'index.html')
+            # my_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(app.static_folder)))) + "/client/build"
+            # return send_from_directory(my_path, 'index.html')
+
+            return send_from_directory(app.static_folder, 'index.html')
 
         except Exception as ex:
             flash("An error occurred.")
