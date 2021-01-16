@@ -33,10 +33,9 @@ def create_app(test_config=None):
     app = Flask(__name__, static_folder='../client/build', static_url_path='')
     setup_db(app)
     CORS(app, resources={
-         r"*": {"origins": ["127.0.0.1",
-                            "127.0.0.1/api/",
-                            "https://sample-will.herokuapp.com/",
-                            "https://sample-will.herokuapp.com/api"]}})
+         r"*": {"origins": [
+                            "https://sample-will.herokuapp.com/"
+                            ]}})
 
     @app.route('/')
     def serve():
