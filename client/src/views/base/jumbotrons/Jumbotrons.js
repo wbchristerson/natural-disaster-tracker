@@ -14,6 +14,12 @@ import {
 import { DocsLink } from 'src/reusable'
 
 const Jumbotrons = () => {
+  // return (
+  //   <div className="my-test">
+  //     <h1 className="display-3">Disaster Reporter</h1>
+  //     <p className="lead">This is a modified jumbotron that occupies the entire horizontal space of its parent.</p>
+  //   </div>
+  // );
 
   return (
     <>
@@ -55,6 +61,24 @@ const Jumbotrons = () => {
           </CCard>
         </CCol>
       </CRow>
+
+
+      {/* <CRow className="my-test">
+        <h1 className="display-3">Disaster Reporter</h1>
+        <p className="lead">This is a modified jumbotron that occupies the entire horizontal space of its parent.</p>
+        <CCol>
+          <CJumbotron fluid>
+            <CContainer fluid>
+              <h1 className="display-3">Disaster Reporter</h1>
+              <p className="lead">This is a modified jumbotron that occupies the entire horizontal space of its parent.</p>
+              <CEmbed>
+                <CEmbedItem src="https://simplifaster.com/wp-content/uploads/2017/05/Sunshine-Vitamin-D.jpg"/>
+              </CEmbed>
+            </CContainer>
+          </CJumbotron>
+        </CCol>
+      </CRow> */}
+
       <CRow>
         <CCol>
           <CCard>
@@ -63,7 +87,7 @@ const Jumbotrons = () => {
             </CCardHeader>
             <CCardBody>
               <CEmbed>
-                <CEmbedItem src="https://www.youtube.com/embed/zpOULjyy-n8?rel=0"/>
+                <CEmbedItem src="https://www.youtube.com/embed/36GT2zI8lVA?rel=0"/>
               </CEmbed>
             </CCardBody>
           </CCard>

@@ -20,8 +20,21 @@ const WidgetsDropdown = lazy(() => import('../widgets/WidgetsDropdown.js'))
 const WidgetsBrand = lazy(() => import('../widgets/WidgetsBrand.js'))
 
 const Dashboard = () => {
+  const d = new Date();
+  const seconds = d.getSeconds();
+  console.log(seconds);
+
+  // <div className={`banner ${active ? "active" : ""}`}>{children}</div>
+
   return (
     <>
+      <div className={`my-test ${seconds % 3 == 0 ? "main-image-1" : seconds % 3 == 1 ? "main-image-2" : "main-image-3"}`}>
+        <div className="card-overlay">
+          <h1 className="display-3 main-top-text">Disaster Reporter</h1>
+          <p className="main-bottom-text">See And Write Reports About Natural Disasters In Your Area</p>
+        </div>
+      </div>
+
       <WidgetsDropdown />
       <CCard>
         <CCardBody>
