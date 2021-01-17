@@ -34,7 +34,8 @@ def create_app(test_config=None):
     setup_db(app)
     CORS(app, resources={
          r"*": {"origins": [
-                            "https://sample-will.herokuapp.com/"
+                                # "http://localhost:3000",
+                                "https://sample-will.herokuapp.com/"
                             ]}})
 
     @app.route('/')

@@ -10,7 +10,8 @@ import {
   CCol,
   CProgress,
   CRow,
-  CCallout
+  CCallout,
+  // CLink
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { DocsLink } from 'src/reusable'
@@ -35,8 +36,8 @@ class Dashboard extends React.Component {
   }
 
   fetchDisasters() {
-    // fetch("https://sample-will.herokuapp.com/api/disasters?page=1")
-    fetch(`http://127.0.0.1:5000/api/disasters?page=${this.state.page}`)
+    fetch(`https://sample-will.herokuapp.com/api/disasters?page=${this.state.page}`)
+    // fetch(`http://127.0.0.1:5000/api/disasters?page=${this.state.page}`)
     .then(response => response.json())
     .then(result => {
         console.log(result);
@@ -76,13 +77,45 @@ class Dashboard extends React.Component {
               <CCol xs="12" sm="12" md="12">
                 <CCard>
                   <CCardHeader>
-                    Card title
-                    <DocsLink name="CCard"/>
+                    {`${disaster.informal_name} - Official Name: ${disaster.official_name}`}
+                    {/* <DocsLink name="CCard"/> */}
+                    
+                    {/* <div className="card-header-actions">
+                      <CBadge color="success" className="float-right">Success</CBadge>
+                    </div> */}
+
+                    {/* <div className="card-header-actions">
+                      <CLink className="card-header-action">
+                        <CIcon name="cil-settings" />
+                      </CLink>
+                      <CLink className="card-header-action" onClick={() => setCollapsed(!collapsed)}>
+                        <CIcon name={collapsed ? 'cil-chevron-bottom':'cil-chevron-top'} />
+                      </CLink>
+                      <CLink className="card-header-action" onClick={() => setShowCard(false)}>
+                        <CIcon name="cil-x-circle" />
+                      </CLink>
+                    </div> */}
+
+                    <div className="card-header-actions">
+                      <CBadge className="mr-1 float-right" color={`${disaster.is_ongoing ? "danger" : "success"}`}>{`${disaster.is_ongoing ? "On-Going" : "Not On-Going"}`}</CBadge>
+                    </div>
+                    {/* <CBadge className="mr-1" color="danger">Danger</CBadge> */}
+
                   </CCardHeader>
+                  {disaster.random_observer_url && <img className="d-block w-100 set-disaster-max-height" src={disaster.random_observer_url} alt="slide 1"/>}
                   <CCardBody>
-                    Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut
-                    laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation
-                    ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.
+                    {disaster.random_comment && <h5>{`"${disaster.random_comment}"`}</h5>}
+                    {disaster.random_observer && <h6>{`Observer: ${disaster.random_observer}`}</h6>}
+                    {disaster.random_observer_url && <h6>{`Observer url: ${disaster.random_observer_url}`}</h6>}
+
+                    {disaster.average_severity && <h6>{`Average severity: ${disaster.average_severity}`}</h6>}
+                    {disaster.disaster_type && <h6>{`Disaster type: ${disaster.disaster_type}`}</h6>}
+                    {disaster.first_observance && <h6>{`First observance: ${disaster.first_observance}`}</h6>}
+                    {disaster.last_observance && <h6>{`Last observance: ${disaster.last_observance}`}</h6>}
+                    {<h6>{`id: ${disaster.id}`}</h6>}
+                    {<h6>{`Location: (${disaster.location[0]}, ${disaster.location[1]})`}</h6>}
+                    {<h6>{`Number Of Reports: ${disaster.num_reports}`}</h6>}
+                    {disaster.people_affected && <h6>{`People affected: ${disaster.people_affected}`}</h6>}
                   </CCardBody>
                 </CCard>
               </CCol>
