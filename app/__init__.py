@@ -40,10 +40,25 @@ def create_app(test_config=None):
                                 "https://sample-will.herokuapp.com/"
                             ]}})
 
+    auth0 = oauth.register(
+        'auth0',
+        client_id=os.environ["AUTH0_CLIENT_ID"],
+        client_secret=os.environ["SECRET_KEY"],
+        api_base_url=(f'https://{os.environ["AUTH0_DOMAIN"]}'),
+        access_token_url=(f'https://{os.environ["AUTH0_DOMAIN"]}/oauth/token'),
+        authorize_url=(f'https://{os.environ["AUTH0_DOMAIN"]}/authorize'),
+        client_kwargs={
+            'scope': 'openid profile email',
+        },
+    )
+
     @app.route('/')
     def serve():
         try:
+            print("\n\nStep 1\n\n")
+
             auth0.authorize_access_token()
+            
             resp = auth0.get('userinfo')
             userinfo = resp.json()
 
