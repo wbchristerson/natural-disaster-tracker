@@ -19,6 +19,7 @@ from sqlalchemy import func, join
 from random import randrange
 from copy import copy
 from authentication_utils import requires_auth
+from authlib.integrations.flask_client import OAuth
 import sys
 
 PAGE_SIZE = 10
@@ -32,6 +33,7 @@ def create_app(test_config=None):
 
     app = Flask(__name__, static_folder='../client/build', static_url_path='')
     setup_db(app)
+    oauth = OAuth(app)
     CORS(app, resources={
          r"*": {"origins": [
                                 "http://localhost:3000",
