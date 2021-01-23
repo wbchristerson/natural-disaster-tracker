@@ -93,6 +93,7 @@ class SampleWillTestCase(unittest.TestCase):
                 "random_observer": None,
                 "random_comment": None,
                 "random_observer_url": None,
+                "random_witness_image": None,
             }
 
             self.disaster_2_data = {
@@ -112,6 +113,7 @@ class SampleWillTestCase(unittest.TestCase):
                 "random_observer": mock.ANY,
                 "random_comment": mock.ANY,
                 "random_observer_url": mock.ANY,
+                "random_witness_image": mock.ANY,
             }
 
             self.disaster_3_data = {
@@ -129,6 +131,7 @@ class SampleWillTestCase(unittest.TestCase):
                 "random_observer": None,
                 "random_comment": None,
                 "random_observer_url": None,
+                "random_witness_image": None,
             }
 
             self.observer_1_data = observer_1.format()
@@ -249,6 +252,7 @@ class SampleWillTestCase(unittest.TestCase):
         del reports_data["random_observer"]
         del reports_data["random_comment"]
         del reports_data["random_observer_url"]
+        del reports_data["random_witness_image"]
         reports_data["reports"] = []
 
         self.assertDictEqual(reports_data, data)
@@ -265,6 +269,7 @@ class SampleWillTestCase(unittest.TestCase):
         del reports_data["random_observer"]
         del reports_data["random_comment"]
         del reports_data["random_observer_url"]
+        del reports_data["random_witness_image"]
 
         reports_data["reports"] = [
             self.witness_report_1_data,
