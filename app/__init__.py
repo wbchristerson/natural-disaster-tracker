@@ -56,6 +56,7 @@ def create_app(test_config=None):
     def serve():
         try:
             print("\n\nStep 1\n\n")
+            print("auth0:", auth0)
 
             auth0.authorize_access_token()
 
