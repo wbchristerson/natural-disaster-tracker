@@ -58,8 +58,13 @@ def create_app(test_config=None):
             print("\n\nStep 1\n\n")
 
             auth0.authorize_access_token()
+
+            print("\n\nStep 2\n\n")
             
             resp = auth0.get('userinfo')
+
+            print("\n\nStep 3\n\n")
+
             userinfo = resp.json()
 
             print("\n\n\n")
