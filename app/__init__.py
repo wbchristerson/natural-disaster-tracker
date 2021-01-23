@@ -57,6 +57,7 @@ def create_app(test_config=None):
         try:
             print("\n\nStep 1\n\n")
             print("auth0:", auth0)
+            print("dir(auth0):", dir(auth0))
 
             auth0.authorize_access_token()
 
