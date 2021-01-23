@@ -58,6 +58,11 @@ def create_app(test_config=None):
             print("\n\nStep 1\n\n")
             print("auth0:", auth0)
             print("dir(auth0):", dir(auth0))
+            print("auth0.client_id:", auth0.client_id)
+            print("auth0.client_secret:", auth0.client_secret)
+            print("auth0.api_base_url:", auth0.api_base_url)
+            print("auth0.access_token_url:", auth0.access_token_url)
+            print("auth0.authorize_url:", auth0.authorize_url)
 
             auth0.authorize_access_token()
 
