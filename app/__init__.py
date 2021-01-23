@@ -47,9 +47,9 @@ def create_app(test_config=None):
         api_base_url=(f'https://{os.environ["AUTH0_DOMAIN"]}'),
         access_token_url=(f'https://{os.environ["AUTH0_DOMAIN"]}/oauth/token'),
         authorize_url=(f'https://{os.environ["AUTH0_DOMAIN"]}/authorize'),
-        client_kwargs={
-            'scope': 'openid profile email',
-        },
+        # client_kwargs={
+        #     'scope': 'openid profile email',
+        # },
     )
 
     @app.route('/')
