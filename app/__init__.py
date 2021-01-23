@@ -34,13 +34,21 @@ def create_app(test_config=None):
     setup_db(app)
     CORS(app, resources={
          r"*": {"origins": [
-                                # "http://localhost:3000",
+                                "http://localhost:3000",
                                 "https://sample-will.herokuapp.com/"
                             ]}})
 
     @app.route('/')
     def serve():
         try:
+            auth0.authorize_access_token()
+            resp = auth0.get('userinfo')
+            userinfo = resp.json()
+
+            print("\n\n\n")
+            print("userinfo:", userinfo)
+            print("\n\n\n")
+
             # return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             # return send_from_directory(app.static_folder, 'index.html')
             # return "hello"
@@ -83,10 +91,10 @@ def create_app(test_config=None):
 
     def get_random_report_data(witness_reports):
         disaster_map = dict()
-        for (disaster_id, observer_id, comment) in witness_reports:
+        for (disaster_id, observer_id, comment, image_url) in witness_reports:
             if disaster_id not in disaster_map:
                 disaster_map[disaster_id] = list()
-            disaster_map[disaster_id].append((observer_id, comment))
+            disaster_map[disaster_id].append((observer_id, comment, image_url))
 
         random_report_data = dict()
         for k, v in disaster_map.items():
@@ -129,10 +137,12 @@ def create_app(test_config=None):
                 disaster["random_observer_url"] = user_map[user_info[0]
                                                            ]["photograph_url"]
                 disaster["random_comment"] = user_info[1]
+                disaster["random_witness_image"] = user_info[2]
             else:
                 disaster["random_observer"] = None
                 disaster["random_observer_url"] = None
                 disaster["random_comment"] = None
+                disaster["random_witness_image"] = None
 
         return formatted_disasters
 
@@ -212,7 +222,7 @@ def create_app(test_config=None):
             # disaster_id, observer_id, comment
             all_witness_reports = WitnessReport.query.with_entities(
                 WitnessReport.disaster_id, WitnessReport.observer_id,
-                WitnessReport.comment).all()
+                WitnessReport.comment, WitnessReport.image_url).all()
 
             # dictionary containing some random report data per disaster
             random_report_data = get_random_report_data(all_witness_reports)
