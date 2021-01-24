@@ -41,7 +41,7 @@ def create_app(test_config=None):
     oauth = OAuth(app)
     CORS(app, resources={
          r"*": {"origins": [
-                                "http://localhost:3000",
+                                # "http://localhost:3000",
                                 "https://sample-will.herokuapp.com/"
                             ]}})
 
@@ -119,6 +119,11 @@ def create_app(test_config=None):
         #     'picture': userinfo['picture']
         # }
         session['profile'] = userinfo
+
+        print("\n\n\nUser info:")
+        print(userinfo)
+        print("\n\n\n")
+
         return redirect('/')
 
 

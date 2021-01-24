@@ -36,8 +36,8 @@ class Dashboard extends React.Component {
   }
 
   fetchDisasters() {
-    // fetch(`https://sample-will.herokuapp.com/api/disasters?page=${this.state.page}`)
-    fetch(`http://127.0.0.1:5000/api/disasters?page=${this.state.page}`)
+    fetch(`https://sample-will.herokuapp.com/api/disasters?page=${this.state.page}`)
+    // fetch(`http://127.0.0.1:5000/api/disasters?page=${this.state.page}`)
     .then(response => response.json())
     .then(result => {
         console.log(result);
