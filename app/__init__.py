@@ -21,6 +21,7 @@ from copy import copy
 from authentication_utils import requires_auth
 from authlib.integrations.flask_client import OAuth
 import sys
+from werkzeug.exceptions import HTTPException
 
 PAGE_SIZE = 10
 
