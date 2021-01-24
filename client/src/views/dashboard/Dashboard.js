@@ -64,6 +64,13 @@ class Dashboard extends React.Component {
 
     return (
       <>
+        <div class="login-box auth0-box before">
+          <img src="https://i.cloudup.com/StzWWrY34s.png" />
+          <h3>Auth0 Example</h3>
+          <p>Zero friction identity infrastructure, built for developers</p>
+          <a class="btn btn-primary btn-lg btn-login btn-block" href="/my-login">Log In</a>
+        </div>
+
         <div className={`my-test ${seconds % 3 === 0 ? "main-image-1" : seconds % 3 === 1 ? "main-image-2" : "main-image-3"}`}>
           <div className="card-overlay">
             <h1 className="display-3 main-top-text">Disaster Reporter</h1>

@@ -5,7 +5,11 @@ from flask import (
     jsonify,
     flash,
     request,
-    send_from_directory
+    send_from_directory,
+    session,
+    redirect,
+    render_template,
+    url_for,
 )
 from models import (
     setup_db,
@@ -56,28 +60,28 @@ def create_app(test_config=None):
     @app.route('/')
     def serve():
         try:
-            print("\n\nStep 1\n\n")
-            print("auth0:", auth0)
-            print("dir(auth0):", dir(auth0))
-            print("auth0.client_id:", auth0.client_id)
-            print("auth0.client_secret:", auth0.client_secret)
-            print("auth0.api_base_url:", auth0.api_base_url)
-            print("auth0.access_token_url:", auth0.access_token_url)
-            print("auth0.authorize_url:", auth0.authorize_url)
+            # print("\n\nStep 1\n\n")
+            # print("auth0:", auth0)
+            # print("dir(auth0):", dir(auth0))
+            # print("auth0.client_id:", auth0.client_id)
+            # print("auth0.client_secret:", auth0.client_secret)
+            # print("auth0.api_base_url:", auth0.api_base_url)
+            # print("auth0.access_token_url:", auth0.access_token_url)
+            # print("auth0.authorize_url:", auth0.authorize_url)
 
-            auth0.authorize_access_token()
+            # auth0.authorize_access_token()
 
-            print("\n\nStep 2\n\n")
+            # print("\n\nStep 2\n\n")
             
-            resp = auth0.get('userinfo')
+            # resp = auth0.get('userinfo')
 
-            print("\n\nStep 3\n\n")
+            # print("\n\nStep 3\n\n")
 
-            userinfo = resp.json()
+            # userinfo = resp.json()
 
-            print("\n\n\n")
-            print("userinfo:", userinfo)
-            print("\n\n\n")
+            # print("\n\n\n")
+            # print("userinfo:", userinfo)
+            # print("\n\n\n")
 
             # return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             # return send_from_directory(app.static_folder, 'index.html')
@@ -96,6 +100,31 @@ def create_app(test_config=None):
             print(sys.exc_info())
             abort(404)
             # abort(ex.args[0][0]["code"])
+
+
+    # Here we're using the /callback route.
+    @app.route('/callback')
+    def callback_handling():
+        # Handles response from token endpoint
+        auth0.authorize_access_token()
+        resp = auth0.get('userinfo')
+        userinfo = resp.json()
+
+        # Store the user information in flask session.
+        session['jwt_payload'] = userinfo
+        
+        # session['profile'] = {
+        #     'user_id': userinfo['sub'],
+        #     'name': userinfo['name'],
+        #     'picture': userinfo['picture']
+        # }
+        session['profile'] = userinfo
+        return redirect('/')
+
+
+    @app.route('/my-login')
+    def login():
+        return auth0.authorize_redirect(redirect_uri='https://sample-will.herokuapp.com/callback')
 
 
     @app.route('/api')
