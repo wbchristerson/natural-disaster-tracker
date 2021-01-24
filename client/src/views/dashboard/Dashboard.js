@@ -105,49 +105,50 @@ class Dashboard extends React.Component {
                   {disaster.random_observer_url && <img className="d-block w-100 set-disaster-max-height" src={disaster.random_witness_image} alt="slide 1"/>}
                   <CCardBody>
 
-                    <table className="table table-hover table-outline mb-0 d-none d-sm-table">
-                      <tbody>
-                        <tr>
-                          <td className="text-center">
-                            <div className="c-avatar">
-                              <img src={disaster.random_observer_url} className="c-avatar-img" alt="admin@bootstrapmaster.com" />
-                              <span className="c-avatar-status bg-success"></span>
-                            </div>
-                          </td>
-                          <td>
-                            <div>Yiorgos Avraamu</div>
-                            <div className="small text-muted">
-                              <span>New</span> | Registered: Jan 1, 2015
-                            </div>
-                          </td>
-                          <td className="text-center">
-                            <CIcon height={25} name="cif-us" title="us" id="us" />
-                          </td>
-                          <td>
-                            <div className="clearfix">
-                              <div className="float-left">
-                                <strong>50%</strong>
+                    {disaster.random_observer &&
+                      <table className="table table-hover table-outline mb-0 d-none d-sm-table">
+                        <tbody>
+                          <tr>
+                            <td className="text-center">
+                              <div className="c-avatar">
+                                <img src={disaster.random_observer_url} className="c-avatar-img" alt="admin@bootstrapmaster.com" />
+                                <span className="c-avatar-status bg-success"></span>
                               </div>
-                              <div className="float-right">
-                                <small className="text-muted">Jun 11, 2015 - Jul 10, 2015</small>
+                            </td>
+                            <td>
+                              <div>{disaster.random_observer}</div>
+                              <div className="small text-muted">
+                                <span>New</span> | Registered: Jan 1, 2015
                               </div>
-                            </div>
-                            <CProgress className="progress-xs" color="success" value="50" />
-                          </td>
-                          <td className="text-center">
-                            <CIcon height={25} name="cib-cc-mastercard" />
-                          </td>
-                          <td>
-                            <div className="small text-muted">Last login</div>
-                            <strong>10 sec ago</strong>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
+                            </td>
+                            <td className="text-center">
+                              <CIcon height={25} name="cif-us" title="us" id="us" />
+                            </td>
+                            <td>
+                              <div className="clearfix">
+                                <div className="float-left">
+                                  <strong>50%</strong>
+                                </div>
+                                <div className="float-right">
+                                  <small className="text-muted">Jun 11, 2015 - Jul 10, 2015</small>
+                                </div>
+                              </div>
+                              <CProgress className="progress-xs" color="success" value="50" />
+                            </td>
+                            <td className="text-center">
+                              <CIcon height={25} name="cib-cc-mastercard" />
+                            </td>
+                            <td>
+                              <div className="small text-muted">Last login</div>
+                              <strong>10 sec ago</strong>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    }
 
                     {disaster.random_comment && <h5>{`"${disaster.random_comment}"`}</h5>}
                     {disaster.random_observer && <h6>{`Observer: ${disaster.random_observer}`}</h6>}
-                    {disaster.random_observer_url && <h6>{`Observer url: ${disaster.random_observer_url}`}</h6>}
 
                     {disaster.average_severity && <h6>{`Average severity: ${disaster.average_severity}`}</h6>}
                     {disaster.disaster_type && <h6>{`Disaster type: ${disaster.disaster_type}`}</h6>}
