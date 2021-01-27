@@ -105,6 +105,8 @@ bash setup.sh
 
 ### Running The Local Server
 
+Note: You will require the `CLIENT_SECRET` and `SECRET_KEY` environment variables. For security reasons, these are not provided here. For access, please e-mail me at the e-mail listed for my GitHub profile.
+
 If you have set up the local database as described above in the "Database Set Up" section, then you next need tokens for the disaster administrator role and the disaster reporter role. These can be obtained by navigating to [this endpoint](https://dev-9xo5gdfc.us.auth0.com/authorize?audience=disasterapi&response_type=token&client_id=RGuSb8hra89UydUhVcjvJAw3nZHtBDdX&redirect_uri=https://sample-will.herokuapp.com/) and either:
 
 - creating your own account with a password and contacting me to enable you as one of the two roles described above
@@ -115,25 +117,41 @@ If you have set up the local database as described above in the "Database Set Up
 
 In the above three cases of the second option, upon logging in you will be re-directed from Auth0 to the application, which will include a bearer token in the URL. Take the value of the token for the disaster admin account and set that value for the `TOKEN` variable in `set_envVars.sh`. Similarly, take the value of the token for the disaster reporter account and set that value for the `REPORTER_TOKEN` in `set_envVars.sh`.
 
-Having set the tokens, now run
+Having set the tokens, perform the following steps:
 
-```bash
-source set_envVars.sh
-```
+- Run the appropriate command, depending on your operating system:
 
-Finally, run
+    For Linux and MacOS users:
+    ```bash
+    source set_env_vars_mac_linux.sh
+    ```
 
-```bash
-flask run
-```
+    For Windows Users:
+    ```bash
+    set set_env_vars_windows.sh
+    ```
 
-to begin the local server on localhost port 5000. You can verify that the server is running properly by opening another terminal window and running the command
+- For personal users who have been given access to `personal_config.sh` (via e-mail or myself), next run:
 
-```bash
-curl -X GET http://localhost:5000/api
-```
+    ```bash
+    source personal_config.sh
+    ```
 
-This should return the message "Hello!!!!!".
+- Run
+
+    ```bash
+    flask run
+    ```
+
+    to begin the local server on localhost port 5000.
+
+- You can verify that the server is running properly by opening another terminal window and running the command
+
+    ```bash
+    curl -X GET http://localhost:5000/api
+    ```
+
+    This should return the message "Hello!!!!!".
 
 ## Tests
 
