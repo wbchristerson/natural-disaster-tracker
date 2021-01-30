@@ -14,7 +14,7 @@ import {
   // CLink
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { DocsLink } from 'src/reusable'
+// import { DocsLink } from 'src/reusable'
 
 import MainChartExample from '../charts/MainChartExample.js'
 
@@ -64,11 +64,19 @@ class Dashboard extends React.Component {
 
     return (
       <>
-        <div class="login-box auth0-box before">
-          <img src="https://i.cloudup.com/StzWWrY34s.png" />
+        <div className="login-box auth0-box before">
+          <img src="https://i.cloudup.com/StzWWrY34s.png" alt="Auth0 login"/>
           <h3>Auth0 Example</h3>
           <p>Zero friction identity infrastructure, built for developers</p>
-          <a class="btn btn-primary btn-lg btn-login btn-block" href="/my-login">Log In</a>
+          <a className="btn btn-primary btn-lg btn-login btn-block" href="/my-login">Log In</a>
+        </div>
+
+        <div className="logged-in-box auth0-box logged-in">
+          <h1 id="logo"><img src="//cdn.auth0.com/samples/auth0_logo_final_blue_RGB.png" alt="logo"/></h1>
+          <img className="avatar" src="{{userinfo['picture']}}" alt="other auth0"/>
+          {/* <h2>{`Welcome ${userinfo ? userinfo['name'] : 'ABC!'}`}</h2> */}
+          {/* <pre>{`${userinfo_pretty || "XYZ!"}`}</pre> */}
+          <a className="btn btn-primary btn-lg btn-logout btn-block" href="/my-logout">Logout</a>
         </div>
 
         <div className={`my-test ${seconds % 3 === 0 ? "main-image-1" : seconds % 3 === 1 ? "main-image-2" : "main-image-3"}`}>

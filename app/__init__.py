@@ -26,6 +26,8 @@ from authentication_utils import requires_auth
 from authlib.integrations.flask_client import OAuth
 import sys
 from werkzeug.exceptions import HTTPException
+import json
+from six.moves.urllib.parse import urlencode
 
 PAGE_SIZE = 10
 
@@ -93,7 +95,7 @@ def create_app(test_config=None):
             # my_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(app.static_folder)))) + "/client/build"
             # return send_from_directory(my_path, 'index.html')
 
-            return send_from_directory(app.static_folder, 'index.html')
+            return send_from_directory(app.static_folder, 'index.html', userinfo=session["profile"], userinfo_pretty=json.dumps(session['jwt_payload'], indent=4))
 
         except Exception as ex:
             flash("An error occurred.")
@@ -129,7 +131,24 @@ def create_app(test_config=None):
 
     @app.route('/my-login')
     def login():
-        return auth0.authorize_redirect(redirect_uri='https://sample-will.herokuapp.com/callback')
+        # return auth0.authorize_redirect(
+        #     redirect_uri='https://sample-will.herokuapp.com/callback',
+        #     userinfo=session['profile'],
+        #     userinfo_pretty=json.dumps(session['jwt_payload'],
+        #     indent=4
+        # )
+        return auth0.authorize_redirect(redirect_uri='/callback')
+
+
+    @app.route('/my-logout')
+    def logout():
+        # Clear session stored data
+        session.clear()
+        # Redirect user to logout endpoint
+        params = {'returnTo': url_for('home', _external=True), 'client_id': os.environ["AUTH0_CLIENT_ID"]}
+        return redirect(auth0.api_base_url + '/v2/logout?' + urlencode(params))
+        # return redirect(auth0.api_base_url + '/404?' + urlencode(params))
+
 
 
     @app.route('/api')
