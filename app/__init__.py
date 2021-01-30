@@ -146,6 +146,7 @@ def create_app(test_config=None):
 
     @app.route('/my-logout')
     def logout():
+        print("\n\n\nIn my-logout\n\n\n")
         # Clear session stored data
         session.clear()
         # Redirect user to logout endpoint
