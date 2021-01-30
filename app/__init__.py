@@ -130,7 +130,15 @@ def create_app(test_config=None):
         print("session:", session)
         print("\n\n\n")
 
-        return redirect('/')
+        return redirect('/my-dashboard')
+
+
+    @app.route('/my-dashboard')
+    # @requires_auth
+    def dashboard():
+        return render_template('dashboard.html',
+                            userinfo=session['profile'],
+                            userinfo_pretty=json.dumps(session['jwt_payload'], indent=4))
 
 
     @app.route('/my-login')
