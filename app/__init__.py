@@ -136,7 +136,7 @@ def create_app(test_config=None):
     @app.route('/my-dashboard')
     # @requires_auth
     def dashboard():
-        return render_template('dashboard.html',
+        return render_template('/dashboard',
                             userinfo=session['profile'],
                             userinfo_pretty=json.dumps(session['jwt_payload'], indent=4))
 
