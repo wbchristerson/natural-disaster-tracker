@@ -117,15 +117,17 @@ def create_app(test_config=None):
         # Store the user information in flask session.
         session['jwt_payload'] = userinfo
         
-        # session['profile'] = {
-        #     'user_id': userinfo['sub'],
-        #     'name': userinfo['name'],
-        #     'picture': userinfo['picture']
-        # }
-        session['profile'] = userinfo
+        session['profile'] = {
+            'user_id': userinfo['sub'],
+            'name': userinfo['name'],
+            'picture': userinfo['picture']
+        }
+        # session['profile'] = userinfo
 
         print("\n\n\nUser info:")
         print(userinfo)
+        print("\n\n")
+        print("session:", session)
         print("\n\n\n")
 
         return redirect('/')
@@ -148,8 +150,8 @@ def create_app(test_config=None):
         session.clear()
         # Redirect user to logout endpoint
         params = {'returnTo': '/404', 'client_id': os.environ["AUTH0_CLIENT_ID"]}
-        return redirect(auth0.api_base_url + '/v2/logout?' + urlencode(params))
-        # return redirect(auth0.api_base_url + '/404?' + urlencode(params))
+        # return redirect(auth0.api_base_url + '/v2/logout?' + urlencode(params))
+        return redirect(auth0.api_base_url + '/?' + urlencode(params))
 
 
 
