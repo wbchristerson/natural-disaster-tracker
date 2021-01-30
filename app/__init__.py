@@ -97,7 +97,7 @@ def create_app(test_config=None):
 
             # return send_from_directory(app.static_folder, 'index.html', userinfo=session["profile"], userinfo_pretty=json.dumps(session['jwt_payload'], indent=4))
             # return send_from_directory(app.static_folder, 'index.html')
-            return render_template(app.static_folder + '/index.html')
+            return render_template('../client/build/index.html')
 
 
         except Exception as ex:
