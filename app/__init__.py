@@ -146,11 +146,17 @@ def create_app(test_config=None):
 
     @app.route('/my-logout')
     def logout():
-        print("\n\n\nIn my-logout\n\n\n")
+        print("\n\n\nIn my-logout 1\n\n\n")
         # Clear session stored data
         session.clear()
         # Redirect user to logout endpoint
+
+        print("\n\n\nIn my-logout 2\n\n\n")
+
         params = {'returnTo': '/404', 'client_id': os.environ["AUTH0_CLIENT_ID"]}
+
+        print(f"\n\n\nIn my-logout 3: {auth0.api_base_url}\n\n\n")
+
         # return redirect(auth0.api_base_url + '/v2/logout?' + urlencode(params))
         return redirect(auth0.api_base_url + '/?' + urlencode(params))
 
