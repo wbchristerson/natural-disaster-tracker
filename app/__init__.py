@@ -130,16 +130,16 @@ def create_app(test_config=None):
         print("session:", session)
         print("\n\n\n")
 
-        # return redirect('/')
-        return redirect('/my-dashboard')
+        return redirect('/')
+        # return redirect('/my-dashboard')
 
 
-    @app.route('/my-dashboard')
-    # @requires_auth
-    def dashboard():
-        return render_template('index.html',
-                            userinfo=session['profile'],
-                            userinfo_pretty=json.dumps(session['jwt_payload'], indent=4))
+    # @app.route('/my-dashboard')
+    # # @requires_auth
+    # def dashboard():
+    #     return render_template('index.html',
+    #                         userinfo=session['profile'],
+    #                         userinfo_pretty=json.dumps(session['jwt_payload'], indent=4))
 
 
     @app.route('/my-login')
@@ -166,9 +166,9 @@ def create_app(test_config=None):
 
         print(f"\n\n\nIn my-logout 3: {auth0.api_base_url}\n\n\n")
 
-        # return redirect(auth0.api_base_url + '/v2/logout?' + urlencode(params))
+        return redirect(auth0.api_base_url + '/v2/logout?' + urlencode(params))
         # return redirect(auth0.api_base_url + '?' + urlencode(params))
-        return redirect('https://sample-will.herokuapp.com/#/404')
+        # return redirect('https://sample-will.herokuapp.com/#/404')
 
 
 
