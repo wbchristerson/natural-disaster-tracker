@@ -139,7 +139,7 @@ def create_app(test_config=None):
         #     userinfo_pretty=json.dumps(session['jwt_payload'],
         #     indent=4
         # )
-        return auth0.authorize_redirect(redirect_uri='/callback')
+        return auth0.authorize_redirect(redirect_uri='https://sample-will.herokuapp.com/callback')
 
 
     @app.route('/my-logout')
