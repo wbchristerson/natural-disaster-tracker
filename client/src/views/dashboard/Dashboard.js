@@ -73,7 +73,7 @@ class Dashboard extends React.Component {
 
         <div className="logged-in-box auth0-box logged-in">
           <h1 id="logo"><img src="//cdn.auth0.com/samples/auth0_logo_final_blue_RGB.png" alt="logo"/></h1>
-          <img className="avatar" src="{{userinfo['picture']}}" alt="other auth0"/>
+          {/* <img className="avatar" src="{{userinfo['picture']}}" alt="other auth0"/> */}
           {/* <h2>{`Welcome ${userinfo ? userinfo['name'] : 'ABC!'}`}</h2> */}
           {/* <pre>{`${userinfo_pretty || "XYZ!"}`}</pre> */}
           <a className="btn btn-primary btn-lg btn-logout btn-block" href="/my-logout">Logout</a>

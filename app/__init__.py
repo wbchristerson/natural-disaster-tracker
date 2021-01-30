@@ -147,7 +147,7 @@ def create_app(test_config=None):
         # Clear session stored data
         session.clear()
         # Redirect user to logout endpoint
-        params = {'returnTo': url_for('home', _external=True), 'client_id': os.environ["AUTH0_CLIENT_ID"]}
+        params = {'returnTo': '/404', 'client_id': os.environ["AUTH0_CLIENT_ID"]}
         return redirect(auth0.api_base_url + '/v2/logout?' + urlencode(params))
         # return redirect(auth0.api_base_url + '/404?' + urlencode(params))
 
