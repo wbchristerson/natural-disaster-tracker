@@ -95,7 +95,9 @@ def create_app(test_config=None):
             # my_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(app.static_folder)))) + "/client/build"
             # return send_from_directory(my_path, 'index.html')
 
-            return send_from_directory(app.static_folder, 'index.html', userinfo=session["profile"], userinfo_pretty=json.dumps(session['jwt_payload'], indent=4))
+            # return send_from_directory(app.static_folder, 'index.html', userinfo=session["profile"], userinfo_pretty=json.dumps(session['jwt_payload'], indent=4))
+            return send_from_directory(app.static_folder, 'index.html')
+
 
         except Exception as ex:
             flash("An error occurred.")
