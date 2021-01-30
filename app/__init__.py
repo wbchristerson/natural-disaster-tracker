@@ -158,7 +158,7 @@ def create_app(test_config=None):
         print(f"\n\n\nIn my-logout 3: {auth0.api_base_url}\n\n\n")
 
         # return redirect(auth0.api_base_url + '/v2/logout?' + urlencode(params))
-        return redirect(auth0.api_base_url + '/?' + urlencode(params))
+        return redirect(auth0.api_base_url + '?' + urlencode(params))
         # return redirect('https://sample-will.herokuapp.com/#/404')
 
 
