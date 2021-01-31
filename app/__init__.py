@@ -43,8 +43,9 @@ def create_app(test_config=None):
     oauth = OAuth(app)
     CORS(app, resources={
          r"*": {"origins": [
+                                os.environ["FRONT_END_HOST"]
                                 # "http://localhost:3000",
-                                "https://sample-will.herokuapp.com/"
+                                # "https://sample-will.herokuapp.com/"
                             ]}})
 
     auth0 = oauth.register(
@@ -131,7 +132,11 @@ def create_app(test_config=None):
         print("session:", session)
         print("\n\n\n")
 
-        return redirect('/')
+        # return redirect('/')
+
+        # return redirect('http://localhost:3000/')
+        return redirect(os.environ["FRONT_END_HOST"] + "/")
+
         # return redirect('/my-dashboard')
 
 
@@ -151,7 +156,12 @@ def create_app(test_config=None):
         #     userinfo_pretty=json.dumps(session['jwt_payload'],
         #     indent=4
         # )
-        return auth0.authorize_redirect(redirect_uri='https://sample-will.herokuapp.com/callback')
+
+        print("\n\n\nIn my-login\n\n\n")
+        # return auth0.authorize_redirect(redirect_uri='https://sample-will.herokuapp.com/callback')
+        # return auth0.authorize_redirect(redirect_uri='http://localhost:5000/callback')
+        return auth0.authorize_redirect(redirect_uri=(f"{os.environ['BACK_END_HOST']}/callback"))
+
 
 
     @app.route('/my-logout')
@@ -163,7 +173,7 @@ def create_app(test_config=None):
 
         print("\n\n\nIn my-logout 2\n\n\n")
 
-        params = {'returnTo': 'https://sample-will.herokuapp.com/#/404', 'client_id': os.environ["AUTH0_CLIENT_ID"]}
+        params = {'returnTo': f'{os.environ["FRONT_END_HOST"]}/#/404', 'client_id': os.environ["AUTH0_CLIENT_ID"]}
 
         print(f"\n\n\nIn my-logout 3: {auth0.api_base_url}\n\n\n")
 
