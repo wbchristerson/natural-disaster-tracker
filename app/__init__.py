@@ -56,7 +56,10 @@ def create_app(test_config=None):
         access_token_url=(f'https://{os.environ["AUTH0_DOMAIN"]}/oauth/token'),
         authorize_url=(f'https://{os.environ["AUTH0_DOMAIN"]}/authorize'),
         client_kwargs={
+            # 'audience': 'disasterapi',
+            # 'scope': 'openid profile email post:witnessreports patch:witnessreports delete:witnessreports get:observers',
             'scope': 'openid profile email',
+
         },
     )
 
@@ -111,26 +114,41 @@ def create_app(test_config=None):
     # Here we're using the /callback route.
     @app.route('/callback')
     def callback_handling():
+        print("In callback 1!!!!!!!!!")
+
         # Handles response from token endpoint
-        auth0.authorize_access_token()
+        X = auth0.authorize_access_token()
+
+        print("In callback 2!!!!!!!!! X:", X)
+
         resp = auth0.get('userinfo')
+
+        print("In callback 3!!!!!!!!! resp:", resp)
+
         userinfo = resp.json()
+
+        print("In callback 4!!!!!!!!! userinfo:", userinfo)
 
         # Store the user information in flask session.
         session['jwt_payload'] = userinfo
         
+        print("In callback 5!!!!!!!!!")
+
         session['profile'] = {
             'user_id': userinfo['sub'],
             'name': userinfo['name'],
             'picture': userinfo['picture']
         }
+
+        print("In callback 6!!!!!!!!! session['profile']:", session['profile'])
+
         # session['profile'] = userinfo
 
-        print("\n\n\nUser info:")
-        print(userinfo)
-        print("\n\n")
-        print("session:", session)
-        print("\n\n\n")
+        # print("\n\n\nUser info:")
+        # print(userinfo)
+        # print("\n\n")
+        # print("session:", session)
+        # print("\n\n\n")
 
         # return redirect('/')
 
@@ -157,25 +175,27 @@ def create_app(test_config=None):
         #     indent=4
         # )
 
-        print("\n\n\nIn my-login\n\n\n")
+        # print("\n\n\nIn my-login\n\n\n")
         # return auth0.authorize_redirect(redirect_uri='https://sample-will.herokuapp.com/callback')
         # return auth0.authorize_redirect(redirect_uri='http://localhost:5000/callback')
+
+        # print("Go to call back")
         return auth0.authorize_redirect(redirect_uri=(f"{os.environ['BACK_END_HOST']}/callback"))
 
 
 
     @app.route('/my-logout')
     def logout():
-        print("\n\n\nIn my-logout 1\n\n\n")
+        # print("\n\n\nIn my-logout 1\n\n\n")
         # Clear session stored data
         session.clear()
         # Redirect user to logout endpoint
 
-        print("\n\n\nIn my-logout 2\n\n\n")
+        # print("\n\n\nIn my-logout 2\n\n\n")
 
         params = {'returnTo': f'{os.environ["FRONT_END_HOST"]}/#/404', 'client_id': os.environ["AUTH0_CLIENT_ID"]}
 
-        print(f"\n\n\nIn my-logout 3: {auth0.api_base_url}\n\n\n")
+        # print(f"\n\n\nIn my-logout 3: {auth0.api_base_url}\n\n\n")
 
         return redirect(auth0.api_base_url + '/v2/logout?' + urlencode(params))
         # return redirect(auth0.api_base_url + '?' + urlencode(params))

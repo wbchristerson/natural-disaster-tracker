@@ -29,6 +29,12 @@ class Dashboard extends React.Component {
       disasterList: [],
       page: 1,
     };
+
+    // this.back_end_host = "http://127.0.0.1:5000";
+    // this.back_end_host = "https://sample-will.herokuapp.com";
+
+    // this.front_end_host = "http://127.0.0.1:3000";
+    // this.front_end_host = "https://sample-will.herokuapp.com";
   }
 
   componentDidMount() {
@@ -36,8 +42,16 @@ class Dashboard extends React.Component {
   }
 
   fetchDisasters() {
-    fetch(`https://sample-will.herokuapp.com/api/disasters?page=${this.state.page}`)
+    // const back_end_host = "http://127.0.0.1:5000";
+    // const back_end_host = "https://sample-will.herokuapp.com";
+
+    // const front_end_host = "http://127.0.0.1:3000";
+    // const front_end_host = "https://sample-will.herokuapp.com";
+
     // fetch(`http://127.0.0.1:5000/api/disasters?page=${this.state.page}`)
+
+    fetch(`https://sample-will.herokuapp.com/api/disasters?page=${this.state.page}`)
+    // fetch(`http://localhost:5000/api/disasters?page=${this.state.page}`)
     .then(response => response.json())
     .then(result => {
         console.log(result);
@@ -51,6 +65,25 @@ class Dashboard extends React.Component {
         console.log(e);
         // this.setState({...this.state, isFetching: false});
     });
+  }
+
+  getUsers() {
+    const myHeaders = new Headers({
+      // 'Authorization': 'Bearer z2gTLUmzMaAeZ7QpjC1didkRVWMOOv-_',
+      // 'authorization': 'Bearer z2gTLUmzMaAeZ7QpjC1didkRVWMOOv-_',
+      'authorization': 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im4yWlN4YWR2T1F4V2xzMkxPTF9DRCJ9.eyJuaWNrbmFtZSI6IndiY2hyaXN0ZXJzb24iLCJuYW1lIjoid2JjaHJpc3RlcnNvbkBnbWFpbC5jb20iLCJwaWN0dXJlIjoiaHR0cHM6Ly9zLmdyYXZhdGFyLmNvbS9hdmF0YXIvNDZhMjI0MDk4OTEwMjgxYWRmNDcxZTE1MzcwMTRkOTQ_cz00ODAmcj1wZyZkPWh0dHBzJTNBJTJGJTJGY2RuLmF1dGgwLmNvbSUyRmF2YXRhcnMlMkZ3Yi5wbmciLCJ1cGRhdGVkX2F0IjoiMjAyMS0wMi0wNlQyMDowOToyNi44NTZaIiwiZW1haWwiOiJ3YmNocmlzdGVyc29uQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaXNzIjoiaHR0cHM6Ly9kZXYtOXhvNWdkZmMudXMuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVmN2ZhN2JmNmJjNzkyMDA2ODI3ZjMzYSIsImF1ZCI6IlJHdVNiOGhyYTg5VXlkVWhWY2p2SkF3M25aSHRCRGRYIiwiaWF0IjoxNjEyNjQyMTY3LCJleHAiOjE2MTI2NzgxNjcsIm5vbmNlIjoiNG9aWjU1Q1RGUVlwV1l5NkdFZkgifQ.uFUpViiTnrwrZSLrFzeqKT4cjF8cmDBrCO1WErfTabwNpwAXbh2WSQxUvf1quQTSCtDFJJJW1DEiNl2D84g_Rz2YjKu6XG_OOfBJ74S_D1ilz5DNTERsvl4fFxNepuV4RvAWyO8Nw_naZNmNmdBZTqRzdCDRUYA--GkU05-EjFMSzGybZWP3IaQ6GJJvfBBr0GgV6igK2LKUe_TQLBd5PTpq2VOTPAiCzQ3fYj8Ha_KeaR9HV_fK91_BhSEA-CNko8qFJ9aH-opGV3BNhJjK2ffgVDEy6i_E39J6dRHjsxhIWxpEpn3r4PIKXStZ70hst7FiavUPKRLiGXzJTfvpDw',
+      // 'Authorization': 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im4yWlN4YWR2T1F4V2xzMkxPTF9DRCJ9.eyJuaWNrbmFtZSI6IndiY2hyaXN0ZXJzb24iLCJuYW1lIjoid2JjaHJpc3RlcnNvbkBnbWFpbC5jb20iLCJwaWN0dXJlIjoiaHR0cHM6Ly9zLmdyYXZhdGFyLmNvbS9hdmF0YXIvNDZhMjI0MDk4OTEwMjgxYWRmNDcxZTE1MzcwMTRkOTQ_cz00ODAmcj1wZyZkPWh0dHBzJTNBJTJGJTJGY2RuLmF1dGgwLmNvbSUyRmF2YXRhcnMlMkZ3Yi5wbmciLCJ1cGRhdGVkX2F0IjoiMjAyMS0wMi0wNlQyMDowOToyNi44NTZaIiwiZW1haWwiOiJ3YmNocmlzdGVyc29uQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaXNzIjoiaHR0cHM6Ly9kZXYtOXhvNWdkZmMudXMuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVmN2ZhN2JmNmJjNzkyMDA2ODI3ZjMzYSIsImF1ZCI6IlJHdVNiOGhyYTg5VXlkVWhWY2p2SkF3M25aSHRCRGRYIiwiaWF0IjoxNjEyNjQyMTY3LCJleHAiOjE2MTI2NzgxNjcsIm5vbmNlIjoiNG9aWjU1Q1RGUVlwV1l5NkdFZkgifQ.uFUpViiTnrwrZSLrFzeqKT4cjF8cmDBrCO1WErfTabwNpwAXbh2WSQxUvf1quQTSCtDFJJJW1DEiNl2D84g_Rz2YjKu6XG_OOfBJ74S_D1ilz5DNTERsvl4fFxNepuV4RvAWyO8Nw_naZNmNmdBZTqRzdCDRUYA--GkU05-EjFMSzGybZWP3IaQ6GJJvfBBr0GgV6igK2LKUe_TQLBd5PTpq2VOTPAiCzQ3fYj8Ha_KeaR9HV_fK91_BhSEA-CNko8qFJ9aH-opGV3BNhJjK2ffgVDEy6i_E39J6dRHjsxhIWxpEpn3r4PIKXStZ70hst7FiavUPKRLiGXzJTfvpDw',
+    })
+
+    const myRawHeaders = {
+      'Authorization': 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im4yWlN4YWR2T1F4V2xzMkxPTF9DRCJ9.eyJuaWNrbmFtZSI6IndiY2hyaXN0ZXJzb24iLCJuYW1lIjoid2JjaHJpc3RlcnNvbkBnbWFpbC5jb20iLCJwaWN0dXJlIjoiaHR0cHM6Ly9zLmdyYXZhdGFyLmNvbS9hdmF0YXIvNDZhMjI0MDk4OTEwMjgxYWRmNDcxZTE1MzcwMTRkOTQ_cz00ODAmcj1wZyZkPWh0dHBzJTNBJTJGJTJGY2RuLmF1dGgwLmNvbSUyRmF2YXRhcnMlMkZ3Yi5wbmciLCJ1cGRhdGVkX2F0IjoiMjAyMS0wMi0wNlQyMDowOToyNi44NTZaIiwiZW1haWwiOiJ3YmNocmlzdGVyc29uQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaXNzIjoiaHR0cHM6Ly9kZXYtOXhvNWdkZmMudXMuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVmN2ZhN2JmNmJjNzkyMDA2ODI3ZjMzYSIsImF1ZCI6IlJHdVNiOGhyYTg5VXlkVWhWY2p2SkF3M25aSHRCRGRYIiwiaWF0IjoxNjEyNjQyMTY3LCJleHAiOjE2MTI2NzgxNjcsIm5vbmNlIjoiNG9aWjU1Q1RGUVlwV1l5NkdFZkgifQ.uFUpViiTnrwrZSLrFzeqKT4cjF8cmDBrCO1WErfTabwNpwAXbh2WSQxUvf1quQTSCtDFJJJW1DEiNl2D84g_Rz2YjKu6XG_OOfBJ74S_D1ilz5DNTERsvl4fFxNepuV4RvAWyO8Nw_naZNmNmdBZTqRzdCDRUYA--GkU05-EjFMSzGybZWP3IaQ6GJJvfBBr0GgV6igK2LKUe_TQLBd5PTpq2VOTPAiCzQ3fYj8Ha_KeaR9HV_fK91_BhSEA-CNko8qFJ9aH-opGV3BNhJjK2ffgVDEy6i_E39J6dRHjsxhIWxpEpn3r4PIKXStZ70hst7FiavUPKRLiGXzJTfvpDw',
+    }
+
+    fetch("http://localhost:5000/api/observers", { 'headers': myHeaders, 'method': 'GET' })
+    .then(response => response.json())
+    .then(result => {
+      console.log(result);
+    })
   }
 
   render() {
@@ -68,7 +101,9 @@ class Dashboard extends React.Component {
           <img src="https://i.cloudup.com/StzWWrY34s.png" alt="Auth0 login"/>
           <h3>Auth0 Example</h3>
           <p>Zero friction identity infrastructure, built for developers</p>
-          <a className="btn btn-primary btn-lg btn-login btn-block" href="/my-login">Log In</a>
+          <a className="btn btn-primary btn-lg btn-login btn-block" href="https://sample-will.herokuapp.com/my-login">Log In</a>
+          {/* <a className="btn btn-primary btn-lg btn-login btn-block" href="http://localhost:5000/my-login">Log In</a> */}
+          {/* <a className="btn btn-primary btn-lg btn-login btn-block" href="/my-login">Log In</a> */}
         </div>
 
         <div className="logged-in-box auth0-box logged-in">
@@ -76,8 +111,12 @@ class Dashboard extends React.Component {
           {/* <img className="avatar" src="{{userinfo['picture']}}" alt="other auth0"/> */}
           {/* <h2>{`Welcome ${userinfo ? userinfo['name'] : 'ABC!'}`}</h2> */}
           {/* <pre>{`${userinfo_pretty || "XYZ!"}`}</pre> */}
-          <a className="btn btn-primary btn-lg btn-logout btn-block" href="/my-logout">Logout</a>
+          <a className="btn btn-primary btn-lg btn-logout btn-block" href="https://sample-will.herokuapp.com/my-logout">Logout</a>
+          {/* <a className="btn btn-primary btn-lg btn-logout btn-block" href="http://localhost:5000/my-logout">Logout</a> */}
+          {/* <a className="btn btn-primary btn-lg btn-logout btn-block" href="/my-logout">Logout</a> */}
         </div>
+
+        <CButton block color="primary" onClick={this.getUsers}>Primary</CButton>
 
         <div className={`my-test ${seconds % 3 === 0 ? "main-image-1" : seconds % 3 === 1 ? "main-image-2" : "main-image-3"}`}>
           <div className="card-overlay">
@@ -85,6 +124,8 @@ class Dashboard extends React.Component {
             <p className="main-bottom-text">See And Write Reports About Natural Disasters In Your Area</p>
           </div>
         </div>
+
+        
 
         {this.state.disasterList.map((disaster, index) => {
           return (

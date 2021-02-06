@@ -29,10 +29,24 @@ def verify_decode_jwt(token):
     function for jwts in the BasicFlaskAuth folder from the course on
     authentication taught by Gabriel Ruttner
     """
+
+    print("\nIn verify decode 1\n")
+
+
     jsonurl = urlopen(
         f'https://{os.environ["AUTH0_DOMAIN"]}/.well-known/jwks.json')
+
+    print("\nIn verify decode 2\n")
+
     jwks = json.loads(jsonurl.read())
+
+    print(f"\nIn verify decode 3: {token}\n")
+    print("jwks:", jwks)
+
     unverified_header = jwt.get_unverified_header(token)
+
+    print(f"\nIn verify decode 4: {unverified_header}\n")
+
     rsa_key = {}
 
     if 'kid' not in unverified_header:
@@ -48,6 +62,8 @@ def verify_decode_jwt(token):
                 'e': key['e']
             }
 
+    print("\nIn verify decode 5\n")
+
     if rsa_key:
         try:
             return jwt.decode(
@@ -60,6 +76,7 @@ def verify_decode_jwt(token):
         except jwt.ExpiredSignatureError:
             abort(401)
         except jwt.JWTClaimsError:
+            print("\n\nSuccessful JWT!!! 4\n\n")
             abort(401)
         except Exception:
             abort(400)
@@ -95,7 +112,9 @@ def requires_auth(permission=""):
             try:
                 payload = verify_decode_jwt(token)
             except Exception:
+                print("\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n")
                 abort(401)
+
             check_permissions(permission, payload)
             return f(payload, *args, **kwargs)
         return wrapper
