@@ -79,7 +79,9 @@ class Dashboard extends React.Component {
       'Authorization': 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im4yWlN4YWR2T1F4V2xzMkxPTF9DRCJ9.eyJuaWNrbmFtZSI6IndiY2hyaXN0ZXJzb24iLCJuYW1lIjoid2JjaHJpc3RlcnNvbkBnbWFpbC5jb20iLCJwaWN0dXJlIjoiaHR0cHM6Ly9zLmdyYXZhdGFyLmNvbS9hdmF0YXIvNDZhMjI0MDk4OTEwMjgxYWRmNDcxZTE1MzcwMTRkOTQ_cz00ODAmcj1wZyZkPWh0dHBzJTNBJTJGJTJGY2RuLmF1dGgwLmNvbSUyRmF2YXRhcnMlMkZ3Yi5wbmciLCJ1cGRhdGVkX2F0IjoiMjAyMS0wMi0wNlQyMDowOToyNi44NTZaIiwiZW1haWwiOiJ3YmNocmlzdGVyc29uQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaXNzIjoiaHR0cHM6Ly9kZXYtOXhvNWdkZmMudXMuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVmN2ZhN2JmNmJjNzkyMDA2ODI3ZjMzYSIsImF1ZCI6IlJHdVNiOGhyYTg5VXlkVWhWY2p2SkF3M25aSHRCRGRYIiwiaWF0IjoxNjEyNjQyMTY3LCJleHAiOjE2MTI2NzgxNjcsIm5vbmNlIjoiNG9aWjU1Q1RGUVlwV1l5NkdFZkgifQ.uFUpViiTnrwrZSLrFzeqKT4cjF8cmDBrCO1WErfTabwNpwAXbh2WSQxUvf1quQTSCtDFJJJW1DEiNl2D84g_Rz2YjKu6XG_OOfBJ74S_D1ilz5DNTERsvl4fFxNepuV4RvAWyO8Nw_naZNmNmdBZTqRzdCDRUYA--GkU05-EjFMSzGybZWP3IaQ6GJJvfBBr0GgV6igK2LKUe_TQLBd5PTpq2VOTPAiCzQ3fYj8Ha_KeaR9HV_fK91_BhSEA-CNko8qFJ9aH-opGV3BNhJjK2ffgVDEy6i_E39J6dRHjsxhIWxpEpn3r4PIKXStZ70hst7FiavUPKRLiGXzJTfvpDw',
     }
 
-    fetch("http://localhost:5000/api/observers", { 'headers': myHeaders, 'method': 'GET' })
+    fetch("https://sample-will.herokuapp.com/api/observers",
+    // fetch("http://localhost:5000/api/observers",
+          { 'headers': myHeaders, 'method': 'GET' })
     .then(response => response.json())
     .then(result => {
       console.log(result);
