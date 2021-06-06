@@ -71,12 +71,12 @@ def verify_decode_jwt(token):
                 rsa_key,
                 algorithms=[os.environ["ALGORITHM"]],
                 audience=os.environ["API_AUDIENCE"],
-                issuer='https://' + os.environ["AUTH0_DOMAIN"] + '/'
+                issuer='https://' + os.environ["AUTH0_DOMAIN"]
             )
         except jwt.ExpiredSignatureError:
             abort(401)
         except jwt.JWTClaimsError:
-            print("\n\nSuccessful JWT!!! 4\n\n")
+            print("\n\nUnsuccessful JWT!!! 4\n\n")
             abort(401)
         except Exception:
             abort(400)

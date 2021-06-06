@@ -28,6 +28,7 @@ import sys
 from werkzeug.exceptions import HTTPException
 import json
 from six.moves.urllib.parse import urlencode
+import requests
 
 PAGE_SIZE = 10
 
@@ -43,22 +44,28 @@ def create_app(test_config=None):
     oauth = OAuth(app)
     CORS(app, resources={
          r"*": {"origins": [
-                                os.environ["FRONT_END_HOST"]
+                                os.environ["FRONT_END_HOST"],
+                                # "https://dev-9xo5gdfc.us.auth0.com",
                                 # "http://localhost:3000",
                                 # "https://sample-will.herokuapp.com/"
-                            ]}})
+                            ],
+            }
+        }
+    )
 
     auth0 = oauth.register(
         'auth0',
         client_id=os.environ["AUTH0_CLIENT_ID"],
         client_secret=os.environ["CLIENT_SECRET"],
         api_base_url=(f'https://{os.environ["AUTH0_DOMAIN"]}'),
+        # request_token_url=(f'https://{os.environ["AUTH0_DOMAIN"]}/oauth/request_token'),
         access_token_url=(f'https://{os.environ["AUTH0_DOMAIN"]}/oauth/token'),
         authorize_url=(f'https://{os.environ["AUTH0_DOMAIN"]}/authorize'),
+        # authorize_url=(f"https://dev-9xo5gdfc.us.auth0.com/authorize?audience=disasterapi&scope=get%3Aobservers&response_type=token&client_id=RGuSb8hra89UydUhVcjvJAw3nZHtBDdX&redirect_uri={os.environ['BACK_END_HOST']}/callback&state=xyz123ABC"),
         client_kwargs={
             # 'audience': 'disasterapi',
             # 'scope': 'openid profile email post:witnessreports patch:witnessreports delete:witnessreports get:observers',
-            'scope': 'openid profile email',
+            # 'scope': 'openid profile email get:observers',
 
         },
     )
@@ -117,45 +124,50 @@ def create_app(test_config=None):
         print("In callback 1!!!!!!!!!")
 
         # Handles response from token endpoint
-        X = auth0.authorize_access_token()
+        # X = auth0.authorize_access_token()
 
-        print("In callback 2!!!!!!!!! X:", X)
+        # print("In callback 2!!!!!!!!! X:", X)
 
-        resp = auth0.get('userinfo')
-
-        print("In callback 3!!!!!!!!! resp:", resp)
-
-        userinfo = resp.json()
-
-        print("In callback 4!!!!!!!!! userinfo:", userinfo)
-
-        # Store the user information in flask session.
-        session['jwt_payload'] = userinfo
-        
-        print("In callback 5!!!!!!!!!")
-
-        session['profile'] = {
-            'user_id': userinfo['sub'],
-            'name': userinfo['name'],
-            'picture': userinfo['picture']
-        }
-
-        print("In callback 6!!!!!!!!! session['profile']:", session['profile'])
-
-        # session['profile'] = userinfo
-
-        # print("\n\n\nUser info:")
-        # print(userinfo)
-        # print("\n\n")
-        # print("session:", session)
+        # response = requests.post(url=f"https://{os.environ['AUTH0_DOMAIN']}/oauth/token")
+        # print("\n\n\n")
+        # print("response:", response)
         # print("\n\n\n")
 
-        # return redirect('/')
+        # resp = auth0.get('userinfo')
 
-        # return redirect('http://localhost:3000/')
+        # print("In callback 3!!!!!!!!! resp:", resp)
+
+        # userinfo = resp.json()
+
+        # print("In callback 4!!!!!!!!! userinfo:", userinfo)
+
+        # # Store the user information in flask session.
+        # session['jwt_payload'] = userinfo
+        
+        # print("In callback 5!!!!!!!!!")
+
+        # session['profile'] = {
+        #     'user_id': userinfo['sub'],
+        #     'name': userinfo['name'],
+        #     'picture': userinfo['picture']
+        # }
+
+        # print("In callback 6!!!!!!!!! session['profile']:", session['profile'])
+
+        # # session['profile'] = userinfo
+
+        # # print("\n\n\nUser info:")
+        # # print(userinfo)
+        # # print("\n\n")
+        # # print("session:", session)
+        # # print("\n\n\n")
+
+        # # return redirect('/')
+
+        # # return redirect('http://localhost:3000/')
         return redirect(os.environ["FRONT_END_HOST"] + "/")
 
-        # return redirect('/my-dashboard')
+        # # return redirect('/my-dashboard')
 
 
     # @app.route('/my-dashboard')
@@ -179,9 +191,30 @@ def create_app(test_config=None):
         # return auth0.authorize_redirect(redirect_uri='https://sample-will.herokuapp.com/callback')
         # return auth0.authorize_redirect(redirect_uri='http://localhost:5000/callback')
 
-        # print("Go to call back")
-        return auth0.authorize_redirect(redirect_uri=(f"{os.environ['BACK_END_HOST']}/callback"))
+        print("Go to call back")
 
+        # return auth0.authorize_redirect(redirect_uri=(f"{os.environ['BACK_END_HOST']}/callback"))
+
+        return redirect(f"https://dev-9xo5gdfc.us.auth0.com/authorize?audience=disasterapi&scope=get%3Aobservers&response_type=token&client_id=RGuSb8hra89UydUhVcjvJAw3nZHtBDdX&redirect_uri={os.environ['BACK_END_HOST']}/callback&state=xyz123ABC")
+        
+        # response = requests.post(url="http://0.0.0.0:5000/",data=paras)
+        # response = requests.get(url="https://dev-9xo5gdfc.us.auth0.com/authorize?audience=disasterapi&scope=get%3Aobservers&response_type=token&client_id=RGuSb8hra89UydUhVcjvJAw3nZHtBDdX&redirect_uri={os.environ['BACK_END_HOST']}/callback&state=xyz123ABC")
+        
+        # print("\n\n\n")
+        # # X = json.loads(response)
+        # print("response:", response)
+        # # print("X:", X)
+        # print("\n\n\n")
+
+        # return redirect(f"{os.environ['BACK_END_HOST']}/callback")
+
+
+    @app.route('/extract-token')
+    def extract_token():
+        print(auth0.parseHash())
+        return jsonify({
+            "success": True,
+        })
 
 
     @app.route('/my-logout')
