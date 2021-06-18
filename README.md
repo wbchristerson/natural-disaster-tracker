@@ -107,7 +107,11 @@ bash setup.sh
 
 Note: You will require the `CLIENT_SECRET` and `SECRET_KEY` environment variables. For security reasons, these are not provided here. For access, please e-mail me at the e-mail listed for my GitHub profile.
 
-If you have set up the local database as described above in the "Database Set Up" section, then you next need tokens for the disaster administrator role and the disaster reporter role. These can be obtained by navigating to [this endpoint](https://dev-9xo5gdfc.us.auth0.com/authorize?audience=disasterapi&response_type=token&client_id=RGuSb8hra89UydUhVcjvJAw3nZHtBDdX&redirect_uri=https://sample-will.herokuapp.com/) and either:
+If you have set up the local database as described above in the "Database Set Up" section, then you next need tokens for the disaster administrator role and the disaster reporter role. These can be obtained by navigating to [this endpoint](https://dev-9xo5gdfc.us.auth0.com/authorize?audience=disasterapi&response_type=token&client_id=RGuSb8hra89UydUhVcjvJAw3nZHtBDdX&redirect_uri=https://sample-will.herokuapp.com/) and 
+
+[X](https://dev-9xo5gdfc.us.auth0.com/authorize?audience=disasterapi&response_type=token&client_id=RGuSb8hra89UydUhVcjvJAw3nZHtBDdX&redirect_uri=http://localhost:5000)
+
+either:
 
 - creating your own account with a password and contacting me to enable you as one of the two roles described above
 - following these steps for the three kinds of users (warning - as the passwords used are being provided, do not upload sensitive information to this application):

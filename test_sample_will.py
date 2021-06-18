@@ -339,465 +339,465 @@ class SampleWillTestCase(unittest.TestCase):
             disaster_info["location_longitude"],
             matching_disaster.location_longitude)
 
-    def test_insert_disaster_no_location_failure(self):
-        """Test for a failed attempt to insert a disaster due to no latitude or
-        longitude being given"""
-        disaster_info = {
-            "informal_name": "Dangerous Volcanic Eruption",
-            "official_name": "Volcano Eruption-1843",
-            "disaster_type": "volcano",
-            "is_ongoing": True,
-        }
-        res = self.client().post(
-            '/api/disasters', data=json.dumps(disaster_info),
-            headers=self.headers)
-        self.assertEqual(400, res.status_code)
+    # def test_insert_disaster_no_location_failure(self):
+    #     """Test for a failed attempt to insert a disaster due to no latitude or
+    #     longitude being given"""
+    #     disaster_info = {
+    #         "informal_name": "Dangerous Volcanic Eruption",
+    #         "official_name": "Volcano Eruption-1843",
+    #         "disaster_type": "volcano",
+    #         "is_ongoing": True,
+    #     }
+    #     res = self.client().post(
+    #         '/api/disasters', data=json.dumps(disaster_info),
+    #         headers=self.headers)
+    #     self.assertEqual(400, res.status_code)
 
-    def test_insert_disaster_duplicate_failure(self):
-        """Test for a failed attempt to insert a disaster due to no latitude or
-        longitude being given"""
-        disaster_data = {
-            "informal_name": "Dangerous Volcanic Eruption",
-            "official_name": "Volcano Eruption-1843",
-            "disaster_type": "volcano",
-            "is_ongoing": True,
-            "location_latitude": 20.669765,
-            "location_longitude": -156.339161,
-        }
-        res1 = self.client().post(
-            '/api/disasters', data=json.dumps(disaster_data),
-            headers=self.headers)
-        self.assertEqual(200, res1.status_code)
-        data = json.loads(res1.data)
-        self.added_disaster_ids.append(data["id"])
+    # def test_insert_disaster_duplicate_failure(self):
+    #     """Test for a failed attempt to insert a disaster due to no latitude or
+    #     longitude being given"""
+    #     disaster_data = {
+    #         "informal_name": "Dangerous Volcanic Eruption",
+    #         "official_name": "Volcano Eruption-1843",
+    #         "disaster_type": "volcano",
+    #         "is_ongoing": True,
+    #         "location_latitude": 20.669765,
+    #         "location_longitude": -156.339161,
+    #     }
+    #     res1 = self.client().post(
+    #         '/api/disasters', data=json.dumps(disaster_data),
+    #         headers=self.headers)
+    #     self.assertEqual(200, res1.status_code)
+    #     data = json.loads(res1.data)
+    #     self.added_disaster_ids.append(data["id"])
 
-        res2 = self.client().post(
-            '/api/disasters', data=json.dumps(disaster_data),
-            headers=self.headers)
-        self.assertEqual(400, res2.status_code)
+    #     res2 = self.client().post(
+    #         '/api/disasters', data=json.dumps(disaster_data),
+    #         headers=self.headers)
+    #     self.assertEqual(400, res2.status_code)
 
-    def test_insert_observer_success(self):
-        """Test for successfully inserting a new observer"""
-        observer_data = {
-            "username": "disaster_recorder",
-            "photograph_url": "https://ichef.bbci.co.uk/images/ic/960x960/" +
-            "p08634k6.jpg"
-        }
-        res = self.client().post(
-            '/api/observers', data=json.dumps(observer_data),
-            headers=self.headers)
-        self.assertEqual(200, res.status_code)
-        data = json.loads(res.data)
-        self.added_observer_ids.append(data["id"])
+    # def test_insert_observer_success(self):
+    #     """Test for successfully inserting a new observer"""
+    #     observer_data = {
+    #         "username": "disaster_recorder",
+    #         "photograph_url": "https://ichef.bbci.co.uk/images/ic/960x960/" +
+    #         "p08634k6.jpg"
+    #     }
+    #     res = self.client().post(
+    #         '/api/observers', data=json.dumps(observer_data),
+    #         headers=self.headers)
+    #     self.assertEqual(200, res.status_code)
+    #     data = json.loads(res.data)
+    #     self.added_observer_ids.append(data["id"])
 
-        matching_observer = Observer.query.filter(
-            Observer.id == data["id"]).first()
+    #     matching_observer = Observer.query.filter(
+    #         Observer.id == data["id"]).first()
 
-        self.assertIsNotNone(matching_observer)
-        self.assertEqual(observer_data["username"], matching_observer.username)
-        self.assertEqual(
-            observer_data["photograph_url"], matching_observer.photograph_url)
+    #     self.assertIsNotNone(matching_observer)
+    #     self.assertEqual(observer_data["username"], matching_observer.username)
+    #     self.assertEqual(
+    #         observer_data["photograph_url"], matching_observer.photograph_url)
 
-    def test_insert_observer_no_username_failure(self):
-        """Test for failing to insert a new observer due to the lack of a
-        username"""
-        observer_data = {
-            "photograph_url": "https://www.gardeningknowhow.com/wp-content/" +
-            "uploads/2017/07/hardwood-tree.jpg",
-        }
-        res = self.client().post(
-            '/api/observers', data=json.dumps(observer_data),
-            headers=self.headers)
-        self.assertEqual(400, res.status_code)
-        matching_observer = Observer.query.filter(
-            Observer.photograph_url == observer_data["photograph_url"]).first()
-        self.assertIsNone(matching_observer)
+    # def test_insert_observer_no_username_failure(self):
+    #     """Test for failing to insert a new observer due to the lack of a
+    #     username"""
+    #     observer_data = {
+    #         "photograph_url": "https://www.gardeningknowhow.com/wp-content/" +
+    #         "uploads/2017/07/hardwood-tree.jpg",
+    #     }
+    #     res = self.client().post(
+    #         '/api/observers', data=json.dumps(observer_data),
+    #         headers=self.headers)
+    #     self.assertEqual(400, res.status_code)
+    #     matching_observer = Observer.query.filter(
+    #         Observer.photograph_url == observer_data["photograph_url"]).first()
+    #     self.assertIsNone(matching_observer)
 
-    def test_insert_observer_duplicate_failure(self):
-        """Test for failing to insert a new observer due to a duplicate
-        username"""
-        observer_data = {
-            "username": "hurricane_tracker",
-            "photograph_url": "https://www.gardeningknowhow.com/wp-content/" +
-            "uploads/2017/07/hardwood-tree.jpg"
-        }
-        res = self.client().post(
-            '/api/observers', data=json.dumps(observer_data),
-            headers=self.headers)
-        self.assertEqual(400, res.status_code)
+    # def test_insert_observer_duplicate_failure(self):
+    #     """Test for failing to insert a new observer due to a duplicate
+    #     username"""
+    #     observer_data = {
+    #         "username": "hurricane_tracker",
+    #         "photograph_url": "https://www.gardeningknowhow.com/wp-content/" +
+    #         "uploads/2017/07/hardwood-tree.jpg"
+    #     }
+    #     res = self.client().post(
+    #         '/api/observers', data=json.dumps(observer_data),
+    #         headers=self.headers)
+    #     self.assertEqual(400, res.status_code)
 
-    def test_insert_witness_report_success(self):
-        """Test for successfully inserting a new witness report"""
-        report_data = {
-            "disaster_id": self.disaster_1_data["id"],
-            "observer_id": self.observer_1_data["id"],
-            "event_datetime": "2019-07-31 09:01:47-04",
-            "severity": 9,
-            "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:" +
-            "ANd9GcSxuuXdroSPZEb_Y9vDdBYpt8daNclg_Vj6bQ&usqp=CAU",
-            "comment": "The damage caused by the hurricane is quite serious.",
-            "people_affected": 12000,
-            "location_latitude": -80.0,
-            "location_longitude": -30.4,
-        }
-        res = self.client().post('/api/witnessreports',
-                                 data=json.dumps(report_data),
-                                 headers=self.headers)
-        self.assertEqual(200, res.status_code)
+    # def test_insert_witness_report_success(self):
+    #     """Test for successfully inserting a new witness report"""
+    #     report_data = {
+    #         "disaster_id": self.disaster_1_data["id"],
+    #         "observer_id": self.observer_1_data["id"],
+    #         "event_datetime": "2019-07-31 09:01:47-04",
+    #         "severity": 9,
+    #         "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:" +
+    #         "ANd9GcSxuuXdroSPZEb_Y9vDdBYpt8daNclg_Vj6bQ&usqp=CAU",
+    #         "comment": "The damage caused by the hurricane is quite serious.",
+    #         "people_affected": 12000,
+    #         "location_latitude": -80.0,
+    #         "location_longitude": -30.4,
+    #     }
+    #     res = self.client().post('/api/witnessreports',
+    #                              data=json.dumps(report_data),
+    #                              headers=self.headers)
+    #     self.assertEqual(200, res.status_code)
 
-        data = json.loads(res.data)
+    #     data = json.loads(res.data)
 
-        matching_report = WitnessReport.query.filter(
-            WitnessReport.id == data["id"]).first()
+    #     matching_report = WitnessReport.query.filter(
+    #         WitnessReport.id == data["id"]).first()
 
-        self.assertIsNotNone(matching_report)
-        self.assertEqual(report_data["disaster_id"],
-                         matching_report.disaster_id)
-        self.assertEqual(report_data["observer_id"],
-                         matching_report.observer_id)
-        self.assertEqual(
-            report_data["event_datetime"],
-            matching_report.event_datetime.strftime(
-                "%Y-%m-%d %H:%M:%S%z")[:-2])
-        self.assertEqual(report_data["severity"], matching_report.severity)
-        self.assertEqual(report_data["image_url"], matching_report.image_url)
-        self.assertEqual(report_data["comment"], matching_report.comment)
-        self.assertEqual(report_data["people_affected"],
-                         matching_report.people_affected)
-        self.assertEqual(report_data["location_latitude"],
-                         matching_report.location_latitude)
-        self.assertEqual(
-            report_data["location_longitude"],
-            matching_report.location_longitude)
+    #     self.assertIsNotNone(matching_report)
+    #     self.assertEqual(report_data["disaster_id"],
+    #                      matching_report.disaster_id)
+    #     self.assertEqual(report_data["observer_id"],
+    #                      matching_report.observer_id)
+    #     self.assertEqual(
+    #         report_data["event_datetime"],
+    #         matching_report.event_datetime.strftime(
+    #             "%Y-%m-%d %H:%M:%S%z")[:-2])
+    #     self.assertEqual(report_data["severity"], matching_report.severity)
+    #     self.assertEqual(report_data["image_url"], matching_report.image_url)
+    #     self.assertEqual(report_data["comment"], matching_report.comment)
+    #     self.assertEqual(report_data["people_affected"],
+    #                      matching_report.people_affected)
+    #     self.assertEqual(report_data["location_latitude"],
+    #                      matching_report.location_latitude)
+    #     self.assertEqual(
+    #         report_data["location_longitude"],
+    #         matching_report.location_longitude)
 
-    def test_insert_witness_report_missing_disaster_id_failure(self):
-        """Test for failing to insert a new witness report because a disaster
-        id has not been provided"""
-        report_data = {
-            "observer_id": self.observer_1_data["id"],
-            "event_datetime": "2019-07-31 09:01:47-04",
-            "severity": 9,
-            "image_url": "https://encrypted-tbn0.gstatic.com/images?q=" +
-            "tbn:ANd9GcSxuuXdroSPZEb_Y9vDdBYpt8daNclg_Vj6bQ&usqp=CAU",
-            "comment": "The damage caused by the hurricane is quite serious.",
-            "people_affected": 12000,
-            "location_latitude": -80.0,
-            "location_longitude": -30.4,
-        }
-        res = self.client().post('/api/witnessreports',
-                                 data=json.dumps(report_data),
-                                 headers=self.headers)
-        self.assertEqual(400, res.status_code)
+    # def test_insert_witness_report_missing_disaster_id_failure(self):
+    #     """Test for failing to insert a new witness report because a disaster
+    #     id has not been provided"""
+    #     report_data = {
+    #         "observer_id": self.observer_1_data["id"],
+    #         "event_datetime": "2019-07-31 09:01:47-04",
+    #         "severity": 9,
+    #         "image_url": "https://encrypted-tbn0.gstatic.com/images?q=" +
+    #         "tbn:ANd9GcSxuuXdroSPZEb_Y9vDdBYpt8daNclg_Vj6bQ&usqp=CAU",
+    #         "comment": "The damage caused by the hurricane is quite serious.",
+    #         "people_affected": 12000,
+    #         "location_latitude": -80.0,
+    #         "location_longitude": -30.4,
+    #     }
+    #     res = self.client().post('/api/witnessreports',
+    #                              data=json.dumps(report_data),
+    #                              headers=self.headers)
+    #     self.assertEqual(400, res.status_code)
 
-    def test_update_disaster_success(self):
-        """Test for successfully updating a disaster"""
-        update_data = {
-            "id": self.disaster_1_data["id"],
-            "informal_name": "The bad tornado",
-            "official_name": "Tornado-XYZ",
-            "disaster_type": "tornado",
-            "is_ongoing": True,
-            "location_latitude": 38.4,
-            "location_longitude": -86.5,
-        }
-        res = self.client().patch(
-            '/api/disasters', data=json.dumps(update_data),
-            headers=self.headers)
+    # def test_update_disaster_success(self):
+    #     """Test for successfully updating a disaster"""
+    #     update_data = {
+    #         "id": self.disaster_1_data["id"],
+    #         "informal_name": "The bad tornado",
+    #         "official_name": "Tornado-XYZ",
+    #         "disaster_type": "tornado",
+    #         "is_ongoing": True,
+    #         "location_latitude": 38.4,
+    #         "location_longitude": -86.5,
+    #     }
+    #     res = self.client().patch(
+    #         '/api/disasters', data=json.dumps(update_data),
+    #         headers=self.headers)
 
-        self.assertEqual(200, res.status_code)
-        data = json.loads(res.data)
+    #     self.assertEqual(200, res.status_code)
+    #     data = json.loads(res.data)
 
-        self.assertEqual(update_data["id"], data["id"])
-        self.assertEqual(update_data["informal_name"], data["informal_name"])
-        self.assertEqual(update_data["official_name"], data["official_name"])
-        self.assertEqual(update_data["disaster_type"], data["disaster_type"])
-        self.assertEqual(update_data["is_ongoing"], data["is_ongoing"])
-        self.assertSequenceEqual((update_data["location_latitude"],
-                                  update_data["location_longitude"]),
-                                 data["location"])
+    #     self.assertEqual(update_data["id"], data["id"])
+    #     self.assertEqual(update_data["informal_name"], data["informal_name"])
+    #     self.assertEqual(update_data["official_name"], data["official_name"])
+    #     self.assertEqual(update_data["disaster_type"], data["disaster_type"])
+    #     self.assertEqual(update_data["is_ongoing"], data["is_ongoing"])
+    #     self.assertSequenceEqual((update_data["location_latitude"],
+    #                               update_data["location_longitude"]),
+    #                              data["location"])
 
-        matching_disaster = Disaster.query.filter(
-            Disaster.id == update_data["id"]).first()
+    #     matching_disaster = Disaster.query.filter(
+    #         Disaster.id == update_data["id"]).first()
 
-        self.assertIsNotNone(matching_disaster)
-        self.assertEqual(update_data["id"], matching_disaster.id)
-        self.assertEqual(update_data["informal_name"],
-                         matching_disaster.informal_name)
-        self.assertEqual(update_data["official_name"],
-                         matching_disaster.official_name)
-        self.assertEqual(update_data["disaster_type"],
-                         matching_disaster.disaster_type)
-        self.assertEqual(update_data["is_ongoing"],
-                         matching_disaster.is_ongoing)
-        self.assertEqual(update_data["location_latitude"],
-                         matching_disaster.location_latitude)
-        self.assertEqual(
-            update_data["location_longitude"],
-            matching_disaster.location_longitude)
+    #     self.assertIsNotNone(matching_disaster)
+    #     self.assertEqual(update_data["id"], matching_disaster.id)
+    #     self.assertEqual(update_data["informal_name"],
+    #                      matching_disaster.informal_name)
+    #     self.assertEqual(update_data["official_name"],
+    #                      matching_disaster.official_name)
+    #     self.assertEqual(update_data["disaster_type"],
+    #                      matching_disaster.disaster_type)
+    #     self.assertEqual(update_data["is_ongoing"],
+    #                      matching_disaster.is_ongoing)
+    #     self.assertEqual(update_data["location_latitude"],
+    #                      matching_disaster.location_latitude)
+    #     self.assertEqual(
+    #         update_data["location_longitude"],
+    #         matching_disaster.location_longitude)
 
-    def test_update_disaster_no_provided_id_failure(self):
-        """Test for failure to update a disaster because no id is provided in
-        update data"""
-        update_data = {
-            "informal_name": "The bad tornado",
-            "official_name": "Tornado-XYZ",
-            "disaster_type": "tornado",
-            "is_ongoing": True,
-            "location_latitude": 38.4,
-            "location_longitude": -86.5,
-        }
-        res = self.client().patch(
-            '/api/disasters', data=json.dumps(update_data),
-            headers=self.headers)
-        self.assertEqual(400, res.status_code)
+    # def test_update_disaster_no_provided_id_failure(self):
+    #     """Test for failure to update a disaster because no id is provided in
+    #     update data"""
+    #     update_data = {
+    #         "informal_name": "The bad tornado",
+    #         "official_name": "Tornado-XYZ",
+    #         "disaster_type": "tornado",
+    #         "is_ongoing": True,
+    #         "location_latitude": 38.4,
+    #         "location_longitude": -86.5,
+    #     }
+    #     res = self.client().patch(
+    #         '/api/disasters', data=json.dumps(update_data),
+    #         headers=self.headers)
+    #     self.assertEqual(400, res.status_code)
 
-    def test_update_disaster_no_matching_id_failure(self):
-        """Test for failure to update a disaster because there is no disaster
-        with a matching id"""
-        update_data = {
-            "id": 0,
-            "informal_name": "The bad tornado",
-            "official_name": "Tornado-XYZ",
-            "disaster_type": "tornado",
-            "is_ongoing": True,
-            "location_latitude": 38.4,
-            "location_longitude": -86.5,
-        }
-        res = self.client().patch(
-            '/api/disasters', data=json.dumps(update_data),
-            headers=self.headers)
-        self.assertEqual(404, res.status_code)
+    # def test_update_disaster_no_matching_id_failure(self):
+    #     """Test for failure to update a disaster because there is no disaster
+    #     with a matching id"""
+    #     update_data = {
+    #         "id": 0,
+    #         "informal_name": "The bad tornado",
+    #         "official_name": "Tornado-XYZ",
+    #         "disaster_type": "tornado",
+    #         "is_ongoing": True,
+    #         "location_latitude": 38.4,
+    #         "location_longitude": -86.5,
+    #     }
+    #     res = self.client().patch(
+    #         '/api/disasters', data=json.dumps(update_data),
+    #         headers=self.headers)
+    #     self.assertEqual(404, res.status_code)
 
-    def test_update_disaster_invalid_type_failure(self):
-        """Test for failure to update a disaster because the provided type is
-        not valid"""
-        update_data = {
-            "id": self.disaster_1_data["id"],
-            "informal_name": "The bad tornado",
-            "official_name": "Tornado-XYZ",
-            "disaster_type": "power outage",
-            "is_ongoing": True,
-            "location_latitude": 38.4,
-            "location_longitude": -86.5,
-        }
-        res = self.client().patch(
-            '/api/disasters', data=json.dumps(update_data),
-            headers=self.headers)
-        self.assertEqual(422, res.status_code)
+    # def test_update_disaster_invalid_type_failure(self):
+    #     """Test for failure to update a disaster because the provided type is
+    #     not valid"""
+    #     update_data = {
+    #         "id": self.disaster_1_data["id"],
+    #         "informal_name": "The bad tornado",
+    #         "official_name": "Tornado-XYZ",
+    #         "disaster_type": "power outage",
+    #         "is_ongoing": True,
+    #         "location_latitude": 38.4,
+    #         "location_longitude": -86.5,
+    #     }
+    #     res = self.client().patch(
+    #         '/api/disasters', data=json.dumps(update_data),
+    #         headers=self.headers)
+    #     self.assertEqual(422, res.status_code)
 
-    def test_retrieve_observers_success(self):
-        """Test for successfully retrieving the first page of observers"""
-        res = self.client().get('/api/observers', headers=self.headers)
-        self.assertEqual(200, res.status_code)
-        data = json.loads(res.data)
+    # def test_retrieve_observers_success(self):
+    #     """Test for successfully retrieving the first page of observers"""
+    #     res = self.client().get('/api/observers', headers=self.headers)
+    #     self.assertEqual(200, res.status_code)
+    #     data = json.loads(res.data)
 
-        expected_result = {
-            "observers": [self.observer_1_data, self.observer_2_data],
-        }
-        self.assertDictEqual(expected_result, data)
+    #     expected_result = {
+    #         "observers": [self.observer_1_data, self.observer_2_data],
+    #     }
+    #     self.assertDictEqual(expected_result, data)
 
-    def test_retrieve_observers_invalid_page_failure(self):
-        """Test for failure to retrieve data about observers for invalid page
-        """
-        res = self.client().get('/api/observers?page=-1', headers=self.headers)
-        self.assertEqual(422, res.status_code)
+    # def test_retrieve_observers_invalid_page_failure(self):
+    #     """Test for failure to retrieve data about observers for invalid page
+    #     """
+    #     res = self.client().get('/api/observers?page=-1', headers=self.headers)
+    #     self.assertEqual(422, res.status_code)
 
-    def test_update_witness_report_success(self):
-        """Test for successfully updating a witness report"""
-        update_data = {
-            "id": self.witness_report_1_data["id"],
-            "event_datetime": "2019-07-31 09:01:47-04",
-            "severity": 4,
-            "image_url": "https://hgtvhome.sndimg.com/content/dam/images/" +
-            "grdn/fullset/2012/8/20/0/0403_051.jpg.rend.hgtvcom.1280." +
-            "1920.suffix/1452646441575.jpeg",
-            "comment": "The disaster is quite bad.",
-            "people_affected": 1300,
-            "location_latitude": 23.4,
-            "location_longitude": -10.3,
-        }
-        res = self.client().patch('/api/witnessreports',
-                                  data=json.dumps(update_data),
-                                  headers=self.headers)
-        self.assertEqual(200, res.status_code)
+    # def test_update_witness_report_success(self):
+    #     """Test for successfully updating a witness report"""
+    #     update_data = {
+    #         "id": self.witness_report_1_data["id"],
+    #         "event_datetime": "2019-07-31 09:01:47-04",
+    #         "severity": 4,
+    #         "image_url": "https://hgtvhome.sndimg.com/content/dam/images/" +
+    #         "grdn/fullset/2012/8/20/0/0403_051.jpg.rend.hgtvcom.1280." +
+    #         "1920.suffix/1452646441575.jpeg",
+    #         "comment": "The disaster is quite bad.",
+    #         "people_affected": 1300,
+    #         "location_latitude": 23.4,
+    #         "location_longitude": -10.3,
+    #     }
+    #     res = self.client().patch('/api/witnessreports',
+    #                               data=json.dumps(update_data),
+    #                               headers=self.headers)
+    #     self.assertEqual(200, res.status_code)
 
-        update_data["disaster_id"] = self.witness_report_1_data["disaster_id"]
-        update_data["observer_id"] = self.witness_report_1_data["observer_id"]
-        update_data["event_datetime"] = 'Wed, 31 Jul 2019 13:01:47 GMT'
-        update_data["location"] = [
-            update_data["location_latitude"],
-            update_data["location_longitude"]
-        ]
-        del update_data["location_latitude"]
-        del update_data["location_longitude"]
+    #     update_data["disaster_id"] = self.witness_report_1_data["disaster_id"]
+    #     update_data["observer_id"] = self.witness_report_1_data["observer_id"]
+    #     update_data["event_datetime"] = 'Wed, 31 Jul 2019 13:01:47 GMT'
+    #     update_data["location"] = [
+    #         update_data["location_latitude"],
+    #         update_data["location_longitude"]
+    #     ]
+    #     del update_data["location_latitude"]
+    #     del update_data["location_longitude"]
 
-        data = json.loads(res.data)
-        self.assertDictEqual(update_data, data)
+    #     data = json.loads(res.data)
+    #     self.assertDictEqual(update_data, data)
 
-        matching_witness_report = WitnessReport.query.filter(
-            WitnessReport.id == update_data["id"]).first()
-        update_data["location"] = tuple(update_data["location"])
-        update_data["event_datetime"] = datetime(
-            2019, 7, 31, 9, 1, 47, 0, psycopg2.tz.FixedOffsetTimezone(
-                offset=-240, name=None))
+    #     matching_witness_report = WitnessReport.query.filter(
+    #         WitnessReport.id == update_data["id"]).first()
+    #     update_data["location"] = tuple(update_data["location"])
+    #     update_data["event_datetime"] = datetime(
+    #         2019, 7, 31, 9, 1, 47, 0, psycopg2.tz.FixedOffsetTimezone(
+    #             offset=-240, name=None))
 
-        self.assertDictEqual(update_data, matching_witness_report.format())
+    #     self.assertDictEqual(update_data, matching_witness_report.format())
 
-    def test_update_witness_report_no_id_failure(self):
-        """Test for failure to update a witness report due to a lack of an id
-        """
-        update_data = {
-            "event_datetime": "2019-07-31 09:01:47-04",
-            "severity": 4,
-            "image_url": "https://hgtvhome.sndimg.com/content/dam/images/" +
-            "grdn/fullset/2012/8/20/0/0403_051.jpg.rend.hgtvcom.1280." +
-            "1920.suffix/1452646441575.jpeg",
-            "comment": "The disaster is quite bad.",
-            "people_affected": 1300,
-            "location_latitude": 23.4,
-            "location_longitude": -10.3,
-        }
-        res = self.client().patch('/api/witnessreports',
-                                  data=json.dumps(update_data),
-                                  headers=self.headers)
-        self.assertEqual(400, res.status_code)
+    # def test_update_witness_report_no_id_failure(self):
+    #     """Test for failure to update a witness report due to a lack of an id
+    #     """
+    #     update_data = {
+    #         "event_datetime": "2019-07-31 09:01:47-04",
+    #         "severity": 4,
+    #         "image_url": "https://hgtvhome.sndimg.com/content/dam/images/" +
+    #         "grdn/fullset/2012/8/20/0/0403_051.jpg.rend.hgtvcom.1280." +
+    #         "1920.suffix/1452646441575.jpeg",
+    #         "comment": "The disaster is quite bad.",
+    #         "people_affected": 1300,
+    #         "location_latitude": 23.4,
+    #         "location_longitude": -10.3,
+    #     }
+    #     res = self.client().patch('/api/witnessreports',
+    #                               data=json.dumps(update_data),
+    #                               headers=self.headers)
+    #     self.assertEqual(400, res.status_code)
 
-    def test_update_witness_report_no_match_failure(self):
-        """Test for failure to update a witness report due to a lack of a
-        matching witness report"""
-        update_data = {
-            "id": 0,
-            "event_datetime": "2019-07-31 09:01:47-04",
-            "severity": 4,
-            "image_url": "https://hgtvhome.sndimg.com/content/dam/images/" +
-            "grdn/fullset/2012/8/20/0/0403_051.jpg.rend.hgtvcom.1280." +
-            "1920.suffix/1452646441575.jpeg",
-            "comment": "The disaster is quite bad.",
-            "people_affected": 1300,
-            "location_latitude": 23.4,
-            "location_longitude": -10.3,
-        }
-        res = self.client().patch('/api/witnessreports',
-                                  data=json.dumps(update_data),
-                                  headers=self.headers)
-        self.assertEqual(404, res.status_code)
+    # def test_update_witness_report_no_match_failure(self):
+    #     """Test for failure to update a witness report due to a lack of a
+    #     matching witness report"""
+    #     update_data = {
+    #         "id": 0,
+    #         "event_datetime": "2019-07-31 09:01:47-04",
+    #         "severity": 4,
+    #         "image_url": "https://hgtvhome.sndimg.com/content/dam/images/" +
+    #         "grdn/fullset/2012/8/20/0/0403_051.jpg.rend.hgtvcom.1280." +
+    #         "1920.suffix/1452646441575.jpeg",
+    #         "comment": "The disaster is quite bad.",
+    #         "people_affected": 1300,
+    #         "location_latitude": 23.4,
+    #         "location_longitude": -10.3,
+    #     }
+    #     res = self.client().patch('/api/witnessreports',
+    #                               data=json.dumps(update_data),
+    #                               headers=self.headers)
+    #     self.assertEqual(404, res.status_code)
 
-    def test_delete_witness_report_success(self):
-        """Test for successfully deleting a witness report"""
-        delete_id = self.witness_report_1_data["id"]
-        res = self.client().delete(
-            '/api/witnessreports/' + str(delete_id),
-            headers=self.headers)
-        self.assertEqual(200, res.status_code)
+    # def test_delete_witness_report_success(self):
+    #     """Test for successfully deleting a witness report"""
+    #     delete_id = self.witness_report_1_data["id"]
+    #     res = self.client().delete(
+    #         '/api/witnessreports/' + str(delete_id),
+    #         headers=self.headers)
+    #     self.assertEqual(200, res.status_code)
 
-        data = json.loads(res.data)
-        self.assertIn("success", data)
-        self.assertTrue(data["success"])
-        self.assertIn("delete", data)
-        self.assertEqual(delete_id, int(data["delete"]))
+    #     data = json.loads(res.data)
+    #     self.assertIn("success", data)
+    #     self.assertTrue(data["success"])
+    #     self.assertIn("delete", data)
+    #     self.assertEqual(delete_id, int(data["delete"]))
 
-        matching_witness_report = WitnessReport.query.filter(
-            WitnessReport.id == delete_id).first()
-        self.assertIsNone(matching_witness_report)
+    #     matching_witness_report = WitnessReport.query.filter(
+    #         WitnessReport.id == delete_id).first()
+    #     self.assertIsNone(matching_witness_report)
 
-    def test_delete_witness_report_no_matching_id_failure(self):
-        """Test for failure to delete a witness report because there is no
-        matching witness report id"""
-        res = self.client().delete(
-            '/api/witnessreports/0', headers=self.headers)
-        self.assertEqual(400, res.status_code)
+    # def test_delete_witness_report_no_matching_id_failure(self):
+    #     """Test for failure to delete a witness report because there is no
+    #     matching witness report id"""
+    #     res = self.client().delete(
+    #         '/api/witnessreports/0', headers=self.headers)
+    #     self.assertEqual(400, res.status_code)
 
-    # Authorization tests
+    # # Authorization tests
 
-    # disaster administrator tests
+    # # disaster administrator tests
 
-    def test_retrieve_observers_no_authorization_failure(self):
-        """Test for failure to retrieve data about observers due to no
-        authorization parameter being present"""
-        res = self.client().get(
-            '/api/observers', headers={'Content-Type': 'application/json'})
-        self.assertEqual(401, res.status_code)
+    # def test_retrieve_observers_no_authorization_failure(self):
+    #     """Test for failure to retrieve data about observers due to no
+    #     authorization parameter being present"""
+    #     res = self.client().get(
+    #         '/api/observers', headers={'Content-Type': 'application/json'})
+    #     self.assertEqual(401, res.status_code)
 
-    def test_retrieve_observers_expired_token_failure(self):
-        """Test for failure to retrieve data about observers due to expired
-        token"""
-        res = self.client().get('/api/observers', headers={
-            'Content-Type': 'application/json',
-            'Authorization': 'bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsI' +
-            'mtpZCI6Im4yWlN4YWR2T1F4V2xzMkxPTF9DRCJ9.eyJpc3MiOiJodHRwc' +
-            'zovL2Rldi05eG81Z2RmYy51cy5hdXRoMC5jb20vIiwic3ViIjoiYXV0aD' +
-            'B8NWY3ZmE3YmY2YmM3OTIwMDY4MjdmMzNhIiwiYXVkIjoiZGlzYXN0ZXJ' +
-            'hcGkiLCJpYXQiOjE2MDc4NzM1MzEsImV4cCI6MTYwNzg4MDczMSwiYXpw' +
-            'IjoiUkd1U2I4aHJhODlVeWRVaFZjanZKQXczblpIdEJEZFgiLCJzY29wZ' +
-            'SI6IiIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTp3aXRuZXNzcmVwb3J0cy' +
-            'IsImdldDpvYnNlcnZlcnMiLCJwYXRjaDpkaXNhc3RlcnMiLCJwYXRjaDp' +
-            '3aXRuZXNzcmVwb3J0cyIsInBvc3Q6ZGlzYXN0ZXJzIiwicG9zdDp3aXRu' +
-            'ZXNzcmVwb3J0cyJdfQ.PN60BoZqcxYzy7OuGIa9zqXQj7dmKdYqQXCfFW' +
-            'WBRFoMSb91DQVmt_gkwi9tVfMAe2YSjkp5Adb5gABCKGonC2cEVZtG_T9' +
-            'ok5soVRHgmuoCG2gGRQEQNn6r1yzcE9g_yGMlYzEV8w52git9KSD8cDnX' +
-            'xSAbX4gsF-Cbx_X9UJDwSGXOwgyu1qfHjdXQm4C9_s9IzhnKjcs8vBC0-' +
-            'erewMNs7subjbHEoEDVyflu8rC0Y419KuGFe_9fwEg-PBeGPrxnxTMBPO' +
-            'mh1cJnpwwq9cSWLCi__AbpxdNWSc3ir9hLMDKq9xw6LTYb556BuSj9swS' +
-            '4FZ1mSTOl9BtQykHRCg'})
-        self.assertEqual(401, res.status_code)
+    # def test_retrieve_observers_expired_token_failure(self):
+    #     """Test for failure to retrieve data about observers due to expired
+    #     token"""
+    #     res = self.client().get('/api/observers', headers={
+    #         'Content-Type': 'application/json',
+    #         'Authorization': 'bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsI' +
+    #         'mtpZCI6Im4yWlN4YWR2T1F4V2xzMkxPTF9DRCJ9.eyJpc3MiOiJodHRwc' +
+    #         'zovL2Rldi05eG81Z2RmYy51cy5hdXRoMC5jb20vIiwic3ViIjoiYXV0aD' +
+    #         'B8NWY3ZmE3YmY2YmM3OTIwMDY4MjdmMzNhIiwiYXVkIjoiZGlzYXN0ZXJ' +
+    #         'hcGkiLCJpYXQiOjE2MDc4NzM1MzEsImV4cCI6MTYwNzg4MDczMSwiYXpw' +
+    #         'IjoiUkd1U2I4aHJhODlVeWRVaFZjanZKQXczblpIdEJEZFgiLCJzY29wZ' +
+    #         'SI6IiIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTp3aXRuZXNzcmVwb3J0cy' +
+    #         'IsImdldDpvYnNlcnZlcnMiLCJwYXRjaDpkaXNhc3RlcnMiLCJwYXRjaDp' +
+    #         '3aXRuZXNzcmVwb3J0cyIsInBvc3Q6ZGlzYXN0ZXJzIiwicG9zdDp3aXRu' +
+    #         'ZXNzcmVwb3J0cyJdfQ.PN60BoZqcxYzy7OuGIa9zqXQj7dmKdYqQXCfFW' +
+    #         'WBRFoMSb91DQVmt_gkwi9tVfMAe2YSjkp5Adb5gABCKGonC2cEVZtG_T9' +
+    #         'ok5soVRHgmuoCG2gGRQEQNn6r1yzcE9g_yGMlYzEV8w52git9KSD8cDnX' +
+    #         'xSAbX4gsF-Cbx_X9UJDwSGXOwgyu1qfHjdXQm4C9_s9IzhnKjcs8vBC0-' +
+    #         'erewMNs7subjbHEoEDVyflu8rC0Y419KuGFe_9fwEg-PBeGPrxnxTMBPO' +
+    #         'mh1cJnpwwq9cSWLCi__AbpxdNWSc3ir9hLMDKq9xw6LTYb556BuSj9swS' +
+    #         '4FZ1mSTOl9BtQykHRCg'})
+    #     self.assertEqual(401, res.status_code)
 
-    # disaster reporter tests
+    # # disaster reporter tests
 
-    def test_retrieve_observers_insufficient_authorization_failure(self):
-        """Test for failure to retrieve data about observers due to provided
-        token belonging to disaster reporter when authorization requires user
-        to be disaster administrator"""
-        res = self.client().get(
-            '/api/observers',
-            headers={'Content-Type': 'application/json',
-                     'Authorization': 'bearer ' + os.environ["REPORTER_TOKEN"]}
-        )
-        self.assertEqual(403, res.status_code)
+    # def test_retrieve_observers_insufficient_authorization_failure(self):
+    #     """Test for failure to retrieve data about observers due to provided
+    #     token belonging to disaster reporter when authorization requires user
+    #     to be disaster administrator"""
+    #     res = self.client().get(
+    #         '/api/observers',
+    #         headers={'Content-Type': 'application/json',
+    #                  'Authorization': 'bearer ' + os.environ["REPORTER_TOKEN"]}
+    #     )
+    #     self.assertEqual(403, res.status_code)
 
-    def test_update_witness_report_disaster_reporter_authorization_success(
-            self):
-        """Test for successfully updating a witness report as a disaster
-        reporter"""
-        update_data = {
-            "id": self.witness_report_1_data["id"],
-            "event_datetime": "2019-07-31 09:01:47-04",
-            "severity": 4,
-            "image_url": "https://hgtvhome.sndimg.com/content/dam/images/" +
-            "grdn/fullset/2012/8/20/0/0403_051.jpg.rend.hgtvcom.1280." +
-            "1920.suffix/1452646441575.jpeg",
-            "comment": "The disaster is quite bad.",
-            "people_affected": 1300,
-            "location_latitude": 23.4,
-            "location_longitude": -10.3,
-        }
-        res = self.client().patch('/api/witnessreports',
-                                  data=json.dumps(update_data),
-                                  headers={'Content-Type': 'application/json',
-                                           'Authorization': 'bearer ' +
-                                           os.environ["REPORTER_TOKEN"]})
-        self.assertEqual(200, res.status_code)
+    # def test_update_witness_report_disaster_reporter_authorization_success(
+    #         self):
+    #     """Test for successfully updating a witness report as a disaster
+    #     reporter"""
+    #     update_data = {
+    #         "id": self.witness_report_1_data["id"],
+    #         "event_datetime": "2019-07-31 09:01:47-04",
+    #         "severity": 4,
+    #         "image_url": "https://hgtvhome.sndimg.com/content/dam/images/" +
+    #         "grdn/fullset/2012/8/20/0/0403_051.jpg.rend.hgtvcom.1280." +
+    #         "1920.suffix/1452646441575.jpeg",
+    #         "comment": "The disaster is quite bad.",
+    #         "people_affected": 1300,
+    #         "location_latitude": 23.4,
+    #         "location_longitude": -10.3,
+    #     }
+    #     res = self.client().patch('/api/witnessreports',
+    #                               data=json.dumps(update_data),
+    #                               headers={'Content-Type': 'application/json',
+    #                                        'Authorization': 'bearer ' +
+    #                                        os.environ["REPORTER_TOKEN"]})
+    #     self.assertEqual(200, res.status_code)
 
-        update_data["disaster_id"] = self.witness_report_1_data["disaster_id"]
-        update_data["observer_id"] = self.witness_report_1_data["observer_id"]
-        update_data["event_datetime"] = 'Wed, 31 Jul 2019 13:01:47 GMT'
-        update_data["location"] = [
-            update_data["location_latitude"],
-            update_data["location_longitude"]
-        ]
-        del update_data["location_latitude"]
-        del update_data["location_longitude"]
+    #     update_data["disaster_id"] = self.witness_report_1_data["disaster_id"]
+    #     update_data["observer_id"] = self.witness_report_1_data["observer_id"]
+    #     update_data["event_datetime"] = 'Wed, 31 Jul 2019 13:01:47 GMT'
+    #     update_data["location"] = [
+    #         update_data["location_latitude"],
+    #         update_data["location_longitude"]
+    #     ]
+    #     del update_data["location_latitude"]
+    #     del update_data["location_longitude"]
 
-        data = json.loads(res.data)
-        self.assertDictEqual(update_data, data)
+    #     data = json.loads(res.data)
+    #     self.assertDictEqual(update_data, data)
 
-        matching_witness_report = WitnessReport.query.filter(
-            WitnessReport.id == update_data["id"]).first()
-        update_data["location"] = tuple(update_data["location"])
-        update_data["event_datetime"] = datetime(
-            2019, 7, 31, 9, 1, 47, 0, psycopg2.tz.FixedOffsetTimezone(
-                offset=-240, name=None))
+    #     matching_witness_report = WitnessReport.query.filter(
+    #         WitnessReport.id == update_data["id"]).first()
+    #     update_data["location"] = tuple(update_data["location"])
+    #     update_data["event_datetime"] = datetime(
+    #         2019, 7, 31, 9, 1, 47, 0, psycopg2.tz.FixedOffsetTimezone(
+    #             offset=-240, name=None))
 
-        self.assertDictEqual(update_data, matching_witness_report.format())
+    #     self.assertDictEqual(update_data, matching_witness_report.format())
 
 
 # Make tests executable

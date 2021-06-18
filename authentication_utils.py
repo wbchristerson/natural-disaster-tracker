@@ -30,22 +30,22 @@ def verify_decode_jwt(token):
     authentication taught by Gabriel Ruttner
     """
 
-    print("\nIn verify decode 1\n")
+    # print("\nIn verify decode 1\n")
 
 
     jsonurl = urlopen(
         f'https://{os.environ["AUTH0_DOMAIN"]}/.well-known/jwks.json')
 
-    print("\nIn verify decode 2\n")
+    # print("\nIn verify decode 2\n")
 
     jwks = json.loads(jsonurl.read())
 
-    print(f"\nIn verify decode 3: {token}\n")
-    print("jwks:", jwks)
+    # print(f"\nIn verify decode 3: {token}\n")
+    # print("jwks:", jwks)
 
     unverified_header = jwt.get_unverified_header(token)
 
-    print(f"\nIn verify decode 4: {unverified_header}\n")
+    # print(f"\nIn verify decode 4: {unverified_header}\n")
 
     rsa_key = {}
 
@@ -62,7 +62,7 @@ def verify_decode_jwt(token):
                 'e': key['e']
             }
 
-    print("\nIn verify decode 5\n")
+    # print("\nIn verify decode 5\n")
 
     if rsa_key:
         try:
@@ -76,7 +76,7 @@ def verify_decode_jwt(token):
         except jwt.ExpiredSignatureError:
             abort(401)
         except jwt.JWTClaimsError:
-            print("\n\nUnsuccessful JWT!!! 4\n\n")
+            # print("\n\nUnsuccessful JWT!!! 4\n\n")
             abort(401)
         except Exception:
             abort(400)
@@ -112,7 +112,7 @@ def requires_auth(permission=""):
             try:
                 payload = verify_decode_jwt(token)
             except Exception:
-                print("\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n")
+                # print("\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n")
                 abort(401)
 
             check_permissions(permission, payload)
