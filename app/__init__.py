@@ -122,11 +122,29 @@ def create_app(test_config=None):
     @app.route('/callback')
     def callback_handling():
         print("In callback 1!!!!!!!!!")
+        print(request.args)
+        print()
+        print("request.headers:")
+        print(request.headers)
+        print("\n\n\n")
+        print(request.headers.get("Location"))
 
         # Handles response from token endpoint
-        # X = auth0.authorize_access_token()
+        X = auth0.authorize_access_token()
 
-        # print("In callback 2!!!!!!!!! X:", X)
+        print("In callback 2!!!!!!!!! X:", X)
+        print()
+        print(f"dir(X): {dir(X)}")
+        print()
+        print(f"X['access_token']: {X['access_token']}")
+        print()
+        print(f"X['id_token']: {X['id_token']}")
+        print()
+        print(f"X['scope']: {X['scope']}")
+        print()
+        print(f"X['expires_in']: {X['expires_in']}")
+        print()
+        print(f"X['token_type']: {X['token_type']}")
 
         # response = requests.post(url=f"https://{os.environ['AUTH0_DOMAIN']}/oauth/token")
         # print("\n\n\n")
@@ -156,18 +174,11 @@ def create_app(test_config=None):
 
         # # session['profile'] = userinfo
 
-        # # print("\n\n\nUser info:")
-        # # print(userinfo)
-        # # print("\n\n")
-        # # print("session:", session)
-        # # print("\n\n\n")
-
         # # return redirect('/')
 
-        # # return redirect('http://localhost:3000/')
+        # return jsonify({ "success": True })
         return redirect(os.environ["FRONT_END_HOST"] + "/")
 
-        # # return redirect('/my-dashboard')
 
 
     # @app.route('/my-dashboard')
@@ -189,24 +200,26 @@ def create_app(test_config=None):
 
         # print("\n\n\nIn my-login\n\n\n")
         # return auth0.authorize_redirect(redirect_uri='https://sample-will.herokuapp.com/callback')
-        # return auth0.authorize_redirect(redirect_uri='http://localhost:5000/callback')
+        return auth0.authorize_redirect(redirect_uri=f"{os.environ['BACK_END_HOST']}/callback")
 
         print("Go to call back")
 
         # return auth0.authorize_redirect(redirect_uri=(f"{os.environ['BACK_END_HOST']}/callback"))
-
-        return redirect(f"https://dev-9xo5gdfc.us.auth0.com/authorize?audience=disasterapi&scope=get%3Aobservers&response_type=token&client_id=RGuSb8hra89UydUhVcjvJAw3nZHtBDdX&redirect_uri={os.environ['BACK_END_HOST']}/callback&state=xyz123ABC")
         
         # response = requests.post(url="http://0.0.0.0:5000/",data=paras)
         # response = requests.get(url="https://dev-9xo5gdfc.us.auth0.com/authorize?audience=disasterapi&scope=get%3Aobservers&response_type=token&client_id=RGuSb8hra89UydUhVcjvJAw3nZHtBDdX&redirect_uri={os.environ['BACK_END_HOST']}/callback&state=xyz123ABC")
         
-        # print("\n\n\n")
-        # # X = json.loads(response)
-        # print("response:", response)
+        print("\n\n\n")
+        # X = json.loads(response)
+        # print("response:", json.loads(response))
         # # print("X:", X)
         # print("\n\n\n")
+        # return redirect(f"{os.environ['FRONT_END_HOST']}")
 
         # return redirect(f"{os.environ['BACK_END_HOST']}/callback")
+
+        # return redirect(f"https://dev-9xo5gdfc.us.auth0.com/authorize?audience=disasterapi&scope=get%3Aobservers&response_type=token&response_mode=fragment&client_id={os.environ['AUTH0_CLIENT_ID']}&redirect_uri={os.environ['BACK_END_HOST']}/callback&state=xyz123ABC")
+        # return redirect(f"https://dev-9xo5gdfc.us.auth0.com/authorize?audience=disasterapi&scope=get%3Aobservers&response_type=token&client_id={os.environ['AUTH0_CLIENT_ID']}&redirect_uri={os.environ['BACK_END_HOST']}/callback&state=xyz123ABC")
 
 
     @app.route('/extract-token')
@@ -233,7 +246,6 @@ def create_app(test_config=None):
         return redirect(auth0.api_base_url + '/v2/logout?' + urlencode(params))
         # return redirect(auth0.api_base_url + '?' + urlencode(params))
         # return redirect('https://sample-will.herokuapp.com/#/404')
-
 
 
     @app.route('/api')
