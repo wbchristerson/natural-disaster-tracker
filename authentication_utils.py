@@ -112,7 +112,6 @@ def requires_auth(permission=""):
             try:
                 payload = verify_decode_jwt(token)
             except Exception:
-                # print("\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n")
                 abort(401)
 
             check_permissions(permission, payload)

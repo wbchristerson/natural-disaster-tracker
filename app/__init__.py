@@ -34,20 +34,12 @@ PAGE_SIZE = 10
 
 
 def create_app(test_config=None):
-    # directory_up_two_levels = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    # app = Flask(__name__, static_folder=(directory_up_two_levels + '/client/build'), static_url_path='')
-
-    # app = Flask(__name__, static_folder='client/build', static_url_path='')
-
     app = Flask(__name__, static_folder='../client/build', static_url_path='')
     setup_db(app)
     oauth = OAuth(app)
     CORS(app, resources={
          r"*": {"origins": [
-                                os.environ["FRONT_END_HOST"],
-                                # "https://dev-9xo5gdfc.us.auth0.com",
-                                # "http://localhost:3000",
-                                # "https://sample-will.herokuapp.com/"
+                            os.environ["FRONT_END_HOST"],
                             ],
             }
         }
@@ -58,70 +50,29 @@ def create_app(test_config=None):
         client_id=os.environ["AUTH0_CLIENT_ID"],
         client_secret=os.environ["CLIENT_SECRET"],
         api_base_url=(f'https://{os.environ["AUTH0_DOMAIN"]}'),
-        # request_token_url=(f'https://{os.environ["AUTH0_DOMAIN"]}/oauth/request_token'),
         access_token_url=(f'https://{os.environ["AUTH0_DOMAIN"]}/oauth/token'),
         authorize_url=(f'https://{os.environ["AUTH0_DOMAIN"]}/authorize'),
-        # authorize_url=(f"https://dev-9xo5gdfc.us.auth0.com/authorize?audience=disasterapi&scope=get%3Aobservers&response_type=token&client_id=RGuSb8hra89UydUhVcjvJAw3nZHtBDdX&redirect_uri={os.environ['BACK_END_HOST']}/callback&state=xyz123ABC"),
         client_kwargs={
             # 'audience': 'disasterapi',
             # 'scope': 'openid profile email post:witnessreports patch:witnessreports delete:witnessreports get:observers',
             # 'scope': 'openid profile email get:observers',
-
         },
     )
+
 
     @app.route('/')
     def serve():
         try:
-            # print("\n\nStep 1\n\n")
-            # print("auth0:", auth0)
-            # print("dir(auth0):", dir(auth0))
-            # print("auth0.client_id:", auth0.client_id)
-            # print("auth0.client_secret:", auth0.client_secret)
-            # print("auth0.api_base_url:", auth0.api_base_url)
-            # print("auth0.access_token_url:", auth0.access_token_url)
-            # print("auth0.authorize_url:", auth0.authorize_url)
-
-            # auth0.authorize_access_token()
-
-            # print("\n\nStep 2\n\n")
-            
-            # resp = auth0.get('userinfo')
-
-            # print("\n\nStep 3\n\n")
-
-            # userinfo = resp.json()
-
-            # print("\n\n\n")
-            # print("userinfo:", userinfo)
-            # print("\n\n\n")
-
-            # return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            # return send_from_directory(app.static_folder, 'index.html')
-            # return "hello"
-
-            # return str(os.listdir(app.static_folder))
-            # return str(os.listdir(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(app.static_folder)))) + "/client/build"))
-
-            # my_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(app.static_folder)))) + "/client/build"
-            # return send_from_directory(my_path, 'index.html')
-
-            # return send_from_directory(app.static_folder, 'index.html', userinfo=session["profile"], userinfo_pretty=json.dumps(session['jwt_payload'], indent=4))
             return send_from_directory(app.static_folder, 'index.html')
-            # return render_template('../client/build/index.html')
-
-
         except Exception as ex:
             flash("An error occurred.")
             print(sys.exc_info())
             abort(404)
-            # abort(ex.args[0][0]["code"])
 
 
     @app.route('/callback')
     def callback_handling():
-        # Handles response from token endpoint
-        X = auth0.authorize_access_token()
+        X = auth0.authorize_access_token() # Handles response from token endpoint
 
         print("In callback 2!!!!!!!!! X:", X)
         print()
@@ -149,46 +100,14 @@ def create_app(test_config=None):
         #     indent=4
         # )
 
-        # print("\n\n\nIn my-login\n\n\n")
-        # return auth0.authorize_redirect(redirect_uri='https://sample-will.herokuapp.com/callback')
         return auth0.authorize_redirect(redirect_uri=f"{os.environ['BACK_END_HOST']}/callback")
-
-        print("Go to call back")
-
-        # return auth0.authorize_redirect(redirect_uri=(f"{os.environ['BACK_END_HOST']}/callback"))
-        
-        # response = requests.post(url="http://0.0.0.0:5000/",data=paras)
-        # response = requests.get(url="https://dev-9xo5gdfc.us.auth0.com/authorize?audience=disasterapi&scope=get%3Aobservers&response_type=token&client_id=RGuSb8hra89UydUhVcjvJAw3nZHtBDdX&redirect_uri={os.environ['BACK_END_HOST']}/callback&state=xyz123ABC")
-        
-        print("\n\n\n")
-        # X = json.loads(response)
-        # print("response:", json.loads(response))
-        # # print("X:", X)
-        # print("\n\n\n")
-        # return redirect(f"{os.environ['FRONT_END_HOST']}")
-
-        # return redirect(f"{os.environ['BACK_END_HOST']}/callback")
-
-        # return redirect(f"https://dev-9xo5gdfc.us.auth0.com/authorize?audience=disasterapi&scope=get%3Aobservers&response_type=token&response_mode=fragment&client_id={os.environ['AUTH0_CLIENT_ID']}&redirect_uri={os.environ['BACK_END_HOST']}/callback&state=xyz123ABC")
-        # return redirect(f"https://dev-9xo5gdfc.us.auth0.com/authorize?audience=disasterapi&scope=get%3Aobservers&response_type=token&client_id={os.environ['AUTH0_CLIENT_ID']}&redirect_uri={os.environ['BACK_END_HOST']}/callback&state=xyz123ABC")
 
 
     @app.route('/my-logout')
     def logout():
-        # print("\n\n\nIn my-logout 1\n\n\n")
-        # Clear session stored data
-        session.clear()
-        # Redirect user to logout endpoint
-
-        # print("\n\n\nIn my-logout 2\n\n\n")
-
-        params = {'returnTo': f'{os.environ["FRONT_END_HOST"]}/#/404', 'client_id': os.environ["AUTH0_CLIENT_ID"]}
-
-        # print(f"\n\n\nIn my-logout 3: {auth0.api_base_url}\n\n\n")
-
+        session.clear() # Clear session stored data
+        params = {'returnTo': f'{os.environ["FRONT_END_HOST"]}/#/404', 'client_id': os.environ["AUTH0_CLIENT_ID"]} # Redirect user to logout endpoint
         return redirect(auth0.api_base_url + '/v2/logout?' + urlencode(params))
-        # return redirect(auth0.api_base_url + '?' + urlencode(params))
-        # return redirect('https://sample-will.herokuapp.com/#/404')
 
 
     @app.route('/api')
@@ -204,6 +123,7 @@ def create_app(test_config=None):
     def be_cool():
         return "Be cool, man, be coooool! You're almost an FSND grad!"
 
+
     def get_page_of_resource(arr, page):
         if page <= 0:
             raise ValueError("A non-positive page is not recognized.")
@@ -211,6 +131,7 @@ def create_app(test_config=None):
         start = min((page - 1) * PAGE_SIZE, len(arr))
         end = min(page * PAGE_SIZE, len(arr))
         return arr[start:end]
+
 
     def get_random_report_data(witness_reports):
         disaster_map = dict()
@@ -223,6 +144,7 @@ def create_app(test_config=None):
         for k, v in disaster_map.items():
             random_report_data[k] = v[randrange(len(v))]
         return random_report_data
+
 
     def combine_disaster_data(
             formatted_disasters: list,
@@ -269,6 +191,7 @@ def create_app(test_config=None):
 
         return formatted_disasters
 
+
     def combine_single_disaster_data(
             disaster,
             formatted_additional_data,
@@ -287,6 +210,7 @@ def create_app(test_config=None):
             del report["disaster_id"]
 
         return all_data
+
 
     '''
     A GET endpoint to get all disasters or disasters by disaster type. This
@@ -368,6 +292,7 @@ def create_app(test_config=None):
             flash("An error occurred.")
             print(sys.exc_info())
             abort(422)
+
 
     '''
     A GET endpoint to get the details of a single disaster, including:
@@ -457,6 +382,7 @@ def create_app(test_config=None):
             print(sys.exc_info())
             abort(422)
 
+
     '''
     A GET endpoint to retrieve a page of the set of observers, including the
     observers' ids, usernames, and the URLs of their user photographs. The page
@@ -478,6 +404,7 @@ def create_app(test_config=None):
             flash("An error occurred.")
             print(sys.exc_info())
             abort(422)
+
 
     '''
     A POST endpoint to insert a disaster into the database. The body for the
@@ -513,6 +440,7 @@ def create_app(test_config=None):
             print(sys.exc_info())
             abort(400)
 
+
     '''
     A POST endpoint to insert a user into the database. THe body for the
     request is a dictionary with the following keys:
@@ -535,6 +463,7 @@ def create_app(test_config=None):
             flash("An error occurred.")
             print(sys.exc_info())
             abort(400)
+
 
     '''
     A POST endpoint to insert a witness's report into the database. The body
@@ -575,6 +504,7 @@ def create_app(test_config=None):
             flash("An error occurred.")
             print(sys.exc_info())
             abort(400)
+
 
     '''
     A PATCH endpoint to update a disaster. The body of the request is a
@@ -634,6 +564,7 @@ def create_app(test_config=None):
             flash("An error occurred.")
             print(sys.exc_info())
             abort(422)
+
 
     '''
     A PATCH endpoint to update a witness report of disaster. The body of the
@@ -699,6 +630,7 @@ def create_app(test_config=None):
             print(sys.exc_info())
             abort(422)
 
+
     '''
     A DELETE endpoint for deleting a witness report. If the listed id does not
     exist among witness reports, a 400 status error is returned.
@@ -721,6 +653,7 @@ def create_app(test_config=None):
             print(sys.exc_info())
             abort(400)
 
+
     @app.errorhandler(400)
     def bad_request(error):
         return jsonify({
@@ -728,6 +661,7 @@ def create_app(test_config=None):
             "error": 400,
             "message": "malformed request - " + str(error)
         }), 400
+
 
     @app.errorhandler(401)
     def authorization_header_missing(error):
@@ -737,6 +671,7 @@ def create_app(test_config=None):
             "message": "authorization issue - " + str(error)
         }), 401
 
+
     @app.errorhandler(403)
     def authorization_incorrect_permission(error):
         return jsonify({
@@ -745,6 +680,7 @@ def create_app(test_config=None):
             "message": "authorization incorrect permission - " + str(error)
         }), 403
 
+
     @app.errorhandler(404)
     def resource_not_found(error):
         return jsonify({
@@ -752,6 +688,7 @@ def create_app(test_config=None):
             "error": 404,
             "message": "resource not found - " + str(error)
         }), 404
+
 
     @app.errorhandler(422)
     def unprocessable(error):
