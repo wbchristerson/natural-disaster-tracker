@@ -118,17 +118,8 @@ def create_app(test_config=None):
             # abort(ex.args[0][0]["code"])
 
 
-    # Here we're using the /callback route.
     @app.route('/callback')
     def callback_handling():
-        print("In callback 1!!!!!!!!!")
-        print(request.args)
-        print()
-        print("request.headers:")
-        print(request.headers)
-        print("\n\n\n")
-        print(request.headers.get("Location"))
-
         # Handles response from token endpoint
         X = auth0.authorize_access_token()
 
@@ -146,47 +137,7 @@ def create_app(test_config=None):
         print()
         print(f"X['token_type']: {X['token_type']}")
 
-        # response = requests.post(url=f"https://{os.environ['AUTH0_DOMAIN']}/oauth/token")
-        # print("\n\n\n")
-        # print("response:", response)
-        # print("\n\n\n")
-
-        # resp = auth0.get('userinfo')
-
-        # print("In callback 3!!!!!!!!! resp:", resp)
-
-        # userinfo = resp.json()
-
-        # print("In callback 4!!!!!!!!! userinfo:", userinfo)
-
-        # # Store the user information in flask session.
-        # session['jwt_payload'] = userinfo
-        
-        # print("In callback 5!!!!!!!!!")
-
-        # session['profile'] = {
-        #     'user_id': userinfo['sub'],
-        #     'name': userinfo['name'],
-        #     'picture': userinfo['picture']
-        # }
-
-        # print("In callback 6!!!!!!!!! session['profile']:", session['profile'])
-
-        # # session['profile'] = userinfo
-
-        # # return redirect('/')
-
-        # return jsonify({ "success": True })
         return redirect(os.environ["FRONT_END_HOST"] + "/")
-
-
-
-    # @app.route('/my-dashboard')
-    # # @requires_auth
-    # def dashboard():
-    #     return render_template('index.html',
-    #                         userinfo=session['profile'],
-    #                         userinfo_pretty=json.dumps(session['jwt_payload'], indent=4))
 
 
     @app.route('/my-login')
@@ -220,14 +171,6 @@ def create_app(test_config=None):
 
         # return redirect(f"https://dev-9xo5gdfc.us.auth0.com/authorize?audience=disasterapi&scope=get%3Aobservers&response_type=token&response_mode=fragment&client_id={os.environ['AUTH0_CLIENT_ID']}&redirect_uri={os.environ['BACK_END_HOST']}/callback&state=xyz123ABC")
         # return redirect(f"https://dev-9xo5gdfc.us.auth0.com/authorize?audience=disasterapi&scope=get%3Aobservers&response_type=token&client_id={os.environ['AUTH0_CLIENT_ID']}&redirect_uri={os.environ['BACK_END_HOST']}/callback&state=xyz123ABC")
-
-
-    @app.route('/extract-token')
-    def extract_token():
-        print(auth0.parseHash())
-        return jsonify({
-            "success": True,
-        })
 
 
     @app.route('/my-logout')

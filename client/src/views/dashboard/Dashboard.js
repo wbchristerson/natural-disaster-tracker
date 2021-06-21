@@ -30,11 +30,11 @@ class Dashboard extends React.Component {
       page: 1,
     };
 
-    // this.back_end_host = "http://127.0.0.1:5000";
-    // this.back_end_host = "https://sample-will.herokuapp.com";
-
-    // this.front_end_host = "http://127.0.0.1:3000";
-    // this.front_end_host = "https://sample-will.herokuapp.com";
+    if (process.env["NODE_ENV"] == "development") {
+      this.back_end_host = "http://localhost:5000";
+    } else {
+      this.back_end_host = "https://sample-will.herokuapp.com"
+    }
   }
 
   componentDidMount() {
@@ -42,16 +42,7 @@ class Dashboard extends React.Component {
   }
 
   fetchDisasters() {
-    // const back_end_host = "http://127.0.0.1:5000";
-    // const back_end_host = "https://sample-will.herokuapp.com";
-
-    // const front_end_host = "http://127.0.0.1:3000";
-    // const front_end_host = "https://sample-will.herokuapp.com";
-
-    // fetch(`http://127.0.0.1:5000/api/disasters?page=${this.state.page}`)
-
-    // fetch(`https://sample-will.herokuapp.com/api/disasters?page=${this.state.page}`)
-    fetch(`http://localhost:5000/api/disasters?page=${this.state.page}`)
+    fetch(`${this.back_end_host}/api/disasters?page=${this.state.page}`)
     .then(response => response.json())
     .then(result => {
         console.log(result);
@@ -59,109 +50,43 @@ class Dashboard extends React.Component {
           totalDisasters: result.totalDisasters,
           disasterList: result.disasters,
         })
-        // this.setState({users: result, isFetching: false})
     })
     .catch(e => {
         console.log(e);
-        // this.setState({...this.state, isFetching: false});
     });
   }
 
   getUsers() {
-    const myHeaders = new Headers({
-      // 'Authorization': 'Bearer z2gTLUmzMaAeZ7QpjC1didkRVWMOOv-_',
-      // 'authorization': 'Bearer z2gTLUmzMaAeZ7QpjC1didkRVWMOOv-_',
-
-
-      // 'authorization': 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im4yWlN4YWR2T1F4V2xzMkxPTF9DRCJ9.eyJuaWNrbmFtZSI6IndiY2hyaXN0ZXJzb24iLCJuYW1lIjoid2JjaHJpc3RlcnNvbkBnbWFpbC5jb20iLCJwaWN0dXJlIjoiaHR0cHM6Ly9zLmdyYXZhdGFyLmNvbS9hdmF0YXIvNDZhMjI0MDk4OTEwMjgxYWRmNDcxZTE1MzcwMTRkOTQ_cz00ODAmcj1wZyZkPWh0dHBzJTNBJTJGJTJGY2RuLmF1dGgwLmNvbSUyRmF2YXRhcnMlMkZ3Yi5wbmciLCJ1cGRhdGVkX2F0IjoiMjAyMS0wMi0xM1QxMzozMTowOS40NjNaIiwiZW1haWwiOiJ3YmNocmlzdGVyc29uQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaXNzIjoiaHR0cHM6Ly9kZXYtOXhvNWdkZmMudXMuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVmN2ZhN2JmNmJjNzkyMDA2ODI3ZjMzYSIsImF1ZCI6IlJHdVNiOGhyYTg5VXlkVWhWY2p2SkF3M25aSHRCRGRYIiwiaWF0IjoxNjEzMjIzMDY5LCJleHAiOjE2MTMyNTkwNjksIm5vbmNlIjoiRjFOd0M4eUlJbUI4czVtZ3d1SmsifQ.lyfesMdVv3jlxBH8NcNZmjBYi4zyvMRpHYYMDBYPKowDzRXrcaMCQEW0W5ceUSRIr11-8MUCdSJPc3celfVK4M0EmyHlASKz2PhdBtPu83iUi7zcdxjgd8WOvVHCx_grCuhVmDTqAVjC2ojD4_4935nk6tQw0mwLvFh8R79Er5xw2b2ErQXZ0yXxKNArSqgdM2hxU951IaRIhw9ORgKkMsdlXuE75Ge5_ITd4mIS_YLdaNhlgPwon_8wATlT4_nz5OLu3z0yXCsIaRyQS0tIE_rYVu1gPdjLq4NeHVZVGoTKAO1YQQdOHD8fb2GUH_jtSIqoQPO7wZguIFsLxo_cGg',
-      // 'authorization': 'Bearer hmjtWhBJjWBkLpgfgWRKqEKIS7erT4B0'
-      // 'authorization': 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im4yWlN4YWR2T1F4V2xzMkxPTF9DRCJ9.eyJpc3MiOiJodHRwczovL2Rldi05eG81Z2RmYy51cy5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWY3ZmE3YmY2YmM3OTIwMDY4MjdmMzNhIiwiYXVkIjoiZGlzYXN0ZXJhcGkiLCJpYXQiOjE2MTMyMjQxMjMsImV4cCI6MTYxMzMxMDUyMywiYXpwIjoiUkd1U2I4aHJhODlVeWRVaFZjanZKQXczblpIdEJEZFgiLCJzY29wZSI6ImdldDpvYnNlcnZlcnMiLCJwZXJtaXNzaW9ucyI6WyJkZWxldGU6d2l0bmVzc3JlcG9ydHMiLCJnZXQ6b2JzZXJ2ZXJzIiwicGF0Y2g6ZGlzYXN0ZXJzIiwicGF0Y2g6d2l0bmVzc3JlcG9ydHMiLCJwb3N0OmRpc2FzdGVycyIsInBvc3Q6d2l0bmVzc3JlcG9ydHMiXX0.WyRRd_CdoY3CGD3zQfhrCVB8hBlsNwY5TbFSXEsUCv5FQ44vCAGsUNf6QEhhO7sYbqfS5ZRIHCU1u6g-ifXCyULljCq-VRwi9pMYMnqIeh1HCE5lUPA7M5Dw23o1BVDcKiiaN1hoXqI7Fc9BzQw0ycAg2kAGamEKUSt60i8WzhoLE9G95ArjoWXsUa2zC17YsA57E2xDqdpug9Ko2iGs296Zj0YGjAVZn_E505VfPJi6tAN1yJjW-xxwxvUXTDw8JT2a2WK905vx4kEr99_g6oOeuj4ejfHJAYp6WfgeKz1RKRyKOUy3PzIK95cXIbfBU5DePw96TiPbW7tp86G8nw',
-      // 'authorization': 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im4yWlN4YWR2T1F4V2xzMkxPTF9DRCJ9.eyJpc3MiOiJodHRwczovL2Rldi05eG81Z2RmYy51cy5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWY3ZmE3YmY2YmM3OTIwMDY4MjdmMzNhIiwiYXVkIjoiZGlzYXN0ZXJhcGkiLCJpYXQiOjE2MTMyMjQ0MDMsImV4cCI6MTYxMzMxMDgwMywiYXpwIjoiUkd1U2I4aHJhODlVeWRVaFZjanZKQXczblpIdEJEZFgiLCJzY29wZSI6ImdldDpvYnNlcnZlcnMiLCJwZXJtaXNzaW9ucyI6WyJkZWxldGU6d2l0bmVzc3JlcG9ydHMiLCJnZXQ6b2JzZXJ2ZXJzIiwicGF0Y2g6ZGlzYXN0ZXJzIiwicGF0Y2g6d2l0bmVzc3JlcG9ydHMiLCJwb3N0OmRpc2FzdGVycyIsInBvc3Q6d2l0bmVzc3JlcG9ydHMiXX0.Z6PicqklY5Gybf-hcnPRqPnCuV-4DZhiaTQ-Hwag3fv3el0GaA9A36ooR0DuhZtzuyegdsATr_paqc6IbADTP4VYNiFrA066Ib7lGoHqhwmfBLR1kCLibxq5SSIzvFWfT7iRigrFJERlzc076a5zr-6zyfgPC7AQtTG7Itm7180HYi0zFNsYyppcDLS8_grSmxrOxmCxlBCwCprfhpPt1SoemVY6M2T6HQENpjoYvbMSyCDnBVHe7usu11vPAFt_bvD0a42z5mx5SH2DwmTx9j501e_OxF9A7XJu3uj5NhCwP475hK7sss77K2CQ_vdtEMUjqXn_09y590L2IaLPQw',
-      'authorization': 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im4yWlN4YWR2T1F4V2xzMkxPTF9DRCJ9.eyJpc3MiOiJodHRwczovL2Rldi05eG81Z2RmYy51cy5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWY3ZmE3YmY2YmM3OTIwMDY4MjdmMzNhIiwiYXVkIjoiZGlzYXN0ZXJhcGkiLCJpYXQiOjE2MTMyMzIwNzQsImV4cCI6MTYxMzMxODQ3NCwiYXpwIjoiUkd1U2I4aHJhODlVeWRVaFZjanZKQXczblpIdEJEZFgiLCJzY29wZSI6ImdldDpvYnNlcnZlcnMiLCJwZXJtaXNzaW9ucyI6WyJkZWxldGU6d2l0bmVzc3JlcG9ydHMiLCJnZXQ6b2JzZXJ2ZXJzIiwicGF0Y2g6ZGlzYXN0ZXJzIiwicGF0Y2g6d2l0bmVzc3JlcG9ydHMiLCJwb3N0OmRpc2FzdGVycyIsInBvc3Q6d2l0bmVzc3JlcG9ydHMiXX0.1ziog9QLnQ6KWJIM1cZvmpb5p_CC8LNDgCWFwg6KgbaQTfXxPiMeC39bS-_4hpF-C7fW1xD7MxhWW8ljTvddbfJzsfO78U8JLdm_svI3vgUOQdT-OcBm8tQUPJXSIaeIM6DjadzfSK70b7kMt45jfkXXsDD0ctYO7utcTICxZjK7-nKJ9fp-vD72OD1Zn2n-x1X-q-hHk2DeHtzyIQDT8zN-A4JNDh2vY9sFI-c8Bomc2GKw2givMf99ketzFDJJpbmwcTwZcO-Rwpg4lDc-dA5anpk_coUPPqpa0heyBSfPEV282fG1XU7CseBGhXmwGCZKu9gJqryDJwUvV7i5yA&scope=get%3Aobservers',
-
-
-      // 'Authorization': 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im4yWlN4YWR2T1F4V2xzMkxPTF9DRCJ9.eyJuaWNrbmFtZSI6IndiY2hyaXN0ZXJzb24iLCJuYW1lIjoid2JjaHJpc3RlcnNvbkBnbWFpbC5jb20iLCJwaWN0dXJlIjoiaHR0cHM6Ly9zLmdyYXZhdGFyLmNvbS9hdmF0YXIvNDZhMjI0MDk4OTEwMjgxYWRmNDcxZTE1MzcwMTRkOTQ_cz00ODAmcj1wZyZkPWh0dHBzJTNBJTJGJTJGY2RuLmF1dGgwLmNvbSUyRmF2YXRhcnMlMkZ3Yi5wbmciLCJ1cGRhdGVkX2F0IjoiMjAyMS0wMi0wNlQyMDowOToyNi44NTZaIiwiZW1haWwiOiJ3YmNocmlzdGVyc29uQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaXNzIjoiaHR0cHM6Ly9kZXYtOXhvNWdkZmMudXMuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVmN2ZhN2JmNmJjNzkyMDA2ODI3ZjMzYSIsImF1ZCI6IlJHdVNiOGhyYTg5VXlkVWhWY2p2SkF3M25aSHRCRGRYIiwiaWF0IjoxNjEyNjQyMTY3LCJleHAiOjE2MTI2NzgxNjcsIm5vbmNlIjoiNG9aWjU1Q1RGUVlwV1l5NkdFZkgifQ.uFUpViiTnrwrZSLrFzeqKT4cjF8cmDBrCO1WErfTabwNpwAXbh2WSQxUvf1quQTSCtDFJJJW1DEiNl2D84g_Rz2YjKu6XG_OOfBJ74S_D1ilz5DNTERsvl4fFxNepuV4RvAWyO8Nw_naZNmNmdBZTqRzdCDRUYA--GkU05-EjFMSzGybZWP3IaQ6GJJvfBBr0GgV6igK2LKUe_TQLBd5PTpq2VOTPAiCzQ3fYj8Ha_KeaR9HV_fK91_BhSEA-CNko8qFJ9aH-opGV3BNhJjK2ffgVDEy6i_E39J6dRHjsxhIWxpEpn3r4PIKXStZ70hst7FiavUPKRLiGXzJTfvpDw',
-    })
-
-    const rawHeaders = {
-      // 'Authorization': 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im4yWlN4YWR2T1F4V2xzMkxPTF9DRCJ9.eyJpc3MiOiJodHRwczovL2Rldi05eG81Z2RmYy51cy5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWY3ZmE3YmY2YmM3OTIwMDY4MjdmMzNhIiwiYXVkIjoiZGlzYXN0ZXJhcGkiLCJpYXQiOjE2MTMyMjQ0MDMsImV4cCI6MTYxMzMxMDgwMywiYXpwIjoiUkd1U2I4aHJhODlVeWRVaFZjanZKQXczblpIdEJEZFgiLCJzY29wZSI6ImdldDpvYnNlcnZlcnMiLCJwZXJtaXNzaW9ucyI6WyJkZWxldGU6d2l0bmVzc3JlcG9ydHMiLCJnZXQ6b2JzZXJ2ZXJzIiwicGF0Y2g6ZGlzYXN0ZXJzIiwicGF0Y2g6d2l0bmVzc3JlcG9ydHMiLCJwb3N0OmRpc2FzdGVycyIsInBvc3Q6d2l0bmVzc3JlcG9ydHMiXX0.Z6PicqklY5Gybf-hcnPRqPnCuV-4DZhiaTQ-Hwag3fv3el0GaA9A36ooR0DuhZtzuyegdsATr_paqc6IbADTP4VYNiFrA066Ib7lGoHqhwmfBLR1kCLibxq5SSIzvFWfT7iRigrFJERlzc076a5zr-6zyfgPC7AQtTG7Itm7180HYi0zFNsYyppcDLS8_grSmxrOxmCxlBCwCprfhpPt1SoemVY6M2T6HQENpjoYvbMSyCDnBVHe7usu11vPAFt_bvD0a42z5mx5SH2DwmTx9j501e_OxF9A7XJu3uj5NhCwP475hK7sss77K2CQ_vdtEMUjqXn_09y590L2IaLPQw',
-      'Authorization': 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im4yWlN4YWR2T1F4V2xzMkxPTF9DRCJ9.eyJpc3MiOiJodHRwczovL2Rldi05eG81Z2RmYy51cy5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWY3ZmE3YmY2YmM3OTIwMDY4MjdmMzNhIiwiYXVkIjoiZGlzYXN0ZXJhcGkiLCJpYXQiOjE2MTMyMzIwNzQsImV4cCI6MTYxMzMxODQ3NCwiYXpwIjoiUkd1U2I4aHJhODlVeWRVaFZjanZKQXczblpIdEJEZFgiLCJzY29wZSI6ImdldDpvYnNlcnZlcnMiLCJwZXJtaXNzaW9ucyI6WyJkZWxldGU6d2l0bmVzc3JlcG9ydHMiLCJnZXQ6b2JzZXJ2ZXJzIiwicGF0Y2g6ZGlzYXN0ZXJzIiwicGF0Y2g6d2l0bmVzc3JlcG9ydHMiLCJwb3N0OmRpc2FzdGVycyIsInBvc3Q6d2l0bmVzc3JlcG9ydHMiXX0.1ziog9QLnQ6KWJIM1cZvmpb5p_CC8LNDgCWFwg6KgbaQTfXxPiMeC39bS-_4hpF-C7fW1xD7MxhWW8ljTvddbfJzsfO78U8JLdm_svI3vgUOQdT-OcBm8tQUPJXSIaeIM6DjadzfSK70b7kMt45jfkXXsDD0ctYO7utcTICxZjK7-nKJ9fp-vD72OD1Zn2n-x1X-q-hHk2DeHtzyIQDT8zN-A4JNDh2vY9sFI-c8Bomc2GKw2givMf99ketzFDJJpbmwcTwZcO-Rwpg4lDc-dA5anpk_coUPPqpa0heyBSfPEV282fG1XU7CseBGhXmwGCZKu9gJqryDJwUvV7i5yA&scope=get%3Aobservers',
-    }
-
-    // fetch("https://sample-will.herokuapp.com/api/observers",
-    fetch("http://localhost:5000/api/observers",
-          { 'headers': rawHeaders, 'method': 'GET' })
-    .then(response => response.json())
-    .then(result => {
-      console.log(result);
-    })
-  }
-
-  proceedWithLogin() {
-    // fetch("http://localhost:5000/my-login")
-    // .then(response => {
-    //   console.log("\n\n\n\n\n\n\n");
-    //   console.log(response);
-    //   console.log("\n\n\n\n\n\n\n");
+    // fetch(`${this.back_end_host}/api/observers`,
+    //       { 'headers': rawHeaders, 'method': 'GET' })
+    // .then(response => response.json())
+    // .then(result => {
+    //   console.log(result);
     // })
-
-    const formattedHeaders = new Headers({
-      'Access-Control-Allow-Origin': 'http://localhost:3000/',
-    });
-
-    // fetch("https://dev-9xo5gdfc.us.auth0.com/authorize?audience=disasterapi&scope=get%3Aobservers&response_type=token&client_id=RGuSb8hra89UydUhVcjvJAw3nZHtBDdX&redirect_uri=http://localhost:5000/callback&state=xyz123ABC",
-    fetch('http://localhost:5000/my-login',
-      { 'headers': { 'Access-Control-Allow-Origin': 'http://localhost:3000/' } }
-    )
-    .then(response => {
-      console.log("\n\n\n\n\n\n\n");
-      console.log("response:", response)
-      console.log("\n\n\n\n\n\n\n");
-    })
   }
-
-
-  extractToken() {
-    fetch('http://localhost:5000/extract-token', { 'headers': { 'Access-Control-Allow-Origin': 'http://localhost:3000/#/dashboard' } })
-    .then(response => {
-      console.log("\n\n\n\n\n\n\n");
-      console.log("response: ", response);
-      console.log("\n\n\n\n\n\n\n")
-    })
-  }
-
 
   render() {
     const d = new Date();
     const seconds = d.getSeconds();
-    // console.log(seconds);
 
     console.log("disasterlist: ", this.state.disasterList);
 
-    // <div className={`banner ${active ? "active" : ""}`}>{children}</div>
-
     return (
       <>
-        <CButton block color="primary" onClick={this.proceedWithLogin}>Log--------------in</CButton>
-
-        <CButton block color="primary" onClick={this.extractToken}>Test Authorization (Please Open Console)</CButton>
-
         <div className="login-box auth0-box before">
           <img src="https://i.cloudup.com/StzWWrY34s.png" alt="Auth0 login"/>
           <h3>Auth0 Example</h3>
           <p>Zero friction identity infrastructure, built for developers</p>
           {/* <a className="btn btn-primary btn-lg btn-login btn-block" href="https://sample-will.herokuapp.com/my-login">Log In</a> */}
-          <a className="btn btn-primary btn-lg btn-login btn-block" href="http://localhost:5000/my-login">Log In</a>
-          {/* <a className="btn btn-primary btn-lg btn-login btn-block" href="/my-login">Log In</a> */}
+          <a className="btn btn-primary btn-lg btn-login btn-block" href={`${this.back_end_host}/my-login`}>Log In</a>
         </div>
 
         <div className="logged-in-box auth0-box logged-in">
           <h1 id="logo"><img src="//cdn.auth0.com/samples/auth0_logo_final_blue_RGB.png" alt="logo"/></h1>
           {/* <img className="avatar" src="{{userinfo['picture']}}" alt="other auth0"/> */}
           {/* <h2>{`Welcome ${userinfo ? userinfo['name'] : 'ABC!'}`}</h2> */}
-          {/* <pre>{`${userinfo_pretty || "XYZ!"}`}</pre> */}
           {/* <a className="btn btn-primary btn-lg btn-logout btn-block" href="https://sample-will.herokuapp.com/my-logout">Logout</a> */}
-          <a className="btn btn-primary btn-lg btn-logout btn-block" href="http://localhost:5000/my-logout">Logout</a>
+          <a className="btn btn-primary btn-lg btn-logout btn-block" href={`${this.back_end_host}/my-logout`}>Logout</a>
           {/* <a className="btn btn-primary btn-lg btn-logout btn-block" href="/my-logout">Logout</a> */}
         </div>
 
@@ -802,9 +727,5 @@ class Dashboard extends React.Component {
     )
   }
 }
-
-// const Dashboard = () => {
-  
-// }
 
 export default Dashboard
