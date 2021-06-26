@@ -33,7 +33,7 @@ class Dashboard extends React.Component {
     if (process.env["NODE_ENV"] == "development") {
       this.back_end_host = "http://localhost:5000";
     } else {
-      this.back_end_host = "https://sample-will.herokuapp.com"
+      this.back_end_host = "https://sample-will.herokuapp.com";
     }
   }
 
@@ -91,6 +91,15 @@ class Dashboard extends React.Component {
         </div>
 
         <CButton block color="primary" onClick={this.getUsers}>Primary</CButton>
+
+        <div className="logged-in-box auth0-box logged-in">
+          {/* <a className="btn btn-primary btn-lg btn-logout btn-block" href="https://sample-will.herokuapp.com/my-logout">Logout</a> */}
+          
+          {/* <a className="btn btn-primary btn-lg btn-logout btn-block" href={`${this.front_end_host}/base/forms`}>Add Disaster Event</a> */}
+          <a className="btn btn-primary btn-lg btn-logout btn-block" href={`http://localhost:3000/#/add-disaster-event`}>Add Disaster Event</a>
+
+          {/* <a className="btn btn-primary btn-lg btn-logout btn-block" href="/my-logout">Logout</a> */}
+        </div>
 
         <div className={`my-test ${seconds % 3 === 0 ? "main-image-1" : seconds % 3 === 1 ? "main-image-2" : "main-image-3"}`}>
           <div className="card-overlay">
