@@ -43,6 +43,8 @@ class AddDisaster extends React.Component {
       officialName: "",
       disasterType: "",
       isOngoing: false,
+      latitude: "",
+      longitude: "",
     }
   }
 
@@ -61,7 +63,18 @@ class AddDisaster extends React.Component {
   }
 
   onIsOngoingChange(evt) {
-    console.log("hi");
+    this.setState({ isOngoing: !this.state.isOngoing });
+  }
+
+  onLatitudeChange(evt) {
+    const latitudeRegExp = /^(-?\d+\.?\d*)?$/;
+
+    console.log(evt.target.value); // evt.target.value
+    console.log(latitudeRegExp.test(evt.target.value));
+
+    if (latitudeRegExp.test(evt.target.value) && parseFloat(evt.target.value) >= -180.0 && parseFloat(evt.target.value) <= 180.0) {
+      this.setState({ latitude: evt.target.value });
+    }
   }
 
   onSubmit() {
@@ -82,33 +95,25 @@ class AddDisaster extends React.Component {
                 <CForm action="" method="post" encType="multipart/form-data" className="form-horizontal">
                   <CFormGroup row>
                     <CCol md="3">
-                      <CLabel>Static</CLabel>
-                    </CCol>
-                    <CCol xs="12" md="9">
-                      <p className="form-control-static">Username</p>
-                    </CCol>
-                  </CFormGroup>
-                  <CFormGroup row>
-                    <CCol md="3">
-                      <CLabel htmlFor="text-input">Text Input</CLabel>
+                      <CLabel htmlFor="text-input">Informal Name</CLabel>
                     </CCol>
                     <CCol xs="12" md="9">
                       <CInput id="text-input" name="text-input" placeholder="Text" value={this.state.informalName} onChange={this.onInformalNameChange.bind(this)}/>
-                      <CFormText>Informal Name: the colloquial name of the disaster</CFormText>
+                      <CFormText>the colloquial name of the disaster</CFormText>
                     </CCol>
                   </CFormGroup>
                   <CFormGroup row>
                     <CCol md="3">
-                      <CLabel htmlFor="text-input">Text Input</CLabel>
+                      <CLabel htmlFor="text-input">Official Name</CLabel>
                     </CCol>
                     <CCol xs="12" md="9">
                       <CInput id="text-input" name="text-input" placeholder="Text" value={this.state.officialName} onChange={this.onOfficialNameChange.bind(this)}/>
-                      <CFormText>Official Name: the identifying name of the disaster</CFormText>
+                      <CFormText>the identifying name of the disaster</CFormText>
                     </CCol>
                   </CFormGroup>
                   <CFormGroup row>
                     <CCol md="3">
-                      <CLabel htmlFor="select">Select</CLabel>
+                      <CLabel htmlFor="select">Disaster Type</CLabel>
                     </CCol>
                     <CCol xs="12" md="9">
                       <CSelect custom name="select" id="select" value={this.state.disasterType} onChange={this.onDisasterTypeChange.bind(this)}>
@@ -118,62 +123,36 @@ class AddDisaster extends React.Component {
                   </CFormGroup>
                   <CFormGroup row>
                     <CCol tag="label" sm="3" className="col-form-label">
-                      Switch checkboxes
+                      Disaster Ongoing
                     </CCol>
-                    <CCol sm="9">
+                    <CCol sm="1">
                       <CSwitch
-                        className="mr-1"
-                        color="primary"
-                        defaultChecked
-                      />
-                      <CSwitch
-                        className="mr-1"
-                        color="success"
-                        defaultChecked
-                        variant="outline"
-                      />
-                      <CSwitch
-                        className="mr-1"
-                        color="warning"
-                        defaultChecked
-                        variant="opposite"
-                      />
-                      <CSwitch
+                        id="add-disaster-ongoing-switch"
                         className="mr-1"
                         color="danger"
                         // defaultChecked
                         shape="pill"
                         checked={this.state.isOngoing}
-                        onChange={this.onIsOngoingChange}
-                      />
-                      <CSwitch
-                        className="mr-1"
-                        color="info"
-                        defaultChecked
-                        shape="pill"
-                        variant="outline"
-                      />
-                      <CSwitch
-                        className="mr-1"
-                        color="dark"
-                        defaultChecked
-                        shape="pill"
-                        variant="opposite"
+                        onChange={this.onIsOngoingChange.bind(this)}
                       />
                     </CCol>
+                    <CCol sm="3">
+                      <CLabel htmlFor="add-disaster-ongoing-switch">{this.state.isOngoing ? "Yes" : "No"}</CLabel>
+                    </CCol>
                   </CFormGroup>
-
-
-
                   <CFormGroup row>
                     <CCol md="3">
-                      <CLabel htmlFor="email-input">Email Input</CLabel>
+                      <CLabel htmlFor="email-input">Latitude</CLabel>
                     </CCol>
                     <CCol xs="12" md="9">
-                      <CInput type="email" id="email-input" name="email-input" placeholder="Enter Email" autoComplete="email"/>
-                      <CFormText className="help-block">Please enter your email</CFormText>
+                      <CInput type="email" id="email-input" name="email-input" placeholder="Disaster Latitude" value={this.state.latitude} onChange={this.onLatitudeChange.bind(this)}/>
+                      <CFormText className="help-block">Please enter the latitude of the disaster</CFormText>
                     </CCol>
                   </CFormGroup>
+                  
+
+
+
                   <CFormGroup row>
                     <CCol md="3">
                       <CLabel htmlFor="password-input">Password</CLabel>
