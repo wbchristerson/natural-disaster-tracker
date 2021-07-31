@@ -33,6 +33,7 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { DocsLink } from 'src/reusable'
+import { getAccessToken, getBackEndHost, getFrontEndHost } from 'src/Utilities';
 
 
 class AddDisaster extends React.Component {
@@ -45,7 +46,9 @@ class AddDisaster extends React.Component {
       isOngoing: false,
       latitude: "",
       longitude: "",
-    }
+    };
+    this.backEndHost = getBackEndHost();
+    this.frontEndHost = getFrontEndHost();
   }
 
   static disasterTypes = ["Please select", "Earthquake", "Flood", "Wildfire", "Tornado", "Hurricane", "Tsunami", "Landslide", "Avalanche", "Volcano", "Other"];
@@ -67,18 +70,50 @@ class AddDisaster extends React.Component {
   }
 
   onLatitudeChange(evt) {
-    const latitudeRegExp = /^(-?\d+\.?\d*)?$/;
-
-    console.log(evt.target.value); // evt.target.value
-    console.log(latitudeRegExp.test(evt.target.value));
-
+    const latitudeRegExp = /^-?\d*\.?\d*$/;
     if (latitudeRegExp.test(evt.target.value) && parseFloat(evt.target.value) >= -180.0 && parseFloat(evt.target.value) <= 180.0) {
       this.setState({ latitude: evt.target.value });
+    } else if (evt.target.value == "") {
+      this.setState({ latitude: "" });
+    } else if (evt.target.value == "-") {
+      this.setState({ latitude: "-" });
+    }
+  }
+
+  onLongitudeChange(evt) {
+    const longitudeRegExp = /^-?\d*\.?\d*$/;
+    if (longitudeRegExp.test(evt.target.value) && parseFloat(evt.target.value) >= -180.0 && parseFloat(evt.target.value) <= 180.0) {
+      this.setState({ longitude: evt.target.value });
+    } else if (evt.target.value == "") {
+      this.setState({ longitude: "" });
+    } else if (evt.target.value == "-") {
+      this.setState({ longitude: "-" });
     }
   }
 
   onSubmit() {
-    console.log("hello there");
+    console.log("in onSubmit");
+
+    fetch(`${this.backEndHost}/api/disasters`,
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          informal_name: this.state.informalName,
+          official_name: this.state.officialName,
+          disaster_type: this.state.disasterType,
+          is_ongoing: this.state.isOngoing,
+          location_latitude: this.state.location_latitude,
+          location_longitude: this.state.location_longitude,
+        }),
+        contentType: 'application/json',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + getAccessToken(),
+        }
+      }
+    )
+    .then(data => console.log(data))
+    .catch(error => console.log("error!!!: ", error));
   }
 
   render() {
@@ -149,11 +184,20 @@ class AddDisaster extends React.Component {
                       <CFormText className="help-block">Please enter the latitude of the disaster</CFormText>
                     </CCol>
                   </CFormGroup>
+                  <CFormGroup row>
+                    <CCol md="3">
+                      <CLabel htmlFor="email-input">Longitude</CLabel>
+                    </CCol>
+                    <CCol xs="12" md="9">
+                      <CInput type="email" id="email-input" name="email-input" placeholder="Disaster Latitude" value={this.state.longitude} onChange={this.onLongitudeChange.bind(this)}/>
+                      <CFormText className="help-block">Please enter the longitude of the disaster</CFormText>
+                    </CCol>
+                  </CFormGroup>
                   
 
 
 
-                  <CFormGroup row>
+                  {/* <CFormGroup row>
                     <CCol md="3">
                       <CLabel htmlFor="password-input">Password</CLabel>
                     </CCol>
@@ -408,11 +452,11 @@ class AddDisaster extends React.Component {
                         Choose file...
                       </CLabel>
                     </CCol>
-                  </CFormGroup>
+                  </CFormGroup> */}
                 </CForm>
               </CCardBody>
               <CCardFooter>
-                <CButton type="submit" size="sm" color="primary" onClick={this.onSubmit}><CIcon name="cil-scrubber" /> Submit</CButton>
+                <CButton type="submit" size="sm" color="primary" onClick={this.onSubmit.bind(this)}><CIcon name="cil-scrubber" /> Submit</CButton>
                 <CButton type="reset" size="sm" color="danger"><CIcon name="cil-ban" /> Reset</CButton>
               </CCardFooter>
             </CCard>

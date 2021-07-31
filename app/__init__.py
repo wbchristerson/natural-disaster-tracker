@@ -10,6 +10,8 @@ from flask import (
     redirect,
     render_template,
     url_for,
+    Response,
+    make_response,
 )
 from models import (
     setup_db,
@@ -30,6 +32,8 @@ import json
 from six.moves.urllib.parse import urlencode
 import requests
 
+import http.client
+
 PAGE_SIZE = 10
 
 
@@ -40,6 +44,7 @@ def create_app(test_config=None):
     CORS(app, resources={
          r"*": {"origins": [
                             os.environ["FRONT_END_HOST"],
+                            "http://localhost:3000/#/add-disaster-event",
                             ],
             }
         }
@@ -52,9 +57,14 @@ def create_app(test_config=None):
         api_base_url=(f'https://{os.environ["AUTH0_DOMAIN"]}'),
         access_token_url=(f'https://{os.environ["AUTH0_DOMAIN"]}/oauth/token'),
         authorize_url=(f'https://{os.environ["AUTH0_DOMAIN"]}/authorize'),
+        # audience=os.environ["API_AUDIENCE"],
+        audience={f'https://{os.environ["AUTH0_DOMAIN"]}/api/v2/'},
         client_kwargs={
+            'scope': 'openid profile email',
             # 'audience': 'disasterapi',
-            # 'scope': 'openid profile email post:witnessreports patch:witnessreports delete:witnessreports get:observers',
+            # 'scope': 'openid profile',
+            # 'scope': 'openid post:disasters',
+            # 'scope': 'openid profile email post:disasters post:witnessreports patch:witnessreports delete:witnessreports get:observers',
             # 'scope': 'openid profile email get:observers',
         },
     )
@@ -70,37 +80,167 @@ def create_app(test_config=None):
             abort(404)
 
 
+
+    def jsonResponseFactory(data):
+        '''Return a callable in top of Response'''
+        def callable(response=None, *args, **kwargs):
+            '''Return a response with JSON data from factory context'''
+            return Response(json.dumps(data), *args, **kwargs)
+        return callable
+
     @app.route('/callback')
     def callback_handling():
+        # return jsonify(auth0.authorize_access_token())
         X = auth0.authorize_access_token() # Handles response from token endpoint
+        
+        # print("\n\n\n")
+        # print(dir(auth0))
+        # Y = auth0.fetch_access_token()
+        # Y = auth0.fetch_access_token(
+        #     client_id = "RGuSb8hra89UydUhVcjvJAw3nZHtBDdX",
+        #     client_secret = "rD5RuucRJZ1NWOIkCM1sLWwF3CgPNtFaNd-p8oBoZ0GQejAv_GK4Brb-29skSZIF",
+        #     audience = "disasterapi",
+        #     grant_type= "client_credentials")
+        # print(Y)
+        # print("\n\n\n") 
 
-        print("In callback 2!!!!!!!!! X:", X)
-        print()
-        print(f"dir(X): {dir(X)}")
-        print()
-        print(f"X['access_token']: {X['access_token']}")
-        print()
-        print(f"X['id_token']: {X['id_token']}")
-        print()
-        print(f"X['scope']: {X['scope']}")
-        print()
-        print(f"X['expires_in']: {X['expires_in']}")
-        print()
-        print(f"X['token_type']: {X['token_type']}")
+        conn = http.client.HTTPSConnection(os.environ["AUTH0_DOMAIN"])
 
+        payload = "{\"client_id\":\"" + os.environ["AUTH0_CLIENT_ID"] + "\",\"client_secret\":\"" + os.environ["CLIENT_SECRET"] + "\",\"audience\":\"" + os.environ["API_AUDIENCE"] + "\",\"grant_type\":\"client_credentials\"}"
+
+        headers = { 'content-type': "application/json" }
+
+        conn.request("POST", "/oauth/token", payload, headers)
+
+        res = conn.getresponse()
+        data = res.read()
+
+        print("\n\n\nTrying endpoint\n\n\n")
+        print("raw data:\n\n\n")
+        print(data)
+        print("\n\n\ndecoded data:\n\n\n")
+        print(data.decode("utf-8"))
+        print("\n\n\n")
+
+        access_token = data.decode("utf-8")
+
+
+        # print("In callback 2!!!!!!!!! X:", X)
+        # print()
+        # print(f"dir(X): {dir(X)}")
+        # print()
+        # print(f"X['access_token']: {X['access_token']}")
+        print()
+        print(f"X['id_token']: {X.get('id_token')}")
+        print()
+        # print(f"X['scope']: {X['scope']}")
+        # print()
+        # print(f"X['expires_in']: {X['expires_in']}")
+        # print()
+        # print(f"X['token_type']: {X['token_type']}")
+
+        # return redirect(os.environ["FRONT_END_HOST"] + "/", 302, jsonResponseFactory({ "my_success_status": "it was true" }))
+        
+        # return render_template(os.environ["FRONT_END_HOST"] + "/")
+        # return render_template("index.html")
+
+        # return redirect(os.environ["FRONT_END_HOST"] + "/#/dashboard")
+        # return redirect(url_for(os.environ["FRONT_END_HOST"] + "/#/dashboard", messages={"main":"condition failed"}), jsonResponseFactory({"main":"condition failed"}))
+        # return render_template(os.environ["FRONT_END_HOST"] + "/#/dashboard")
+
+        # return redirect(os.environ["FRONT_END_HOST"] + "/")
+
+        print()
+        print("blah")
+        print()
+        print(f"access token: {dir(access_token)}")
+        print()
+
+        final_response = make_response(redirect(os.environ["FRONT_END_HOST"] + f"/#/dashboard?{access_token}"))
+        final_response.set_cookie("user_access_token", access_token)
+        return final_response
+
+        # return redirect(os.environ["FRONT_END_HOST"] + f"/#/dashboard?response={access_token}")
+
+
+    @app.route('/waka-waka')
+    def waka_waka():
+        return redirect(os.environ["FRONT_END_HOST"] + "/#/dashboard")
+
+
+    # /server.py
+    # Here we're using the /callback route.
+    @app.route('/july-callback')
+    def july_callback_handling():
+        # Handles response from token endpoint
+        auth0.authorize_access_token()
+        print(dir(auth0))
+        resp = auth0.get('userinfo')
+        userinfo = resp.json()
+
+        # Store the user information in flask session.
+        session['jwt_payload'] = userinfo
+
+        print("\n\n\n\n")
+        print("july user info:")
+        print(session['jwt_payload'])
+        print("\n\n\n\n")
+
+        session['profile'] = {
+            'user_id': userinfo['sub'],
+            'name': userinfo['name'],
+            'picture': userinfo['picture']
+        }
+        # return redirect('/dashboard')
         return redirect(os.environ["FRONT_END_HOST"] + "/")
 
+    # /server.py
+    @app.route('/july-login')
+    def july_login():
+        return auth0.authorize_redirect(redirect_uri=f"{os.environ['BACK_END_HOST']}/july-callback", audience=os.environ["API_AUDIENCE"])
+
+    # /server.py
+    def requires_july_auth(f):
+        @wraps(f)
+        def decorated(*args, **kwargs):
+            if 'profile' not in session:
+                # Redirect to Login page here
+                return redirect('/')
+            return f(*args, **kwargs)
+        return decorated
+
+    # import time
 
     @app.route('/my-login')
     def login():
         # return auth0.authorize_redirect(
         #     redirect_uri='https://sample-will.herokuapp.com/callback',
-        #     userinfo=session['profile'],
-        #     userinfo_pretty=json.dumps(session['jwt_payload'],
-        #     indent=4
+        #     userinfo=json.dumps({"id": "123"}),
+        #     # userinfo_pretty=json.dumps(session['jwt_payload']),
+        #     # indent=4
         # )
 
-        return auth0.authorize_redirect(redirect_uri=f"{os.environ['BACK_END_HOST']}/callback")
+        # return auth0.authorize_redirect(
+        #     redirect_uri=f"{os.environ['BACK_END_HOST']}/callback",
+        #     userinfo=json.dumps({"id": "123"}),
+        #     # userinfo_pretty=json.dumps(session['jwt_payload']),
+        #     # indent=4
+        # )
+
+        # return jsonify(
+        #     {
+        #         "status": "Good!"
+        #     })
+
+        # auth0.authorize_redirect(redirect_uri=f"{os.environ['BACK_END_HOST']}/callback", audience=os.environ["API_AUDIENCE"])
+        # time.sleep(5)
+        # return jsonify({ "status": "Good!"})
+
+        resp = make_response(auth0.authorize_redirect(redirect_uri=f"{os.environ['BACK_END_HOST']}/callback", audience=os.environ["API_AUDIENCE"]))
+        resp.set_cookie("name", "Will")
+        return resp
+
+        # return auth0.authorize_redirect(redirect_uri=f"{os.environ['BACK_END_HOST']}/callback", audience=os.environ["API_AUDIENCE"])
 
 
     @app.route('/my-logout')
@@ -236,6 +376,20 @@ def create_app(test_config=None):
         disaster_type = request.args.get("disaster_type")
 
         try:
+            # print("\n\n\n")
+
+            # cookie_test = request.cookies.get('user_access_token') ######################################################################################################
+            # print(f"cookie test: {cookie_test}")
+            
+            # other_cookie_test = request.cookies.get('name')
+            # print(f"other cookie test: {other_cookie_test}")
+            
+            # blah_cookie_test = request.cookies.get('blah')
+            # print(f"blah: {blah_cookie_test}")
+            
+            # print("\n\n\n")
+
+
             if disaster_type is not None and disaster_type.upper(
             ) not in NaturalDisasterEnum.__members__:
                 raise AttributeError("Unrecognized natural disaster type.")
@@ -284,6 +438,18 @@ def create_app(test_config=None):
                         random_report_data, all_users
                     ),
                 })
+            # resp = make_response(
+            #     jsonify({
+            #         'total_disasters': total_disasters,
+            #         'disasters': combine_disaster_data(
+            #             formatted_disasters, formatted_additional_data,
+            #             random_report_data, all_users
+            #         ),
+            #     })
+            # )
+            # resp.set_cookie("blah", "123", domain=os.environ["FRONT_END_HOST"])
+            # resp.set_cookie("blah", "123", domain="127.0.0.1:5000")
+            # return resp
         except AttributeError as ex:
             flash('An error occurred.')
             print(sys.exc_info())
@@ -423,6 +589,9 @@ def create_app(test_config=None):
     @app.route('/api/disasters', methods=["POST"])
     @requires_auth('post:disasters')
     def send_disaster(payload):
+
+        print("\n\n\nIn request body!\n\n\n") ###########################################################################################################################
+
         try:
             body = request.get_json()
             disaster = Disaster(
@@ -433,10 +602,12 @@ def create_app(test_config=None):
                 body.get("location_latitude"),
                 body.get("location_longitude"),
             )
-            disaster.insert()
-            return jsonify({"id": disaster.id})
+            # disaster.insert()
+            # return jsonify({"id": disaster.id})
+            return jsonify({ "id": "SUCCESS" })
         except Exception as ex:
             flash("An error occurred.")
+            print(f"ex: {ex}")
             print(sys.exc_info())
             abort(400)
 

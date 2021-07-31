@@ -30,22 +30,21 @@ def verify_decode_jwt(token):
     authentication taught by Gabriel Ruttner
     """
 
-    # print("\nIn verify decode 1\n")
-
+    print("\nIn verify decode 1\n")
 
     jsonurl = urlopen(
         f'https://{os.environ["AUTH0_DOMAIN"]}/.well-known/jwks.json')
 
-    # print("\nIn verify decode 2\n")
+    print("\nIn verify decode 2\n")
 
     jwks = json.loads(jsonurl.read())
 
-    # print(f"\nIn verify decode 3: {token}\n")
-    # print("jwks:", jwks)
+    print(f"\nIn verify decode 3: {token}\n")
+    print("jwks:", jwks)
 
     unverified_header = jwt.get_unverified_header(token)
 
-    # print(f"\nIn verify decode 4: {unverified_header}\n")
+    print(f"\nIn verify decode 4: {unverified_header}\n")
 
     rsa_key = {}
 
@@ -62,7 +61,10 @@ def verify_decode_jwt(token):
                 'e': key['e']
             }
 
-    # print("\nIn verify decode 5\n")
+    print(f"\nIn verify decode 5: {rsa_key}\n")
+
+    auth = request.headers.get("Authorization", None)
+    print(f"\n\n\nauth: {auth}\n\n\n")
 
     if rsa_key:
         try:
@@ -71,15 +73,22 @@ def verify_decode_jwt(token):
                 rsa_key,
                 algorithms=[os.environ["ALGORITHM"]],
                 audience=os.environ["API_AUDIENCE"],
-                issuer='https://' + os.environ["AUTH0_DOMAIN"]
+                # audience=os.environ["AUTH0_CLIENT_ID"],
+                issuer=('https://' + os.environ["AUTH0_DOMAIN"] + '/')
             )
         except jwt.ExpiredSignatureError:
+            print("\n\nExpired Signature!!!\n\n")
             abort(401)
-        except jwt.JWTClaimsError:
-            # print("\n\nUnsuccessful JWT!!! 4\n\n")
+        except jwt.JWTClaimsError as error:
+            print(f"\n\nUnsuccessful JWT!!! 4\n\n, {error}")
+            print(f"audience: {os.environ['API_AUDIENCE']}")
+            print(f"issuer: {'https://' + os.environ['AUTH0_DOMAIN']}")
             abort(401)
-        except Exception:
+        except Exception as error:
+            print(f"\n\nerror seen: {error}")
             abort(400)
+
+    print("\n\nGeneral error!\n\n")
 
     abort(400)
 
@@ -90,7 +99,11 @@ def check_permissions(permission, payload):
     permission in the BasicFlaskAuth folder from the course on authentication
     taught by Gabriel Ruttner
     """
+
+    print(f"\n\nattempted permission: {permission}\n\n")
+    
     if 'permissions' not in payload:
+        print("\n\nNo permissions key!\n\n")
         abort(400)
 
     if permission not in payload['permissions']:
@@ -109,12 +122,20 @@ def requires_auth(permission=""):
         @wraps(f)
         def wrapper(*args, **kwargs):
             token = get_token_auth_header()
+            print("\n\n\ntoken found: ", token)
             try:
                 payload = verify_decode_jwt(token)
+                print(f"\n\npayload result: {payload}\n\n")
+                print("\n\n\n")
+                unverified_claims = jwt.get_unverified_claims(token)
+                print(f"unverified_claims: {unverified_claims}")
             except Exception:
                 abort(401)
 
             check_permissions(permission, payload)
+
+            print("\n\ncheck permissions succeeded\n\n")
+            
             return f(payload, *args, **kwargs)
         return wrapper
     return requires_auth_decorator

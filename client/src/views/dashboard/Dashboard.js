@@ -14,6 +14,7 @@ import {
   // CLink
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
+import { getAccessToken, getBackEndHost, getFrontEndHost } from '../../Utilities'
 // import { DocsLink } from 'src/reusable'
 
 import MainChartExample from '../charts/MainChartExample.js'
@@ -30,11 +31,16 @@ class Dashboard extends React.Component {
       page: 1,
     };
 
-    if (process.env["NODE_ENV"] == "development") {
-      this.back_end_host = "http://localhost:5000";
-    } else {
-      this.back_end_host = "https://sample-will.herokuapp.com";
-    }
+    this.backEndHost = getBackEndHost();
+    this.frontEndHost = getFrontEndHost();
+
+    // if (process.env["NODE_ENV"] == "development") {
+    //   this.back_end_host = "http://localhost:5000";
+    //   this.front_end_host = "http://localhost:3000";
+    // } else {
+    //   this.back_end_host = "https://sample-will.herokuapp.com";
+    //   this.front_end_host = "https://sample-will.herokuapp.com";
+    // }
   }
 
   componentDidMount() {
@@ -42,7 +48,7 @@ class Dashboard extends React.Component {
   }
 
   fetchDisasters() {
-    fetch(`${this.back_end_host}/api/disasters?page=${this.state.page}`)
+    fetch(`${this.backEndHost}/api/disasters?page=${this.state.page}`, { headers: { 'Access-Control-Allow-Origin': '*' } })
     .then(response => response.json())
     .then(result => {
         console.log(result);
@@ -50,10 +56,50 @@ class Dashboard extends React.Component {
           totalDisasters: result.totalDisasters,
           disasterList: result.disasters,
         })
+        // document.cookie = "blah=123; SameSite=None; Secure";
     })
     .catch(e => {
         console.log(e);
     });
+  }
+
+  onLogin() {
+    console.log("\n\n\nHello!!!!!!!\n\n\n")
+
+    var a = document.createElement('a');
+    a.href = `${this.back_end_host}/my-login`;
+    a.click().then(res => { console.log("\n\n\nBbbbbbBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")}).catch(e => { console.log("\n\n\neeeeeeeeeeeee")});
+    // console.log("\n\n\ninformation: ", a.getAttribute('href'));
+    console.log("\n\n\nAAAAAAAAAAAAAAAAAAA");
+
+    // fetch(`${this.back_end_host}/my-login`)
+    // .then(response => {
+    //   console.log("\n\n\nAAAAAA\n\n\n");
+    //   console.log(response);
+    //   console.log("\n\n\nBBBBBB\n\n\n");
+    //   return response;
+    // })
+    // .catch(e => {
+    //   console.log("\n\nbad\n\n");
+    //   // console.log(JSON.parse(e));
+    //   console.log(e);
+    // });
+
+    // fetch(`${this.back_end_host}/my-login`)
+    // .then(response => {
+    //   console.log("\n\n\nSub result: ")
+    //   console.log(response)
+    //   console.log("\n\n\n")
+    //   return response.json()
+    // })
+    // .then(result => {
+    //   console.log("success");
+    //   console.log(result);
+    // })
+    // .catch(e => {
+    //   console.log("\n\nbad\n\n");
+    //   console.log(JSON.parse(e));
+    // });
   }
 
   getUsers() {
@@ -65,11 +111,51 @@ class Dashboard extends React.Component {
     // })
   }
 
+  // getCookieWithKey(key) {
+  //   const pairs = document.cookie.split(";");
+  //   // const cookies = {};
+  //   for (const pair of pairs) {
+  //     const splitPair = pair.split("=");
+  //     const entryKey = (splitPair[0]+'').trim();
+  //     if (entryKey == key) {
+  //       return splitPair[1];
+  //     } 
+  //     // cookies[(splitPair[0]+'').trim()] = unescape(splitPair.slice(1).join('='));
+  //   }
+  //   return "";
+  // }
+
   render() {
     const d = new Date();
     const seconds = d.getSeconds();
 
     console.log("disasterlist: ", this.state.disasterList);
+    // // console.log("this.props: ", this.props);
+    // // console.log("this.props.location.pathname: ", this.props.location.pathname);
+    // // console.log("this.props.location.search: ", this.props.location.search.split("%22"));
+
+    // console.log("\n\n\n");
+    // // console.log("document.cookie: ", document.cookie);
+
+    // const unformattedAccessToken = this.getCookieWithKey("user_access_token");
+    // // const formattedAccessToken = unformattedAccessToken.split(":");
+    // console.log("\n\n\n");
+    // // console.log("access token: ", accessToken);
+
+    // // console.log("split access token: ", accessToken.split("\""));
+    // const accessToken = unformattedAccessToken.split("\"")[4].slice(0,-1);
+    // console.log("accessToken: ", accessToken);
+
+    // // console.log("formattedAccessToken: \n\n");
+    // // console.log(formattedAccessToken);
+
+    // // console.log("\n\n\n");
+    // // console.log("document.cookie: ", document.cookie);
+
+    const token = getAccessToken();
+    console.log("\n\n\ntoken: ");
+    console.log(token);
+    console.log("\n\n\n");
 
     return (
       <>
@@ -78,7 +164,21 @@ class Dashboard extends React.Component {
           <h3>Auth0 Example</h3>
           <p>Zero friction identity infrastructure, built for developers</p>
           {/* <a className="btn btn-primary btn-lg btn-login btn-block" href="https://sample-will.herokuapp.com/my-login">Log In</a> */}
-          <a className="btn btn-primary btn-lg btn-login btn-block" href={`${this.back_end_host}/my-login`}>Log In</a>
+          <a className="btn btn-primary btn-lg btn-login btn-block" href={`${this.backEndHost}/my-login`}>Log In</a>
+        </div>
+
+        <CButton
+              color="primary"
+              onClick={this.onLogin.bind(this)}
+              className={'mb-1'}
+            >Alternate Login Button</CButton>
+
+        <div className="login-box auth0-box before">
+          <img src="https://i.cloudup.com/StzWWrY34s.png" alt="Auth0 login"/>
+          <h3>Auth0 Example</h3>
+          <p>Zero friction identity infrastructure, built for developers</p>
+          {/* <a className="btn btn-primary btn-lg btn-login btn-block" href="https://sample-will.herokuapp.com/my-login">Log In</a> */}
+          <a className="btn btn-primary btn-lg btn-login btn-block" href={`${this.backEndHost}/july-login`}>July Log In</a>
         </div>
 
         <div className="logged-in-box auth0-box logged-in">
@@ -86,7 +186,7 @@ class Dashboard extends React.Component {
           {/* <img className="avatar" src="{{userinfo['picture']}}" alt="other auth0"/> */}
           {/* <h2>{`Welcome ${userinfo ? userinfo['name'] : 'ABC!'}`}</h2> */}
           {/* <a className="btn btn-primary btn-lg btn-logout btn-block" href="https://sample-will.herokuapp.com/my-logout">Logout</a> */}
-          <a className="btn btn-primary btn-lg btn-logout btn-block" href={`${this.back_end_host}/my-logout`}>Logout</a>
+          <a className="btn btn-primary btn-lg btn-logout btn-block" href={`${this.backEndHost}/my-logout`}>Logout</a>
           {/* <a className="btn btn-primary btn-lg btn-logout btn-block" href="/my-logout">Logout</a> */}
         </div>
 
@@ -96,7 +196,7 @@ class Dashboard extends React.Component {
           {/* <a className="btn btn-primary btn-lg btn-logout btn-block" href="https://sample-will.herokuapp.com/my-logout">Logout</a> */}
           
           {/* <a className="btn btn-primary btn-lg btn-logout btn-block" href={`${this.front_end_host}/base/forms`}>Add Disaster Event</a> */}
-          <a className="btn btn-primary btn-lg btn-logout btn-block" href={`http://localhost:3000/#/add-disaster-event`}>Add Disaster Event</a>
+          <a className="btn btn-primary btn-lg btn-logout btn-block" href={`${this.frontEndHost}/#/add-disaster-event`}>Add Disaster Event</a>
 
           {/* <a className="btn btn-primary btn-lg btn-logout btn-block" href="/my-logout">Logout</a> */}
         </div>
