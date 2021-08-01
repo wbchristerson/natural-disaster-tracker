@@ -23,7 +23,6 @@ export function getAccessToken() {
       } else {
         return accessTokenParts[4].slice(0,-1);
       }
-      // return  unformattedAccessToken.split("\"")[4].slice(0,-1);
     }
 }
 
