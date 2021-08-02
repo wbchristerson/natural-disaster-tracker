@@ -96,9 +96,7 @@ def create_app(test_config=None):
 
     @app.route('/my-login')
     def login():
-        resp = make_response(auth0.authorize_redirect(redirect_uri=f"{os.environ['BACK_END_HOST']}/callback", audience=os.environ["API_AUDIENCE"]))
-        resp.set_cookie("name", "Will")
-        return resp
+        return auth0.authorize_redirect(redirect_uri=f"{os.environ['BACK_END_HOST']}/callback", audience=os.environ["API_AUDIENCE"])
 
 
     @app.route('/my-logout')
