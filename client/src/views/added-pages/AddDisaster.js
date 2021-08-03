@@ -33,7 +33,7 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { DocsLink } from 'src/reusable'
-import { getAccessToken, getBackEndHost, getFrontEndHost } from 'src/Utilities';
+import { getCookieWithKey, USER_ACCESS_TOKEN, getBackEndHost, getFrontEndHost } from 'src/Utilities';
 
 
 class AddDisaster extends React.Component {
@@ -93,6 +93,8 @@ class AddDisaster extends React.Component {
 
   onSubmit() {
     console.log("in onSubmit");
+    console.log(this.state.latitude);
+    console.log(this.state.longitude);
 
     fetch(`${this.backEndHost}/api/disasters`,
       {
@@ -102,13 +104,13 @@ class AddDisaster extends React.Component {
           official_name: this.state.officialName,
           disaster_type: this.state.disasterType,
           is_ongoing: this.state.isOngoing,
-          location_latitude: this.state.location_latitude,
-          location_longitude: this.state.location_longitude,
+          location_latitude: this.state.latitude,
+          location_longitude: this.state.longitude,
         }),
         contentType: 'application/json',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + getAccessToken(),
+          'Authorization': 'Bearer ' + getCookieWithKey(USER_ACCESS_TOKEN),
         }
       }
     )

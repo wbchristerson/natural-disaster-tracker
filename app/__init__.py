@@ -36,6 +36,7 @@ import http.client
 
 PAGE_SIZE = 10
 USER_ACCESS_TOKEN_KEY = "user_access_token"
+USER_ID_TOKEN_KEY = "user_id_token"
 
 
 def create_app(test_config=None):
@@ -78,19 +79,23 @@ def create_app(test_config=None):
 
     @app.route('/callback')
     def callback_handling():
-        auth0.authorize_access_token() # Handles response from token endpoint
-        conn = http.client.HTTPSConnection(os.environ["AUTH0_DOMAIN"])
-        payload = "{\"client_id\":\"" + os.environ["AUTH0_CLIENT_ID"] + "\",\"client_secret\":\"" + \
-            os.environ["CLIENT_SECRET"] + "\",\"audience\":\"" + os.environ["API_AUDIENCE"] + \
-            "\",\"grant_type\":\"client_credentials\"}"
-        headers = { 'content-type': "application/json" }
-        conn.request("POST", "/oauth/token", payload, headers)
-        res = conn.getresponse()
-        data = res.read()
-        access_token = data.decode("utf-8")
+        access_data = auth0.authorize_access_token() # Handles response from token endpoint
+        access_token = access_data['access_token']
+        id_token = access_data['id_token']
+
+        # conn = http.client.HTTPSConnection(os.environ["AUTH0_DOMAIN"])
+        # payload = "{\"client_id\":\"" + os.environ["AUTH0_CLIENT_ID"] + "\",\"client_secret\":\"" + \
+        #     os.environ["CLIENT_SECRET"] + "\",\"audience\":\"" + os.environ["API_AUDIENCE"] + \
+        #     "\",\"grant_type\":\"client_credentials\"}"
+        # headers = { 'content-type': "application/json" }
+        # conn.request("POST", "/oauth/token", payload, headers)
+        # res = conn.getresponse()
+        # data = res.read()
+        # access_token = data.decode("utf-8")
 
         final_response = make_response(redirect(f"{os.environ['FRONT_END_HOST']}/#/dashboard"))
         final_response.set_cookie(USER_ACCESS_TOKEN_KEY, access_token)
+        final_response.set_cookie(USER_ID_TOKEN_KEY, id_token)
         return final_response
 
 
@@ -421,22 +426,18 @@ def create_app(test_config=None):
     @app.route('/api/disasters', methods=["POST"])
     @requires_auth('post:disasters')
     def send_disaster(payload):
-
-        print("\n\n\nIn request body!\n\n\n") ###########################################################################################################################
-
         try:
             body = request.get_json()
             disaster = Disaster(
                 body.get("informal_name"),
                 body.get("official_name"),
-                body.get("disaster_type"),
+                body.get("disaster_type").lower(),
                 body.get("is_ongoing"),
                 body.get("location_latitude"),
                 body.get("location_longitude"),
             )
-            # disaster.insert()
-            # return jsonify({"id": disaster.id})
-            return jsonify({ "id": "SUCCESS" })
+            disaster.insert()
+            return jsonify({"id": disaster.id})
         except Exception as ex:
             flash("An error occurred.")
             print(f"ex: {ex}")
@@ -464,6 +465,7 @@ def create_app(test_config=None):
             return jsonify({"id": observer.id})
         except Exception as ex:
             flash("An error occurred.")
+            print(f"ex: {ex}")
             print(sys.exc_info())
             abort(400)
 
@@ -528,7 +530,7 @@ def create_app(test_config=None):
     of the update data dictionary, then a 422 error is thrown.
     '''
     @app.route('/api/disasters', methods=["PATCH"])
-    @requires_auth('patch:witnessreports')
+    @requires_auth('patch:disasters')
     def update_disaster(payload):
         try:
             body = request.get_json()

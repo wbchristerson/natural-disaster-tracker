@@ -1,4 +1,6 @@
-function getCookieWithKey(key) {
+export const USER_ACCESS_TOKEN = "user_access_token";
+
+export function getCookieWithKey(key) {
   const pairs = document.cookie.split(";");
   for (const pair of pairs) {
     const splitPair = pair.split("=");
