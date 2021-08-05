@@ -58,12 +58,14 @@ class SampleWillTestCase(unittest.TestCase):
 
             observer_1 = Observer(
                 "hurricane_tracker",
+                "auth0-id-1",
                 "https://specials-images.forbesimg.com/imageserve/11304" +
                 "15291/960x0.jpg?fit=scale")
             observer_1.insert()
 
             observer_2 = Observer(
                 "safety_manager",
+                "auth0-id-2",
                 "https://www.telegraph.co.uk/content/dam/news/2016/09/08/" +
                 "107667228_beech-tree-NEWS_trans_NvBQzQNjv4BqplGOf-dgG3z4" +
                 "gg9owgQTXEmhb5tXCQRHAvHRWfzHzHk.jpg"
@@ -402,6 +404,7 @@ class SampleWillTestCase(unittest.TestCase):
         """Test for successfully inserting a new observer"""
         observer_data = {
             "username": "disaster_recorder",
+            "auth0_id": "auth0-id-3",
             "photograph_url": "https://ichef.bbci.co.uk/images/ic/960x960/p08634k6.jpg",
         }
         res = self.client().post(
@@ -415,6 +418,7 @@ class SampleWillTestCase(unittest.TestCase):
 
         self.assertIsNotNone(matching_observer)
         self.assertEqual(observer_data["username"], matching_observer.username)
+        self.assertEqual(observer_data["auth0_id"], matching_observer.auth0_id)
         self.assertEqual(
             observer_data["photograph_url"], matching_observer.photograph_url)
 
@@ -423,6 +427,7 @@ class SampleWillTestCase(unittest.TestCase):
         """Test for failing to insert a new observer due to the lack of a
         username"""
         observer_data = {
+            "auth0_id": "auth0-id-3",
             "photograph_url": "https://www.gardeningknowhow.com/wp-content/" +
             "uploads/2017/07/hardwood-tree.jpg",
         }
@@ -440,6 +445,7 @@ class SampleWillTestCase(unittest.TestCase):
         username"""
         observer_data = {
             "username": "hurricane_tracker",
+            "auth0_id": "auth0-id-3",
             "photograph_url": "https://www.gardeningknowhow.com/wp-content/" +
             "uploads/2017/07/hardwood-tree.jpg"
         }

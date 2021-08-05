@@ -24,15 +24,15 @@ from flask_cors import CORS
 from sqlalchemy import func, join
 from random import randrange
 from copy import copy
-from authentication_utils import requires_auth
+from authentication_utils import requires_auth, verify_decode_jwt
 from authlib.integrations.flask_client import OAuth
 import sys
 from werkzeug.exceptions import HTTPException
 import json
 from six.moves.urllib.parse import urlencode
 import requests
-
 import http.client
+from urllib.request import urlopen
 
 PAGE_SIZE = 10
 USER_ACCESS_TOKEN_KEY = "user_access_token"
@@ -93,6 +93,28 @@ def create_app(test_config=None):
         # data = res.read()
         # access_token = data.decode("utf-8")
 
+        #
+
+        # # set up this code to only run if the user is not in the database of observers, having never logged in
+        # decoded_token_data = verify_decode_jwt(id_token, os.environ['AUTH0_CLIENT_ID'])
+        # print(f"\n\n\n{decoded_token_data}\n\n\n")
+
+        # if "sub" not in decoded_token_data or decoded_token_data["sub"] is None:
+        #     raise ValueError("No defined user from authentication.")
+        
+        # # conn = http.client.HTTPSConnection("")
+        # # payload = "{ \"roles\": [ \"" + os.environ["DISASTER_REPORTER_ROLE_ID"] + "\", \"" + \
+        # #     os.environ["DISASTER_REPORTER_ROLE_ID"] + "\" ] }"
+        # # headers = {
+        # #     'content-type': "application/json",
+        # #     'authorization': "Bearer MGMT_API_ACCESS_TOKEN",
+        # #     'cache-control': "no-cache"
+        # #     }
+        # # conn.request("POST", f"/{os.environ['AUTH0_DOMAIN']}/api/v2/users/USER_ID/roles", payload, headers)
+        # # res = conn.getresponse()
+        # # data = res.read()
+        # # print(data.decode("utf-8"))
+
         final_response = make_response(redirect(f"{os.environ['FRONT_END_HOST']}/#/dashboard"))
         final_response.set_cookie(USER_ACCESS_TOKEN_KEY, access_token)
         final_response.set_cookie(USER_ID_TOKEN_KEY, id_token)
@@ -110,6 +132,7 @@ def create_app(test_config=None):
         params = {'returnTo': f'{os.environ["FRONT_END_HOST"]}/#/404', 'client_id': os.environ["AUTH0_CLIENT_ID"]} # Redirect user to logout endpoint
         response = make_response(redirect(auth0.api_base_url + '/v2/logout?' + urlencode(params)))
         response.delete_cookie(USER_ACCESS_TOKEN_KEY)
+        response.delete_cookie(USER_ID_TOKEN_KEY)
         return response
 
 
@@ -460,6 +483,7 @@ def create_app(test_config=None):
         try:
             body = request.get_json()
             observer = Observer(body.get("username"),
+                                body.get("auth0_id"),
                                 body.get("photograph_url"))
             observer.insert()
             return jsonify({"id": observer.id})

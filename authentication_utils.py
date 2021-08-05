@@ -23,7 +23,7 @@ def get_token_auth_header():
     return token
 
 
-def verify_decode_jwt(token):
+def verify_decode_jwt(token, audience = os.environ["API_AUDIENCE"]):
     """
     Note: this function is largely based on the verification and decoding
     function for jwts in the BasicFlaskAuth folder from the course on
@@ -54,12 +54,13 @@ def verify_decode_jwt(token):
                 token,
                 rsa_key,
                 algorithms=[os.environ["ALGORITHM"]],
-                audience=os.environ["API_AUDIENCE"],
+                audience=audience,
                 issuer=('https://' + os.environ["AUTH0_DOMAIN"] + '/')
             )
         except jwt.ExpiredSignatureError:
             abort(401)
         except jwt.JWTClaimsError as error:
+            print(f"\n\nIn authentication failure!!!: {error}\n\n")
             abort(401)
         except Exception as error:
             abort(400)

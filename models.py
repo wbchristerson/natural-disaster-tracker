@@ -119,19 +119,22 @@ class Observer(DisasterData):
 
     id = Column(Integer, primary_key=True)
     username = Column(String(50), nullable=False, unique=True)
+    auth0_id = Column(String(40), nullable=False, unique=True)
     photograph_url = Column(String(200), nullable=True)
     witness_reports = relationship(
         'WitnessReport', backref="witness_report_observer",
         cascade="all, delete, delete-orphan")
 
-    def __init__(self, username, photograph_url=None):
+    def __init__(self, username, auth0_id, photograph_url=None):
         self.username = username
+        self.auth0_id = auth0_id
         self.photograph_url = photograph_url
 
     def format(self):
         return {
             'id': self.id,
             'username': self.username,
+            'auth0_id': self.auth0_id,
             'photograph_url': self.photograph_url,
         }
 
