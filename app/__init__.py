@@ -83,37 +83,26 @@ def create_app(test_config=None):
         access_token = access_data['access_token']
         id_token = access_data['id_token']
 
-        # conn = http.client.HTTPSConnection(os.environ["AUTH0_DOMAIN"])
-        # payload = "{\"client_id\":\"" + os.environ["AUTH0_CLIENT_ID"] + "\",\"client_secret\":\"" + \
-        #     os.environ["CLIENT_SECRET"] + "\",\"audience\":\"" + os.environ["API_AUDIENCE"] + \
-        #     "\",\"grant_type\":\"client_credentials\"}"
-        # headers = { 'content-type': "application/json" }
-        # conn.request("POST", "/oauth/token", payload, headers)
-        # res = conn.getresponse()
-        # data = res.read()
-        # access_token = data.decode("utf-8")
-
-        #
-
         # # set up this code to only run if the user is not in the database of observers, having never logged in
+        
         # decoded_token_data = verify_decode_jwt(id_token, os.environ['AUTH0_CLIENT_ID'])
         # print(f"\n\n\n{decoded_token_data}\n\n\n")
 
         # if "sub" not in decoded_token_data or decoded_token_data["sub"] is None:
         #     raise ValueError("No defined user from authentication.")
         
-        # # conn = http.client.HTTPSConnection("")
-        # # payload = "{ \"roles\": [ \"" + os.environ["DISASTER_REPORTER_ROLE_ID"] + "\", \"" + \
-        # #     os.environ["DISASTER_REPORTER_ROLE_ID"] + "\" ] }"
-        # # headers = {
-        # #     'content-type': "application/json",
-        # #     'authorization': "Bearer MGMT_API_ACCESS_TOKEN",
-        # #     'cache-control': "no-cache"
-        # #     }
-        # # conn.request("POST", f"/{os.environ['AUTH0_DOMAIN']}/api/v2/users/USER_ID/roles", payload, headers)
-        # # res = conn.getresponse()
-        # # data = res.read()
-        # # print(data.decode("utf-8"))
+        # conn = http.client.HTTPSConnection("")
+        # payload = "{ \"roles\": [ \"" + os.environ["DISASTER_REPORTER_ROLE_ID"] + "\", \"" + \
+        #     os.environ["DISASTER_REPORTER_ROLE_ID"] + "\" ] }"
+        # headers = {
+        #     'content-type': "application/json",
+        #     'authorization': "Bearer MGMT_API_ACCESS_TOKEN",
+        #     'cache-control': "no-cache"
+        #     }
+        # conn.request("POST", f"/{os.environ['AUTH0_DOMAIN']}/api/v2/users/USER_ID/roles", payload, headers)
+        # res = conn.getresponse()
+        # data = res.read()
+        # print(data.decode("utf-8"))
 
         final_response = make_response(redirect(f"{os.environ['FRONT_END_HOST']}/#/dashboard"))
         final_response.set_cookie(USER_ACCESS_TOKEN_KEY, access_token)
