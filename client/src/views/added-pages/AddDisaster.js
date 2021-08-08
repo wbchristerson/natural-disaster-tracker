@@ -33,7 +33,7 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { DocsLink } from 'src/reusable'
-import { getCookieWithKey, USER_ACCESS_TOKEN, getBackEndHost, getFrontEndHost } from 'src/Utilities';
+import { getCookieWithKey, USER_ACCESS_TOKEN_KEY, getBackEndHost, getFrontEndHost } from 'src/Utilities';
 
 
 class AddDisaster extends React.Component {
@@ -110,7 +110,7 @@ class AddDisaster extends React.Component {
         contentType: 'application/json',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + getCookieWithKey(USER_ACCESS_TOKEN),
+          'Authorization': 'Bearer ' + getCookieWithKey(USER_ACCESS_TOKEN_KEY),
         }
       }
     )

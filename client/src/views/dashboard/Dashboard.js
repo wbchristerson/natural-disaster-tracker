@@ -14,7 +14,7 @@ import {
   // CLink
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { getAccessToken, getBackEndHost, getFrontEndHost } from '../../Utilities'
+import { getBackEndHost, getFrontEndHost } from '../../Utilities'
 // import { DocsLink } from 'src/reusable'
 
 import MainChartExample from '../charts/MainChartExample.js'

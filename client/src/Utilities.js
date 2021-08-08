@@ -1,4 +1,5 @@
-export const USER_ACCESS_TOKEN = "user_access_token";
+export const USER_ACCESS_TOKEN_KEY = "user_access_token";
+export const USER_ID_TOKEN_KEY = "user_id_token";
 
 export function getCookieWithKey(key) {
   const pairs = document.cookie.split(";");
@@ -14,7 +15,7 @@ export function getCookieWithKey(key) {
 
 
 export function getAccessToken() {
-    const unformattedAccessToken = getCookieWithKey("user_access_token");
+    const unformattedAccessToken = getCookieWithKey(USER_ACCESS_TOKEN_KEY);
     if (unformattedAccessToken === null || unformattedAccessToken === undefined || unformattedAccessToken === "") {
       return unformattedAccessToken;
     } else {

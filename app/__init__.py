@@ -24,7 +24,7 @@ from flask_cors import CORS
 from sqlalchemy import func, join
 from random import randrange
 from copy import copy
-from authentication_utils import requires_auth, verify_decode_jwt
+from authentication_utils import requires_auth
 from authlib.integrations.flask_client import OAuth
 import sys
 from werkzeug.exceptions import HTTPException
@@ -51,8 +51,6 @@ def create_app(test_config=None):
             }
         }
     )
-
-
     auth0 = oauth.register(
         'auth0',
         client_id=os.environ["AUTH0_CLIENT_ID"],
@@ -65,8 +63,8 @@ def create_app(test_config=None):
             'scope': 'openid profile email',
         },
     )
-
-
+    management_api_access_token = None
+    
     @app.route('/')
     def serve():
         try:
@@ -83,31 +81,65 @@ def create_app(test_config=None):
         access_token = access_data['access_token']
         id_token = access_data['id_token']
 
-        # # set up this code to only run if the user is not in the database of observers, having never logged in
-        
-        # decoded_token_data = verify_decode_jwt(id_token, os.environ['AUTH0_CLIENT_ID'])
-        # print(f"\n\n\n{decoded_token_data}\n\n\n")
+        resp = auth0.get('userinfo')
+        userinfo = resp.json()
 
-        # if "sub" not in decoded_token_data or decoded_token_data["sub"] is None:
-        #     raise ValueError("No defined user from authentication.")
-        
-        # conn = http.client.HTTPSConnection("")
-        # payload = "{ \"roles\": [ \"" + os.environ["DISASTER_REPORTER_ROLE_ID"] + "\", \"" + \
-        #     os.environ["DISASTER_REPORTER_ROLE_ID"] + "\" ] }"
-        # headers = {
-        #     'content-type': "application/json",
-        #     'authorization': "Bearer MGMT_API_ACCESS_TOKEN",
-        #     'cache-control': "no-cache"
-        #     }
-        # conn.request("POST", f"/{os.environ['AUTH0_DOMAIN']}/api/v2/users/USER_ID/roles", payload, headers)
-        # res = conn.getresponse()
-        # data = res.read()
-        # print(data.decode("utf-8"))
+        # Store the user information in flask session.
+        session['jwt_payload'] = userinfo
+        session['profile'] = {
+            'user_id': userinfo['sub'],
+            'name': userinfo['name'],
+            'picture': userinfo['picture'],
+            'nickname': userinfo['nickname'],
+        }
+
+        if session['profile']['user_id'] is None:
+            raise ValueError("No defined user from authentication.")
+
+        matching_report = Observer.query.filter(Observer.auth0_id == session['profile']['user_id']).first()
+        if matching_report is None: # this should imply that this is a sign-up operation by a new user
+            add_new_user(session['profile']['user_id'])
 
         final_response = make_response(redirect(f"{os.environ['FRONT_END_HOST']}/#/dashboard"))
         final_response.set_cookie(USER_ACCESS_TOKEN_KEY, access_token)
         final_response.set_cookie(USER_ID_TOKEN_KEY, id_token)
         return final_response
+
+
+    def add_new_user(user_auth0_id):
+        nonlocal management_api_access_token
+        conn = http.client.HTTPSConnection(os.environ["AUTH0_DOMAIN"])
+        if management_api_access_token is None:
+            management_api_access_token = acquire_management_api_access_token()
+        payload = "{ \"roles\": [ \"" + os.environ["DISASTER_REPORTER_ROLE_ID"] + "\" ] }"
+        headers = {
+            'content-type': "application/json",
+            'authorization': f"Bearer {management_api_access_token}",
+            'cache-control': "no-cache"
+        }
+        try:
+            conn.request("POST", f"/api/v2/users/{user_auth0_id}/roles", payload, headers)
+            conn.getresponse()
+            new_observer = Observer(session['profile']['nickname'], user_auth0_id, session['profile']['picture']) # add entry to database
+            new_observer.insert()
+        except Exception as ex:
+            flash("An error occurred.")
+            print("\n\n\n")
+            print("ex:", ex)
+            print("\n\n\n")
+            print(sys.exc_info())
+
+
+    def acquire_management_api_access_token():
+        print("\nAcquiring management API access token...\n")
+        conn = http.client.HTTPSConnection(os.environ['AUTH0_DOMAIN'])
+        payload = "{\"client_id\":\"" + os.environ['AUTH0_CLIENT_ID'] + "\",\"client_secret\":\"" + os.environ['CLIENT_SECRET'] + "\",\"audience\":\"https://" + os.environ['AUTH0_DOMAIN'] + "/api/v2/\",\"grant_type\":\"client_credentials\"}"
+        headers = { 'content-type': "application/json" }
+        conn.request("POST", "/" + os.environ['AUTH0_DOMAIN'] + "/oauth/token", payload, headers)
+        res = conn.getresponse()
+        data = res.read()
+        json_data = json.loads(data)
+        return json_data["access_token"]
 
 
     @app.route('/my-login')

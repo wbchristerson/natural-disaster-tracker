@@ -60,7 +60,6 @@ def verify_decode_jwt(token, audience = os.environ["API_AUDIENCE"]):
         except jwt.ExpiredSignatureError:
             abort(401)
         except jwt.JWTClaimsError as error:
-            print(f"\n\nIn authentication failure!!!: {error}\n\n")
             abort(401)
         except Exception as error:
             abort(400)
