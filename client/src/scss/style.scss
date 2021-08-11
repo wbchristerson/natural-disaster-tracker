@@ -12,16 +12,11 @@
 
 
 .my-test {
-    // width: 100%;
-    // background-color: lightblue;
-    // background: url("https://simplifaster.com/wp-content/uploads/2017/05/Sunshine-Vitamin-D.jpg");
     height: 800px;
     width: 100%;
     background-repeat: no-repeat;
-    // background-size: auto;
     background-size: cover;
     margin-bottom: 40px;
-    // opacity: 0.1;
 }
 
 .main-image-1 {
@@ -49,10 +44,6 @@
     color: white;
     font-weight: 500;
     font-size: 90px;
-    // margin: auto;
-    // width: 50%;
-    // text-align: center;
-    // background-color: rgb(7, 151, 7);
 }
 
 .main-bottom-text {
@@ -71,4 +62,23 @@
 
 .set-disaster-max-height {
     max-height: 500px;
+}
+
+.individual-disaster-header-block {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.disaster-header {
+    background-color: rgb(41, 49, 210); // 41, 49, 210
+}
+
+.inner-button {
+    width: 50%;
+    margin: 0 auto;
+}
+
+.disaster-data-text {
+    font-size: large;
 }

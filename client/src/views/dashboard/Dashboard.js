@@ -14,7 +14,7 @@ import {
   // CLink
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { getBackEndHost, getFrontEndHost } from '../../Utilities'
+import { formatLatitudeLongitude, getBackEndHost, getCookieWithKey, getFrontEndHost, USER_ACCESS_TOKEN_KEY } from '../../Utilities'
 // import { DocsLink } from 'src/reusable'
 
 import MainChartExample from '../charts/MainChartExample.js'
@@ -56,47 +56,50 @@ class Dashboard extends React.Component {
 
 
   getUsers() {
-    // fetch(`${this.back_end_host}/api/observers`,
-    //       { 'headers': rawHeaders, 'method': 'GET' })
-    // .then(response => response.json())
-    // .then(result => {
-    //   console.log(result);
-    // })
+    fetch(`${this.backEndHost}/api/observers`,
+          {
+            headers: { 'Authorization': 'Bearer ' + getCookieWithKey(USER_ACCESS_TOKEN_KEY) },
+            method: 'GET',
+          })
+    .then(response => response.json())
+    .then(result => {
+      console.log(result);
+    })
   }
 
 
   render() {
     const d = new Date();
     const seconds = d.getSeconds();
+    const isLoggedOut = getCookieWithKey(USER_ACCESS_TOKEN_KEY) == "";
 
     return (
       <>
-        <div className="login-box auth0-box before">
-          <img src="https://i.cloudup.com/StzWWrY34s.png" alt="Auth0 login"/>
-          <h3>Auth0 Example</h3>
-          <p>Zero friction identity infrastructure, built for developers</p>
-          {/* <a className="btn btn-primary btn-lg btn-login btn-block" href="https://sample-will.herokuapp.com/my-login">Log In</a> */}
-          <a className="btn btn-primary btn-lg btn-login btn-block" href={`${this.backEndHost}/my-login`}>Log In</a>
-        </div>
+        {isLoggedOut &&
+          <div className="login-box auth0-box before">
+            <img src="https://i.cloudup.com/StzWWrY34s.png" alt="Auth0 login"/>
+            <h3>Auth0 Example</h3>
+            <p>Zero friction identity infrastructure, built for developers</p>
+            {/* <a className="btn btn-primary btn-lg btn-login btn-block" href="https://sample-will.herokuapp.com/my-login">Log In</a> */}
+            <a className="btn btn-primary btn-lg btn-login btn-block" href={`${this.backEndHost}/my-login`}>Log In</a>
+          </div>
+        }
+
+        {!isLoggedOut &&
+          <div className="logged-in-box auth0-box logged-in">
+            <h1 id="logo"><img src="//cdn.auth0.com/samples/auth0_logo_final_blue_RGB.png" alt="logo"/></h1>
+            {/* <img className="avatar" src="{{userinfo['picture']}}" alt="other auth0"/> */}
+            {/* <h2>{`Welcome ${userinfo ? userinfo['name'] : 'ABC!'}`}</h2> */}
+            {/* <a className="btn btn-primary btn-lg btn-logout btn-block" href="https://sample-will.herokuapp.com/my-logout">Logout</a> */}
+            <a className="btn btn-primary btn-lg btn-logout btn-block" href={`${this.backEndHost}/my-logout`}>Logout</a>
+            {/* <a className="btn btn-primary btn-lg btn-logout btn-block" href="/my-logout">Logout</a> */}
+          </div>
+        }
+
+        <CButton block color="primary" onClick={() => this.getUsers()}>Primary</CButton>
 
         <div className="logged-in-box auth0-box logged-in">
-          <h1 id="logo"><img src="//cdn.auth0.com/samples/auth0_logo_final_blue_RGB.png" alt="logo"/></h1>
-          {/* <img className="avatar" src="{{userinfo['picture']}}" alt="other auth0"/> */}
-          {/* <h2>{`Welcome ${userinfo ? userinfo['name'] : 'ABC!'}`}</h2> */}
-          {/* <a className="btn btn-primary btn-lg btn-logout btn-block" href="https://sample-will.herokuapp.com/my-logout">Logout</a> */}
-          <a className="btn btn-primary btn-lg btn-logout btn-block" href={`${this.backEndHost}/my-logout`}>Logout</a>
-          {/* <a className="btn btn-primary btn-lg btn-logout btn-block" href="/my-logout">Logout</a> */}
-        </div>
-
-        <CButton block color="primary" onClick={this.getUsers}>Primary</CButton>
-
-        <div className="logged-in-box auth0-box logged-in">
-          {/* <a className="btn btn-primary btn-lg btn-logout btn-block" href="https://sample-will.herokuapp.com/my-logout">Logout</a> */}
-          
-          {/* <a className="btn btn-primary btn-lg btn-logout btn-block" href={`${this.front_end_host}/base/forms`}>Add Disaster Event</a> */}
           <a className="btn btn-primary btn-lg btn-logout btn-block" href={`${this.frontEndHost}/#/add-disaster-event`}>Add Disaster Event</a>
-
-          {/* <a className="btn btn-primary btn-lg btn-logout btn-block" href="/my-logout">Logout</a> */}
         </div>
 
         <div className={`my-test ${seconds % 3 === 0 ? "main-image-1" : seconds % 3 === 1 ? "main-image-2" : "main-image-3"}`}>
@@ -192,9 +195,12 @@ class Dashboard extends React.Component {
                     {disaster.first_observance && <h6>{`First observance: ${disaster.first_observance}`}</h6>}
                     {disaster.last_observance && <h6>{`Last observance: ${disaster.last_observance}`}</h6>}
                     {<h6>{`id: ${disaster.id}`}</h6>}
-                    {<h6>{`Location: (${disaster.location[0]}, ${disaster.location[1]})`}</h6>}
+                    {<h6>{`Location: ${formatLatitudeLongitude(disaster.location)}`}</h6>}
                     {<h6>{`Number Of Reports: ${disaster.num_reports}`}</h6>}
                     {disaster.people_affected && <h6>{`People affected: ${disaster.people_affected}`}</h6>}
+                    <div className="auth0-box">
+                      <a className="btn btn-primary" href={`${this.frontEndHost}/#/single-disaster-display?id=${disaster.id}`}>View Witness Reports</a>
+                    </div>
                   </CCardBody>
                 </CCard>
               </CCol>

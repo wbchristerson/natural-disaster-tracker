@@ -39,6 +39,7 @@ const Users = React.lazy(() => import('./views/users/Users'));
 const User = React.lazy(() => import('./views/users/User'));
 
 const AddDisaster = React.lazy(() => import('./views/added-pages/AddDisaster'));
+const SingleDisasterDisplay = React.lazy(() => import('./views/added-pages/SingleDisasterDisplay'));
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
@@ -83,6 +84,7 @@ const routes = [
   { path: '/users/:id', exact: true, name: 'User Details', component: User },
   
   { path: '/add-disaster-event', name: "Add Disaster Event", component: AddDisaster },
+  { path: '/single-disaster-display', name: "Single Disaster Display", component: SingleDisasterDisplay },
 ];
 
 export default routes;

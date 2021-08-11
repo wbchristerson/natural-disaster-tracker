@@ -118,6 +118,17 @@ class AddDisaster extends React.Component {
     .catch(error => console.log("error!!!: ", error));
   }
 
+  resetDisasterForm() {
+    this.setState({
+      informalName: "",
+      officialName: "",
+      disasterType: "",
+      isOngoing: false,
+      latitude: "",
+      longitude: "",
+    });
+  }
+
   render() {
     return (
       <>
@@ -459,7 +470,7 @@ class AddDisaster extends React.Component {
               </CCardBody>
               <CCardFooter>
                 <CButton type="submit" size="sm" color="primary" onClick={this.onSubmit.bind(this)}><CIcon name="cil-scrubber" /> Submit</CButton>
-                <CButton type="reset" size="sm" color="danger"><CIcon name="cil-ban" /> Reset</CButton>
+                <CButton type="reset" size="sm" color="danger" onClick={this.resetDisasterForm.bind(this)}><CIcon name="cil-ban" /> Reset</CButton>
               </CCardFooter>
             </CCard>
           </CCol>

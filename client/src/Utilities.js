@@ -1,5 +1,6 @@
 export const USER_ACCESS_TOKEN_KEY = "user_access_token";
 export const USER_ID_TOKEN_KEY = "user_id_token";
+export const DEFAULT_DISASTER_FIELD_TEXT = "No data available from witness reports"
 
 export function getCookieWithKey(key) {
   const pairs = document.cookie.split(";");
@@ -45,4 +46,22 @@ export function getBackEndHost() {
   } else {
     return "https://sample-will.herokuapp.com";
   }
+}
+
+
+export function displayDisasterDataLine(stateData) {
+  if (stateData) {
+    return stateData;
+  } else {
+    return DEFAULT_DISASTER_FIELD_TEXT;
+  }
+}
+
+export function formatLatitudeLongitude(locationData) {
+  const [latitude, longitude] = locationData;
+  const formattedLatitude = Math.abs(latitude) + "° " + (latitude >= 0 ? "N" : "S");
+  const formattedLongitude = Math.abs(longitude) + "° " + (longitude >= 0 ? "E" : "W");
+
+  return formattedLatitude + ", " + formattedLongitude;
+
 }
