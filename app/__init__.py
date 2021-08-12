@@ -37,6 +37,7 @@ from urllib.request import urlopen
 PAGE_SIZE = 10
 USER_ACCESS_TOKEN_KEY = "user_access_token"
 USER_ID_TOKEN_KEY = "user_id_token"
+OBSERVER_DATABASE_ID_KEY = "observer_database_id"
 
 
 def create_app(test_config=None):
@@ -96,13 +97,14 @@ def create_app(test_config=None):
         if session['profile']['user_id'] is None:
             raise ValueError("No defined user from authentication.")
 
-        matching_report = Observer.query.filter(Observer.auth0_id == session['profile']['user_id']).first()
-        if matching_report is None: # this should imply that this is a sign-up operation by a new user
-            add_new_user(session['profile']['user_id'])
+        matching_observer = Observer.query.filter(Observer.auth0_id == session['profile']['user_id']).first()
+        if matching_observer is None: # this should imply that this is a sign-up operation by a new user
+            matching_observer = add_new_user(session['profile']['user_id'])
 
         final_response = make_response(redirect(f"{os.environ['FRONT_END_HOST']}/#/dashboard"))
         final_response.set_cookie(USER_ACCESS_TOKEN_KEY, access_token)
         final_response.set_cookie(USER_ID_TOKEN_KEY, id_token)
+        final_response.set_cookie(OBSERVER_DATABASE_ID_KEY, str(matching_observer.id))
         return final_response
 
 
@@ -122,6 +124,7 @@ def create_app(test_config=None):
             conn.getresponse()
             new_observer = Observer(session['profile']['nickname'], user_auth0_id, session['profile']['picture']) # add entry to database
             new_observer.insert()
+            return new_observer
         except Exception as ex:
             flash("An error occurred.")
             print("\n\n\n")
@@ -154,6 +157,7 @@ def create_app(test_config=None):
         response = make_response(redirect(auth0.api_base_url + '/v2/logout?' + urlencode(params)))
         response.delete_cookie(USER_ACCESS_TOKEN_KEY)
         response.delete_cookie(USER_ID_TOKEN_KEY)
+        response.delete_cookie(OBSERVER_DATABASE_ID_KEY)
         return response
 
 
