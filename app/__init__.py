@@ -541,19 +541,31 @@ def create_app(test_config=None):
     def send_witness_report(payload):
         try:
             body = request.get_json()
-            witness_report = WitnessReport(
-                body.get("disaster_id"),
-                body.get("observer_id"),
-                body.get("event_datetime"),
-                body.get("severity"),  # optional
-                body.get("image_url"),  # optional
-                body.get("comment"),  # optional
-                body.get("people_affected"),
-                body.get("location_latitude"),
-                body.get("location_longitude")
-            )
-            witness_report.insert()
-            return jsonify({"id": witness_report.id})
+
+            print(body.get("disaster_id"))
+            print(body.get("observer_id"))
+            print(body.get("event_datetime"))
+            print(body.get("severity"))  # optional
+            print(body.get("image_url"))  # optional
+            print(body.get("comment"))  # optional
+            print(body.get("people_affected"))
+            print(body.get("location_latitude"))
+            print(body.get("location_longitude"))
+
+            # witness_report = WitnessReport(
+            #     body.get("disaster_id"),
+            #     body.get("observer_id"),
+            #     body.get("event_datetime"),
+            #     body.get("severity"),  # optional
+            #     body.get("image_url"),  # optional
+            #     body.get("comment"),  # optional
+            #     body.get("people_affected"),
+            #     body.get("location_latitude"),
+            #     body.get("location_longitude")
+            # )
+            # witness_report.insert()
+            # return jsonify({"id": witness_report.id})
+            return jsonify({"was success for witness report": True})
         except Exception as ex:
             flash("An error occurred.")
             print(sys.exc_info())

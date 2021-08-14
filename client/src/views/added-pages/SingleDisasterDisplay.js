@@ -37,7 +37,7 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { DocsLink } from 'src/reusable'
-import { DEFAULT_DISASTER_FIELD_TEXT, displayDisasterDataLine, formatLatitudeLongitude, getBackEndHost, getFrontEndHost } from 'src/Utilities';
+import { DEFAULT_DISASTER_FIELD_TEXT, displayDisasterDataLine, formatLatitudeLongitude, getBackEndHost, getFrontEndHost, isValidGeographicCoordinate, isValidImageURL, isValidNonnegativeIntegerInRange, isValidNonnegativeInteger, isValidTime, getCookieWithKey, OBSERVER_DATABASE_ID_KEY, getGeneralTimeFormat, USER_ACCESS_TOKEN_KEY} from 'src/Utilities';
 
 
 class SingleDisasterDisplay extends React.Component {
@@ -58,6 +58,22 @@ class SingleDisasterDisplay extends React.Component {
       people_affected: 0,
       reports: [],
       witnessReportFormVisible: true,
+
+      newWitnessedDate: "",
+      newWitnessedTime: "",
+      newWitnessedNumPeople: "",
+      newWitnessedLatitude: "",
+      newWitnessedLongitude: "",
+      newWitnessedSeverity: "",
+      newWitnessedImageURL: "",
+      newWitnessedComment: "",
+      witnessedDateValid: true,
+      witnessedTimeValid: true,
+      witnessedNumPeopleValid: true,
+      witnessedLatitudeValid: true,
+      witnessedLongitudeValid: true,
+      witnessedSeverityValid: true,
+      witnessedImageURLValid: true,
     };
     this.backEndHost = getBackEndHost();
     this.frontEndHost = getFrontEndHost();
@@ -95,15 +111,173 @@ class SingleDisasterDisplay extends React.Component {
     });
   }
 
+  onNewWitnessedDateChange(val) {
+    this.setState({
+      newWitnessedDate: val.target.value,
+    });
+  }
+
+  onNewWitnessedTimeChange(val) {
+    this.setState({
+      newWitnessedTime: val.target.value,
+    });
+  }
+
+  onNewWitnessedNumPeopleChange(val) {
+    this.setState({
+      newWitnessedNumPeople: val.target.value,
+    });
+  }
+
+  onNewWitnessedLatitudeChange(val) {
+    this.setState({
+      newWitnessedLatitude: val.target.value,
+    });
+  }
+
+  onNewWitnessedLongitudeChange(val) {
+    this.setState({
+      newWitnessedLongitude: val.target.value,
+    });
+  }
+
+  onNewWitnessedSeverityChange(val) {
+    this.setState({
+      newWitnessedSeverity: val.target.value,
+    });
+  }
+
+  onNewWitnessedImageURLChange(val) {
+    let valueToInsert = val.target.value;
+    if (valueToInsert.length > 250) {
+      valueToInsert = valueToInsert.substring(0, 250);
+    }
+    this.setState({
+      newWitnessedImageURL: valueToInsert,
+    });
+  }
+
+  onNewWitnesseedCommentChange(val) {
+    let valueToInsert = val.target.value;
+    if (valueToInsert.length > 500) {
+      valueToInsert = valueToInsert.substring(0, 500);
+    }
+    this.setState({
+      newWitnessedComment: valueToInsert,
+    });
+  }
+
+  onNewWitnessReportSubmit() {
+    console.log("there");
+    const {
+      id,
+      newWitnessedDate,
+      newWitnessedTime,
+      newWitnessedNumPeople,
+      newWitnessedLatitude,
+      newWitnessedLongitude,
+      newWitnessedSeverity,
+      newWitnessedImageURL,
+      newWitnessedComment,
+    } = this.state;
+
+    let
+      witnessedDateValid = true,
+      witnessedTimeValid = true,
+      witnessedNumPeopleValid = true,
+      witnessedLatitudeValid = true,
+      witnessedLongitudeValid = true,
+      witnessedSeverityValid = true,
+      witnessedImageURLValid = true;
+
+    if (newWitnessedDate == "") {
+      witnessedDateValid = false;
+    }
+
+    if (!isValidTime(newWitnessedTime)) {
+      witnessedTimeValid = false;
+    }
+
+    if (!isValidNonnegativeInteger(newWitnessedNumPeople)) {
+      witnessedNumPeopleValid = false;
+    }
+
+    if (!isValidGeographicCoordinate(newWitnessedLatitude)) {
+      witnessedLatitudeValid = false;
+    }
+
+    if (!isValidGeographicCoordinate(newWitnessedLongitude)) {
+      witnessedLongitudeValid = false;
+    }
+
+    if (newWitnessedSeverity != "" && !isValidNonnegativeIntegerInRange(newWitnessedSeverity, 0, 10)) {
+      witnessedSeverityValid = false;
+    }
+
+    if (newWitnessedImageURL != "" && !isValidImageURL(newWitnessedImageURL)) {
+      witnessedImageURLValid = false;
+    }
+
+    this.setState({
+      witnessedDateValid,
+      witnessedTimeValid,
+      witnessedNumPeopleValid,
+      witnessedLatitudeValid,
+      witnessedLongitudeValid,
+      witnessedSeverityValid,
+      witnessedImageURLValid,
+    });
+
+    if (
+      witnessedDateValid && witnessedTimeValid && witnessedNumPeopleValid && 
+      witnessedLatitudeValid && witnessedLongitudeValid && witnessedSeverityValid &&
+      witnessedImageURLValid) {
+      
+      // send creation request
+      console.log("here");
+      fetch(`${this.backEndHost}/api/witnessreports`,
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            disaster_id: this.state.id,
+            observer_id: getCookieWithKey(OBSERVER_DATABASE_ID_KEY),
+            event_datetime: new Date(newWitnessedDate + "T" + getGeneralTimeFormat(newWitnessedTime)),
+            severity: newWitnessedSeverity ? parseInt(newWitnessedSeverity.trim()) : null,
+            image_url: newWitnessedImageURL ? newWitnessedImageURL.trim() : null,
+            comment: newWitnessedComment ? newWitnessedComment.trim() : null,
+            people_affected: parseInt(newWitnessedNumPeople.trim()),
+            location_latitude: parseFloat(newWitnessedLatitude.trim()),
+            location_longitude: parseFloat(newWitnessedLongitude.trim()),
+          }),
+          contentType: 'application/json',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + getCookieWithKey(USER_ACCESS_TOKEN_KEY),
+          }
+        }
+      )
+      .then(response => response.json())
+      .then(result => console.log(result))
+      .catch(e => {
+          console.log("Error fetching disaster with id ", id);
+          console.log(e);
+      });
+    }
+  }
+
   // body.get("event_datetime"),
-  // body.get("severity"),  # optional
-  // body.get("image_url"),  # optional
-  // body.get("comment"),  # optional
   // body.get("people_affected"),
   // body.get("location_latitude"),
   // body.get("location_longitude")
 
+  // body.get("severity"),  # optional
+  // body.get("image_url"),  # optional
+  // body.get("comment"),  # optional
+
   getAddWitnessReportForm() {
+    const {
+      witnessedDateValid, witnessedTimeValid, witnessedNumPeopleValid, witnessedLatitudeValid,
+      witnessedLongitudeValid, witnessedSeverityValid, witnessedImageURLValid} = this.state;
     return (
       <CCard>
         <CCardHeader className="individual-disaster-header-block">
@@ -111,292 +285,111 @@ class SingleDisasterDisplay extends React.Component {
           <CButtonClose onClick={() => this.setWitnessReportFormVisible(false)}/></CCardHeader>
         <CCardBody>
           <CForm action="" method="post" encType="multipart/form-data" className="form-horizontal">
+            
             <CFormGroup row>
               <CCol md="3">
                 <CLabel htmlFor="date-input">Date Witnessed:</CLabel>
               </CCol>
               <CCol xs="12" md="9">
-                <CInput type="date" id="date-input" name="date-input" placeholder="date" />
+                {witnessedDateValid && <CInput type="date" id="date-input" name="date-input" placeholder="date" onChange={this.onNewWitnessedDateChange.bind(this)} />}
+                {!witnessedDateValid && <CInput invalid type="date" id="date-input" name="date-input" placeholder="date" onChange={this.onNewWitnessedDateChange.bind(this)} />}
+                <CInvalidFeedback>Date provided is blank</CInvalidFeedback>
+                <CFormText>Date of the disaster</CFormText>
               </CCol>
             </CFormGroup>
+            
             <CFormGroup row>
               <CCol md="3">
-                <CLabel>Static</CLabel>
+                <CLabel htmlFor="time-text-input">Time (HH:MM:SS)</CLabel>
               </CCol>
               <CCol xs="12" md="9">
-                <p className="form-control-static">Username</p>
+                {witnessedTimeValid && <CInput required id="time-text-input" name="time-text-input" placeholder="HH:MM:SS" onChange={this.onNewWitnessedTimeChange.bind(this)} value={this.state.newWitnessedTime}/>}
+                {!witnessedTimeValid && <CInput required invalid id="time-text-input" name="time-text-input" placeholder="HH:MM:SS" onChange={this.onNewWitnessedTimeChange.bind(this)} value={this.state.newWitnessedTime}/>}
+                <CInvalidFeedback>Time provided is blank or format is not recognized</CInvalidFeedback>
+                <CFormText>Time of the disaster in hours, minutes, and optional seconds format</CFormText>
               </CCol>
             </CFormGroup>
+
             <CFormGroup row>
               <CCol md="3">
-                <CLabel htmlFor="text-input">Text Input</CLabel>
+                <CLabel htmlFor="people-affected-text-input">Number Of People Affected</CLabel>
               </CCol>
               <CCol xs="12" md="9">
-                <CInput id="text-input" name="text-input" placeholder="Text" />
+                {witnessedNumPeopleValid && <CInput id="people-affected-text-input" name="people-affected-text-input" placeholder="0" onChange={this.onNewWitnessedNumPeopleChange.bind(this)} value={this.state.newWitnessedNumPeople}/>}
+                {!witnessedNumPeopleValid && <CInput invalid id="people-affected-text-input" name="people-affected-text-input" placeholder="0" onChange={this.onNewWitnessedNumPeopleChange.bind(this)} value={this.state.newWitnessedNumPeople}/>}
+                <CInvalidFeedback>Number of people affected is blank or format is not recognized</CInvalidFeedback>
+                <CFormText>Estimate of number of people affected</CFormText>
+              </CCol>
+            </CFormGroup>
+
+            <CFormGroup row>
+              <CCol md="3">
+                <CLabel htmlFor="latitude-text-input">Location Latitude</CLabel>
+              </CCol>
+              <CCol xs="12" md="9">
+                {witnessedLatitudeValid && <CInput id="latitude-text-input" name="latitude-text-input" placeholder="0.00" onChange={this.onNewWitnessedLatitudeChange.bind(this)} value={this.state.newWitnessedLatitude} />}
+                {!witnessedLatitudeValid && <CInput invalid id="latitude-text-input" name="latitude-text-input" placeholder="0.00" onChange={this.onNewWitnessedLatitudeChange.bind(this)} value={this.state.newWitnessedLatitude} />}
+                <CInvalidFeedback>Location latitude is blank or format is not recognized</CInvalidFeedback>
+                <CFormText>Signed latitude of disaster</CFormText>
+              </CCol>
+            </CFormGroup>
+
+            <CFormGroup row>
+              <CCol md="3">
+                <CLabel htmlFor="longitude-text-input">Location Longitude</CLabel>
+              </CCol>
+              <CCol xs="12" md="9">
+                {witnessedLongitudeValid && <CInput id="longitude-text-input" name="longitude-text-input" placeholder="0.00" onChange={this.onNewWitnessedLongitudeChange.bind(this)} value={this.state.newWitnessedLongitude}/>}
+                {!witnessedLongitudeValid && <CInput invalid id="longitude-text-input" name="longitude-text-input" placeholder="0.00" onChange={this.onNewWitnessedLongitudeChange.bind(this)} value={this.state.newWitnessedLongitude}/>}
+                <CInvalidFeedback>Location longitude is blank or format is not recognized</CInvalidFeedback>
+                <CFormText>Signed longitude of disaster</CFormText>
+              </CCol>
+            </CFormGroup>
+
+            <CFormGroup row>
+              <CCol md="3">
+                <CLabel htmlFor="severity-text-input">Severity (optional)</CLabel>
+              </CCol>
+              <CCol xs="12" md="9">
+                {witnessedSeverityValid && <CInput id="severity-text-input" name="severity-text-input" placeholder="0" onChange={this.onNewWitnessedSeverityChange.bind(this)} value={this.state.newWitnessedSeverity}/>}
+                {!witnessedSeverityValid && <CInput invalid id="severity-text-input" name="severity-text-input" placeholder="0" onChange={this.onNewWitnessedSeverityChange.bind(this)} value={this.state.newWitnessedSeverity}/>}
+                <CInvalidFeedback>Format of severity is not recognized or out of range</CInvalidFeedback>
+                <CFormText>Severity of disaster on a scale of 0 to 10, integral values only</CFormText>
+              </CCol>
+            </CFormGroup>
+
+            <CFormGroup row>
+              <CCol md="3">
+                <CLabel htmlFor="image-url-text-input">Image URL (optional)</CLabel>
+              </CCol>
+              <CCol xs="12" md="9">
+                {witnessedImageURLValid && <CInput id="image-url-text-input" name="image-url-text-input" placeholder="Text" onChange={this.onNewWitnessedImageURLChange.bind(this)} value={this.state.newWitnessedImageURL}/>}
+                {!witnessedImageURLValid && <CInput invalid id="image-url-text-input" name="image-url-text-input" placeholder="Text" onChange={this.onNewWitnessedImageURLChange.bind(this)} value={this.state.newWitnessedImageURL}/>}
+                <CInvalidFeedback>Houston, we have a problem...</CInvalidFeedback>
                 <CFormText>This is a help text</CFormText>
               </CCol>
             </CFormGroup>
+
             <CFormGroup row>
               <CCol md="3">
-                <CLabel htmlFor="email-input">Email Input</CLabel>
-              </CCol>
-              <CCol xs="12" md="9">
-                <CInput type="email" id="email-input" name="email-input" placeholder="Enter Email" autoComplete="email"/>
-                <CFormText className="help-block">Please enter your email</CFormText>
-              </CCol>
-            </CFormGroup>
-            <CFormGroup row>
-              <CCol md="3">
-                <CLabel htmlFor="password-input">Password</CLabel>
-              </CCol>
-              <CCol xs="12" md="9">
-                <CInput type="password" id="password-input" name="password-input" placeholder="Password" autoComplete="new-password" />
-                <CFormText className="help-block">Please enter a complex password</CFormText>
-              </CCol>
-            </CFormGroup>
-            <CFormGroup row>
-              <CCol md="3">
-                <CLabel htmlFor="disabled-input">Disabled Input</CLabel>
-              </CCol>
-              <CCol xs="12" md="9">
-                <CInput id="disabled-input" name="disabled-input" placeholder="Disabled" disabled />
-              </CCol>
-            </CFormGroup>
-            <CFormGroup row>
-              <CCol md="3">
-                <CLabel htmlFor="textarea-input">Textarea</CLabel>
+                <CLabel htmlFor="textarea-input">Comment (optional)</CLabel>
               </CCol>
               <CCol xs="12" md="9">
                 <CTextarea 
                   name="textarea-input" 
                   id="textarea-input" 
                   rows="9"
-                  placeholder="Content..." 
+                  placeholder="Content..."
+                  onChange={this.onNewWitnesseedCommentChange.bind(this)}
+                  value={this.state.newWitnessedComment}
                 />
               </CCol>
-            </CFormGroup>
-            <CFormGroup row>
-              <CCol md="3">
-                <CLabel htmlFor="select">Select</CLabel>
-              </CCol>
-              <CCol xs="12" md="9">
-                <CSelect custom name="select" id="select">
-                  <option value="0">Please select</option>
-                  <option value="1">Option #1</option>
-                  <option value="2">Option #2</option>
-                  <option value="3">Option #3</option>
-                </CSelect>
-              </CCol>
-            </CFormGroup>
-            <CFormGroup row>
-              <CCol md="3">
-                <CLabel htmlFor="selectLg">Select Large</CLabel>
-              </CCol>
-              <CCol xs="12" md="9" size="lg">
-                <CSelect custom size="lg" name="selectLg" id="selectLg">
-                  <option value="0">Please select</option>
-                  <option value="1">Option #1</option>
-                  <option value="2">Option #2</option>
-                  <option value="3">Option #3</option>
-                </CSelect>
-              </CCol>
-            </CFormGroup>
-            <CFormGroup row>
-              <CCol md="3">
-                <CLabel htmlFor="selectSm">Select Small</CLabel>
-              </CCol>
-              <CCol xs="12" md="9">
-                <CSelect custom size="sm" name="selectSm" id="SelectLm">
-                  <option value="0">Please select</option>
-                  <option value="1">Option #1</option>
-                  <option value="2">Option #2</option>
-                  <option value="3">Option #3</option>
-                  <option value="4">Option #4</option>
-                  <option value="5">Option #5</option>
-                </CSelect>
-              </CCol>
-            </CFormGroup>
-            <CFormGroup row>
-              <CCol md="3">
-                <CLabel htmlFor="disabledSelect">Disabled Select</CLabel>
-              </CCol>
-              <CCol xs="12" md="9">
-                <CSelect 
-                  custom 
-                  name="disabledSelect" 
-                  id="disabledSelect" 
-                  disabled 
-                  autoComplete="name"
-                >
-                  <option value="0">Please select</option>
-                  <option value="1">Option #1</option>
-                  <option value="2">Option #2</option>
-                  <option value="3">Option #3</option>
-                </CSelect>
-              </CCol>
-            </CFormGroup>
-            <CFormGroup row>
-              <CCol tag="label" sm="3" className="col-form-label">
-                Switch checkboxes
-              </CCol>
-              <CCol sm="9">
-                <CSwitch
-                  className="mr-1"
-                  color="primary"
-                  defaultChecked
-                />
-                <CSwitch
-                  className="mr-1"
-                  color="success"
-                  defaultChecked
-                  variant="outline"
-                />
-                <CSwitch
-                  className="mr-1"
-                  color="warning"
-                  defaultChecked
-                  variant="opposite"
-                />
-                <CSwitch
-                  className="mr-1"
-                  color="danger"
-                  defaultChecked
-                  shape="pill"
-                />
-                <CSwitch
-                  className="mr-1"
-                  color="info"
-                  defaultChecked
-                  shape="pill"
-                  variant="outline"
-                />
-                <CSwitch
-                  className="mr-1"
-                  color="dark"
-                  defaultChecked
-                  shape="pill"
-                  variant="opposite"
-                />
-              </CCol>
-            </CFormGroup>
-            <CFormGroup row>
-              <CCol md="3">
-                <CLabel>Radios</CLabel>
-              </CCol>
-              <CCol md="9">
-                <CFormGroup variant="checkbox">
-                  <CInputRadio className="form-check-input" id="radio1" name="radios" value="option1" />
-                  <CLabel variant="checkbox" htmlFor="radio1">Option 1</CLabel>
-                </CFormGroup>
-                <CFormGroup variant="checkbox">
-                  <CInputRadio className="form-check-input" id="radio2" name="radios" value="option2" />
-                  <CLabel variant="checkbox" htmlFor="radio2">Option 2</CLabel>
-                </CFormGroup>
-                <CFormGroup variant="checkbox">
-                  <CInputRadio className="form-check-input" id="radio3" name="radios" value="option3" />
-                  <CLabel variant="checkbox" htmlFor="radio3">Option 3</CLabel>
-                </CFormGroup>
-              </CCol>
-            </CFormGroup>
-            <CFormGroup row>
-              <CCol md="3">
-                <CLabel>Inline Radios</CLabel>
-              </CCol>
-              <CCol md="9">
-                <CFormGroup variant="custom-radio" inline>
-                  <CInputRadio custom id="inline-radio1" name="inline-radios" value="option1" />
-                  <CLabel variant="custom-checkbox" htmlFor="inline-radio1">One</CLabel>
-                </CFormGroup>
-                <CFormGroup variant="custom-radio" inline>
-                  <CInputRadio custom id="inline-radio2" name="inline-radios" value="option2" />
-                  <CLabel variant="custom-checkbox" htmlFor="inline-radio2">Two</CLabel>
-                </CFormGroup>
-                <CFormGroup variant="custom-radio" inline>
-                  <CInputRadio custom id="inline-radio3" name="inline-radios" value="option3" />
-                  <CLabel variant="custom-checkbox" htmlFor="inline-radio3">Three</CLabel>
-                </CFormGroup>
-              </CCol>
-            </CFormGroup>
-            <CFormGroup row>
-              <CCol md="3"><CLabel>Checkboxes</CLabel></CCol>
-              <CCol md="9">
-                <CFormGroup variant="checkbox" className="checkbox">
-                  <CInputCheckbox 
-                    id="checkbox1" 
-                    name="checkbox1" 
-                    value="option1" 
-                  />
-                  <CLabel variant="checkbox" className="form-check-label" htmlFor="checkbox1">Option 1</CLabel>
-                </CFormGroup>
-                <CFormGroup variant="checkbox" className="checkbox">
-                  <CInputCheckbox id="checkbox2" name="checkbox2" value="option2" />
-                  <CLabel variant="checkbox" className="form-check-label" htmlFor="checkbox2">Option 2</CLabel>
-                </CFormGroup>
-                <CFormGroup variant="checkbox" className="checkbox">
-                  <CInputCheckbox id="checkbox3" name="checkbox3" value="option3" />
-                  <CLabel variant="checkbox" className="form-check-label" htmlFor="checkbox3">Option 3</CLabel>
-                </CFormGroup>
-              </CCol>
-            </CFormGroup>
-            <CFormGroup row>
-              <CCol md="3">
-                <CLabel>Inline Checkboxes</CLabel>
-              </CCol>
-              <CCol md="9">
-                <CFormGroup variant="custom-checkbox" inline>
-                  <CInputCheckbox 
-                    custom 
-                    id="inline-checkbox1" 
-                    name="inline-checkbox1" 
-                    value="option1" 
-                  />
-                  <CLabel variant="custom-checkbox" htmlFor="inline-checkbox1">One</CLabel>
-                </CFormGroup>
-                <CFormGroup variant="custom-checkbox" inline>
-                  <CInputCheckbox custom id="inline-checkbox2" name="inline-checkbox2" value="option2" />
-                  <CLabel variant="custom-checkbox" htmlFor="inline-checkbox2">Two</CLabel>
-                </CFormGroup>
-                <CFormGroup variant="custom-checkbox" inline>
-                  <CInputCheckbox custom id="inline-checkbox3" name="inline-checkbox3" value="option3" />
-                  <CLabel variant="custom-checkbox" htmlFor="inline-checkbox3">Three</CLabel>
-                </CFormGroup>
-              </CCol>
-            </CFormGroup>
-            <CFormGroup row>
-              <CLabel col md="3" htmlFor="file-input">File input</CLabel>
-              <CCol xs="12" md="9">
-                <CInputFile id="file-input" name="file-input"/>
-              </CCol>
-            </CFormGroup>
-            <CFormGroup row>
-              <CCol md="3">
-                <CLabel>Multiple File input</CLabel>
-              </CCol>
-              <CCol xs="12" md="9">
-                <CInputFile 
-                  id="file-multiple-input" 
-                  name="file-multiple-input" 
-                  multiple
-                  custom
-                />
-                <CLabel htmlFor="file-multiple-input" variant="custom-file">
-                  Choose Files...
-                </CLabel>
-              </CCol>
-            </CFormGroup>
-            <CFormGroup row>
-              <CLabel col md={3}>Custom file input</CLabel>
-              <CCol xs="12" md="9">
-                <CInputFile custom id="custom-file-input"/>
-                <CLabel htmlFor="custom-file-input" variant="custom-file">
-                  Choose file...
-                </CLabel>
-              </CCol>
-            </CFormGroup>
+            </CFormGroup>            
+            
           </CForm>
         </CCardBody>
         <CCardFooter>
-          <CButton type="submit" size="sm" color="primary"><CIcon name="cil-scrubber" /> Submit</CButton>
+          <CButton type="submit" size="sm" color="primary" onClick={this.onNewWitnessReportSubmit.bind(this)}><CIcon name="cil-scrubber" /> Submit</CButton>
           <CButton type="reset" size="sm" color="danger"><CIcon name="cil-ban" /> Reset</CButton>
         </CCardFooter>
       </CCard>
