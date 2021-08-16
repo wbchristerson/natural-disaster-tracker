@@ -33,7 +33,8 @@ import {
   CSwitch,
   CListGroup,
   CListGroupItem,
-  CButtonClose
+  CButtonClose,
+  CProgress,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { DocsLink } from 'src/reusable'
@@ -57,7 +58,7 @@ class SingleDisasterDisplay extends React.Component {
       official_name: null,
       people_affected: 0,
       reports: [],
-      witnessReportFormVisible: true,
+      witnessReportFormVisible: false,
 
       newWitnessedDate: "",
       newWitnessedTime: "",
@@ -81,6 +82,10 @@ class SingleDisasterDisplay extends React.Component {
 
   componentDidMount() {
     const disasterId = parseInt(this.props.location.search.substring(4));
+    this.fetchDisasterInformation(disasterId);
+  }
+
+  fetchDisasterInformation(disasterId) {
     fetch(`${this.backEndHost}/api/disasters/${disasterId}?page=${this.state.page}`)
     .then(response => response.json())
     .then(result => {
@@ -167,6 +172,26 @@ class SingleDisasterDisplay extends React.Component {
     });
   }
 
+  clearWitnessReportForm() {
+    this.setState({
+      newWitnessedDate: "",
+      newWitnessedTime: "",
+      newWitnessedNumPeople: "",
+      newWitnessedLatitude: "",
+      newWitnessedLongitude: "",
+      newWitnessedSeverity: "",
+      newWitnessedImageURL: "",
+      newWitnessedComment: "",
+      witnessedDateValid: true,
+      witnessedTimeValid: true,
+      witnessedNumPeopleValid: true,
+      witnessedLatitudeValid: true,
+      witnessedLongitudeValid: true,
+      witnessedSeverityValid: true,
+      witnessedImageURLValid: true,
+    });
+  }
+
   onNewWitnessReportSubmit() {
     console.log("there");
     const {
@@ -234,7 +259,6 @@ class SingleDisasterDisplay extends React.Component {
       witnessedImageURLValid) {
       
       // send creation request
-      console.log("here");
       fetch(`${this.backEndHost}/api/witnessreports`,
         {
           method: 'POST',
@@ -257,7 +281,15 @@ class SingleDisasterDisplay extends React.Component {
         }
       )
       .then(response => response.json())
-      .then(result => console.log(result))
+      .then(result => {
+        console.log(result);
+
+        this.clearWitnessReportForm();
+        this.setState({
+          witnessReportFormVisible: false,
+        });
+        this.fetchDisasterInformation(this.state.id);
+      })
       .catch(e => {
           console.log("Error fetching disaster with id ", id);
           console.log(e);
@@ -265,17 +297,10 @@ class SingleDisasterDisplay extends React.Component {
     }
   }
 
-  // body.get("event_datetime"),
-  // body.get("people_affected"),
-  // body.get("location_latitude"),
-  // body.get("location_longitude")
-
-  // body.get("severity"),  # optional
-  // body.get("image_url"),  # optional
-  // body.get("comment"),  # optional
 
   getAddWitnessReportForm() {
     const {
+      newWitnessedDate, newWitnessedTime,
       witnessedDateValid, witnessedTimeValid, witnessedNumPeopleValid, witnessedLatitudeValid,
       witnessedLongitudeValid, witnessedSeverityValid, witnessedImageURLValid} = this.state;
     return (
@@ -291,8 +316,8 @@ class SingleDisasterDisplay extends React.Component {
                 <CLabel htmlFor="date-input">Date Witnessed:</CLabel>
               </CCol>
               <CCol xs="12" md="9">
-                {witnessedDateValid && <CInput type="date" id="date-input" name="date-input" placeholder="date" onChange={this.onNewWitnessedDateChange.bind(this)} />}
-                {!witnessedDateValid && <CInput invalid type="date" id="date-input" name="date-input" placeholder="date" onChange={this.onNewWitnessedDateChange.bind(this)} />}
+                {witnessedDateValid && <CInput type="date" id="date-input" name="date-input" placeholder="date" value={newWitnessedDate} onChange={this.onNewWitnessedDateChange.bind(this)} />}
+                {!witnessedDateValid && <CInput invalid type="date" id="date-input" name="date-input" placeholder="date" value={newWitnessedDate} onChange={this.onNewWitnessedDateChange.bind(this)} />}
                 <CInvalidFeedback>Date provided is blank</CInvalidFeedback>
                 <CFormText>Date of the disaster</CFormText>
               </CCol>
@@ -303,8 +328,8 @@ class SingleDisasterDisplay extends React.Component {
                 <CLabel htmlFor="time-text-input">Time (HH:MM:SS)</CLabel>
               </CCol>
               <CCol xs="12" md="9">
-                {witnessedTimeValid && <CInput required id="time-text-input" name="time-text-input" placeholder="HH:MM:SS" onChange={this.onNewWitnessedTimeChange.bind(this)} value={this.state.newWitnessedTime}/>}
-                {!witnessedTimeValid && <CInput required invalid id="time-text-input" name="time-text-input" placeholder="HH:MM:SS" onChange={this.onNewWitnessedTimeChange.bind(this)} value={this.state.newWitnessedTime}/>}
+                {witnessedTimeValid && <CInput required id="time-text-input" name="time-text-input" placeholder="HH:MM:SS" onChange={this.onNewWitnessedTimeChange.bind(this)} value={newWitnessedTime}/>}
+                {!witnessedTimeValid && <CInput required invalid id="time-text-input" name="time-text-input" placeholder="HH:MM:SS" onChange={this.onNewWitnessedTimeChange.bind(this)} value={newWitnessedTime}/>}
                 <CInvalidFeedback>Time provided is blank or format is not recognized</CInvalidFeedback>
                 <CFormText>Time of the disaster in hours, minutes, and optional seconds format</CFormText>
               </CCol>
@@ -390,7 +415,7 @@ class SingleDisasterDisplay extends React.Component {
         </CCardBody>
         <CCardFooter>
           <CButton type="submit" size="sm" color="primary" onClick={this.onNewWitnessReportSubmit.bind(this)}><CIcon name="cil-scrubber" /> Submit</CButton>
-          <CButton type="reset" size="sm" color="danger"><CIcon name="cil-ban" /> Reset</CButton>
+          <CButton type="reset" size="sm" color="danger" onClick={this.clearWitnessReportForm.bind(this)}><CIcon name="cil-ban" /> Reset</CButton>
         </CCardFooter>
       </CCard>
     );
@@ -459,6 +484,94 @@ class SingleDisasterDisplay extends React.Component {
             </CCard>
           </CCol>
         </CRow>
+
+        {this.state.reports.map((report, index) => {
+          return (
+            <CRow key={index}>
+              <CCol xs="12" sm="12" md="12">
+                <CCard>
+                  <CCardHeader>
+                    {/* <DocsLink name="CCard"/> */}
+                    
+                    {/* <div className="card-header-actions">
+                      <CBadge color="success" className="float-right">Success</CBadge>
+                    </div> */}
+
+                    {/* <div className="card-header-actions">
+                      <CLink className="card-header-action">
+                        <CIcon name="cil-settings" />
+                      </CLink>
+                      <CLink className="card-header-action" onClick={() => setCollapsed(!collapsed)}>
+                        <CIcon name={collapsed ? 'cil-chevron-bottom':'cil-chevron-top'} />
+                      </CLink>
+                      <CLink className="card-header-action" onClick={() => setShowCard(false)}>
+                        <CIcon name="cil-x-circle" />
+                      </CLink>
+                    </div> */}
+
+                    {/* <CBadge className="mr-1" color="danger">Danger</CBadge> */}
+
+                  </CCardHeader>
+                  {report.image_url && <img className="d-block w-100 set-disaster-max-height" src={report.image_url} alt="slide 1"/>}
+                  <CCardBody>
+
+                    <table className="table table-hover table-outline mb-0 d-none d-sm-table">
+                      <tbody>
+                        <tr>
+                          <td className="text-center">
+                            <div className="c-avatar">
+                              <img src={report.user_photograph_url} className="c-avatar-img" alt={"" + report.username} />
+                              <span className="c-avatar-status bg-success"></span>
+                            </div>
+                          </td>
+                          <td>
+                            <div>{report.username}</div>
+                            <div className="small text-muted">
+                              <span>New</span> | Registered: Jan 1, 2015
+                            </div>
+                          </td>
+                          <td className="text-center">
+                            <CIcon height={25} name="cif-us" title="us" id="us" />
+                          </td>
+                          <td>
+                            <div className="clearfix">
+                              <div className="float-left">
+                                <strong>50%</strong>
+                              </div>
+                              <div className="float-right">
+                                <small className="text-muted">Jun 11, 2015 - Jul 10, 2015</small>
+                              </div>
+                            </div>
+                            <CProgress className="progress-xs" color="success" value="50" />
+                          </td>
+                          <td className="text-center">
+                            <CIcon height={25} name="cib-cc-mastercard" />
+                          </td>
+                          <td>
+                            <div className="small text-muted">Last login</div>
+                            <strong>10 sec ago</strong>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+
+                    {report.comment && <h5>{`"${report.comment}"`}</h5>}
+                    <h6>{`Observer: ${report.username}`}</h6>
+                    <h6>{`Severity: ${report.severity}`}</h6>
+                    <h6>{`Observance time: ${report.event_datetime}`}</h6>
+                    <h6>{`Report id: ${report.id}`}</h6>
+                    <h6>{`Location: ${formatLatitudeLongitude(report.location)}`}</h6>
+                    <h6>{`People affected: ${report.people_affected}`}</h6>
+
+                    {/* <div className="auth0-box">
+                      <a className="btn btn-primary" href={`${this.frontEndHost}/#/single-disaster-display?id=${disaster.id}`}>View Witness Reports</a>
+                    </div> */}
+                  </CCardBody>
+                </CCard>
+              </CCol>
+            </CRow>
+          )
+        })}
       </>
     );
   }

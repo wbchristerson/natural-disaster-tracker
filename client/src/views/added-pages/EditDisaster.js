@@ -1,0 +1,353 @@
+import React from 'react'
+import {
+  CButton,
+  CCard,
+  CCardBody,
+  CCardFooter,
+  CCardHeader,
+  CCol,
+  CCollapse,
+  CDropdownItem,
+  CDropdownMenu,
+  CDropdownToggle,
+  CFade,
+  CForm,
+  CFormGroup,
+  CFormText,
+  CValidFeedback,
+  CInvalidFeedback,
+  CTextarea,
+  CInput,
+  CInputFile,
+  CInputCheckbox,
+  CInputRadio,
+  CInputGroup,
+  CInputGroupAppend,
+  CInputGroupPrepend,
+  CDropdown,
+  CInputGroupText,
+  CLabel,
+  CSelect,
+  CRow,
+  CSwitch
+} from '@coreui/react'
+import CIcon from '@coreui/icons-react'
+import { DocsLink } from 'src/reusable'
+import { getCookieWithKey, USER_ACCESS_TOKEN_KEY, getBackEndHost, getFrontEndHost, isValidGeographicCoordinate } from 'src/Utilities';
+
+
+class EditDisaster extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      informalName: "",
+      officialName: "",
+      disasterType: "",
+      isOngoing: false,
+      latitude: "",
+      longitude: "",
+
+      isValidInformalName: true,
+      isValidOfficialName: true,
+      isValidDisasterType: true,
+      isValidLatitude: true,
+      isValidLongitude: true,
+    };
+    this.backEndHost = getBackEndHost();
+    this.frontEndHost = getFrontEndHost();
+    this.disasterId = parseInt(this.props.location.search.substring(4));
+    
+    this.originalInformalName = "";
+    this.originalOfficialName = "";
+    this.originalDisasterType = "";
+    this.originalIsOngoing = false;
+    this.originalLatitude = "";
+    this.originalLongitude = "";
+  }
+
+  componentDidMount() {
+    fetch(`${this.backEndHost}/api/disasters/${this.disasterId}`)
+    .then(response => response.json())
+    .then(result => {
+        this.setState({
+          informalName: result.informal_name,
+          officialName: result.official_name,
+          disasterType: result.disaster_type.charAt(0).toUpperCase() + result.disaster_type.slice(1),
+          isOngoing: result.is_ongoing,
+          latitude: result.location[0].toString(),
+          longitude: result.location[1].toString(),
+        });
+
+        this.originalInformalName = result.informal_name;
+        this.originalOfficialName = result.official_name;
+        this.originalDisasterType = result.disaster_type.charAt(0).toUpperCase() + result.disaster_type.slice(1);
+        this.originalIsOngoing = result.is_ongoing;
+        this.originalLatitude = result.location[0].toString();
+        this.originalLongitude = result.location[1].toString();
+    })
+    .catch(e => {
+        console.log("Error fetching disaster with id ", this.disasterId);
+        console.log(e);
+    });
+  }
+
+  static disasterTypes = ["Please select", "Earthquake", "Flood", "Wildfire", "Tornado", "Hurricane", "Tsunami", "Landslide", "Avalanche", "Volcano", "Other"];
+
+  onInformalNameChange(evt) {
+    this.setState({ informalName: evt.target.value });
+  }
+
+  onOfficialNameChange(evt) {
+    this.setState({ officialName: evt.target.value });
+  }
+
+  onDisasterTypeChange(evt) {
+    this.setState({ disasterType: evt.target.value });
+  }
+
+  onIsOngoingChange(evt) {
+    this.setState({ isOngoing: !this.state.isOngoing });
+  }
+
+  onLatitudeChange(evt) {
+    // const latitudeRegExp = /^-?\d*\.?\d*$/;
+    // if (latitudeRegExp.test(evt.target.value) && parseFloat(evt.target.value) >= -180.0 && parseFloat(evt.target.value) <= 180.0) {
+    //   this.setState({ latitude: evt.target.value });
+    // } else if (evt.target.value == "") {
+    //   this.setState({ latitude: "" });
+    // } else if (evt.target.value == "-") {
+    //   this.setState({ latitude: "-" });
+    // }
+
+    this.setState({ latitude: evt.target.value });
+  }
+
+  onLongitudeChange(evt) {
+    // const longitudeRegExp = /^-?\d*\.?\d*$/;
+    // if (longitudeRegExp.test(evt.target.value) && parseFloat(evt.target.value) >= -180.0 && parseFloat(evt.target.value) <= 180.0) {
+    //   this.setState({ longitude: evt.target.value });
+    // } else if (evt.target.value == "") {
+    //   this.setState({ longitude: "" });
+    // } else if (evt.target.value == "-") {
+    //   this.setState({ longitude: "-" });
+    // }
+
+    this.setState({ longitude: evt.target.value });
+  }
+
+  onSubmit() {
+    console.log("in onSubmit");
+    console.log(this.state.latitude);
+    console.log(this.state.longitude);
+
+    let
+      isValidInformalName = true,
+      isValidOfficialName = true,
+      isValidDisasterType = true,
+      isValidLatitude = true,
+      isValidLongitude = true;
+
+    const {informalName, officialName, disasterType, isOngoing, latitude, longitude} = this.state;
+    
+    if (informalName == "") {
+      isValidInformalName = false;
+    }
+
+    if (officialName == "") {
+      isValidOfficialName = false;
+    }
+
+    if (disasterType == "Please select") {
+      isValidDisasterType = false;
+    }
+
+    if (!isValidGeographicCoordinate(latitude)) {
+      isValidLatitude = false;
+    }
+
+    if (!isValidGeographicCoordinate(longitude)) {
+      isValidLongitude = false;
+    }
+
+    if (isValidInformalName && isValidOfficialName && isValidDisasterType && isValidLatitude && isValidLongitude) {
+      const rawBody = { id: this.disasterId };
+      if (informalName.trim() != this.originalInformalName) {
+        rawBody.informal_name = informalName.trim();
+      }
+      if (officialName.trim() != this.originalOfficialName) {
+        rawBody.official_name = officialName.trim();
+      }
+      if (disasterType.trim() != this.originalDisasterType) {
+        rawBody.disaster_type = disasterType.charAt(0).toLowerCase() + disasterType.slice(1);
+      }
+      if (isOngoing != this.originalIsOngoing) {
+        rawBody.is_ongoing = isOngoing;
+      }
+      if (latitude != this.originalLatitude) {
+        rawBody.location_latitude = latitude;
+      }
+      if (longitude != this.originalLongitude) {
+        rawBody.location_longitude = longitude;
+      }
+
+      fetch(`${this.backEndHost}/api/disasters`,
+        {
+          method: 'PATCH',
+          body: JSON.stringify(rawBody),
+          contentType: 'application/json',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + getCookieWithKey(USER_ACCESS_TOKEN_KEY),
+          }
+        }
+      )
+      .then(response => response.json())
+      .then(result => {
+        console.log(result);
+        this.originalInformalName = result.informal_name;
+        this.originalOfficialName = result.official_name;
+        this.originalDisasterType = result.disaster_type.charAt(0).toUpperCase() + result.disaster_type.slice(1);
+        this.originalIsOngoing = result.is_ongoing;
+        this.originalLatitude = result.location[0].toString();
+        this.originalLongitude = result.location[1].toString();
+      })
+      .catch(e => {
+          console.log("Error fetching disaster with id ", this.disasterId);
+          console.log(e);
+      });
+    }
+
+    this.setState({
+      isValidInformalName,
+      isValidOfficialName,
+      isValidDisasterType,
+      isValidLatitude,
+      isValidLongitude,
+    });
+  }
+
+  resetDisasterForm() {
+    this.setState({
+      informalName: this.originalInformalName,
+      officialName: this.originalOfficialName,
+      disasterType: this.originalDisasterType,
+      isOngoing: this.originalIsOngoing,
+      latitude: this.originalLatitude,
+      longitude: this.originalLongitude,
+      isValidInformalName: true,
+      isValidOfficialName: true,
+      isValidDisasterType: true,
+      isValidLatitude: true,
+      isValidLongitude: true,
+    });
+  }
+
+  render() {
+    const {isValidInformalName, isValidOfficialName, isValidDisasterType, isValidLatitude, isValidLongitude} = this.state;
+    return (
+      <>
+        <CRow>
+          <CCol xs="12">
+            <CCard>
+              <CCardHeader>
+                Basic Form
+                <small> Elements</small>
+              </CCardHeader>
+              <CCardBody>
+                <CForm action="" method="post" encType="multipart/form-data" className="form-horizontal">
+                  <CFormGroup row>
+                    <CCol md="3">
+                      <CLabel htmlFor="text-input">Informal Name</CLabel>
+                    </CCol>
+                    <CCol xs="12" md="9">
+                      {isValidInformalName && <CInput id="text-input" name="text-input" placeholder="Text" value={this.state.informalName} onChange={this.onInformalNameChange.bind(this)}/>}
+                      {!isValidInformalName && <CInput id="text-input" invalid name="text-input" placeholder="Text" value={this.state.informalName} onChange={this.onInformalNameChange.bind(this)}/>}
+                      <CInvalidFeedback>Informal name is blank or format is not recognized</CInvalidFeedback>
+                      <CFormText>The colloquial name of the disaster</CFormText>
+                    </CCol>
+                  </CFormGroup>
+                  <CFormGroup row>
+                    <CCol md="3">
+                      <CLabel htmlFor="text-input">Official Name</CLabel>
+                    </CCol>
+                    <CCol xs="12" md="9">
+                      {isValidOfficialName && <CInput id="text-input" name="text-input" placeholder="Text" value={this.state.officialName} onChange={this.onOfficialNameChange.bind(this)}/>}
+                      {!isValidOfficialName && <CInput id="text-input" invalid name="text-input" placeholder="Text" value={this.state.officialName} onChange={this.onOfficialNameChange.bind(this)}/>}
+                      <CInvalidFeedback>Official name is blank or format is not recognized</CInvalidFeedback>
+                      <CFormText>The identifying name of the disaster</CFormText>
+                    </CCol>
+                  </CFormGroup>
+                  <CFormGroup row>
+                    <CCol md="3">
+                      <CLabel htmlFor="select">Disaster Type</CLabel>
+                    </CCol>
+                    <CCol xs="12" md="9">
+                      {isValidDisasterType && 
+                        <CSelect custom name="select" id="select" value={this.state.disasterType} onChange={this.onDisasterTypeChange.bind(this)}>
+                          {EditDisaster.disasterTypes.map(disaster => <option key={disaster} value={disaster}>{disaster}</option>)}
+                        </CSelect>
+                      }
+                      {!isValidDisasterType &&
+                        <CSelect invalid custom name="select" id="select" value={this.state.disasterType} onChange={this.onDisasterTypeChange.bind(this)}>
+                          {EditDisaster.disasterTypes.map(disaster => <option key={disaster} value={disaster}>{disaster}</option>)}
+                        </CSelect>
+                      }
+                      <CInvalidFeedback>No disaster type is selected</CInvalidFeedback>
+                    </CCol>
+                  </CFormGroup>
+                  <CFormGroup row>
+                    <CCol tag="label" sm="3" className="col-form-label">
+                      Disaster Ongoing
+                    </CCol>
+                    <CCol sm="1">
+                      <CSwitch
+                        id="add-disaster-ongoing-switch"
+                        className="mr-1"
+                        color="danger"
+                        // defaultChecked
+                        shape="pill"
+                        checked={this.state.isOngoing}
+                        onChange={this.onIsOngoingChange.bind(this)}
+                      />
+                    </CCol>
+                    <CCol sm="3">
+                      <CLabel htmlFor="add-disaster-ongoing-switch">{this.state.isOngoing ? "Yes" : "No"}</CLabel>
+                    </CCol>
+                  </CFormGroup>
+                  <CFormGroup row>
+                    <CCol md="3">
+                      <CLabel htmlFor="email-input">Latitude</CLabel>
+                    </CCol>
+                    <CCol xs="12" md="9">
+                      {isValidLatitude && <CInput type="email" id="email-input" name="email-input" placeholder="Disaster Latitude" value={this.state.latitude} onChange={this.onLatitudeChange.bind(this)}/>}
+                      {!isValidLatitude && <CInput invalid type="email" id="email-input" name="email-input" placeholder="Disaster Latitude" value={this.state.latitude} onChange={this.onLatitudeChange.bind(this)}/>}
+                      <CInvalidFeedback>Provided latitude is blank or format is not recognized</CInvalidFeedback>
+                      <CFormText className="help-block">The latitude of the disaster</CFormText>
+                    </CCol>
+                  </CFormGroup>
+                  <CFormGroup row>
+                    <CCol md="3">
+                      <CLabel htmlFor="email-input">Longitude</CLabel>
+                    </CCol>
+                    <CCol xs="12" md="9">
+                      {isValidLongitude && <CInput type="email" id="email-input" name="email-input" placeholder="Disaster Latitude" value={this.state.longitude} onChange={this.onLongitudeChange.bind(this)}/>}
+                      {!isValidLongitude && <CInput invalid type="email" id="email-input" name="email-input" placeholder="Disaster Latitude" value={this.state.longitude} onChange={this.onLongitudeChange.bind(this)}/>}
+                      <CInvalidFeedback>Provided longitude is blank or format is not recognized</CInvalidFeedback>
+                      <CFormText className="help-block">The longitude of the disaster</CFormText>
+                    </CCol>
+                  </CFormGroup>
+                </CForm>
+              </CCardBody>
+              <CCardFooter>
+                <CButton type="submit" size="sm" color="primary" onClick={this.onSubmit.bind(this)}><CIcon name="cil-scrubber" /> Submit</CButton>
+                <CButton type="reset" size="sm" color="danger" onClick={this.resetDisasterForm.bind(this)}><CIcon name="cil-ban" /> Reset</CButton>
+              </CCardFooter>
+            </CCard>
+          </CCol>
+        </CRow>
+      </>
+    );
+  }
+}
+
+export default EditDisaster;

@@ -193,7 +193,11 @@ def create_app(test_config=None):
 
         random_report_data = dict()
         for k, v in disaster_map.items():
-            random_report_data[k] = v[randrange(len(v))]
+            reports_with_images = list(filter(lambda report_data: report_data[2] is not None, v))
+            if len(reports_with_images) > 0:
+                random_report_data[k] = reports_with_images[randrange(len(reports_with_images))]
+            else:
+                random_report_data[k] = v[randrange(len(v))]
         return random_report_data
 
 
@@ -542,30 +546,29 @@ def create_app(test_config=None):
         try:
             body = request.get_json()
 
-            print(body.get("disaster_id"))
-            print(body.get("observer_id"))
-            print(body.get("event_datetime"))
-            print(body.get("severity"))  # optional
-            print(body.get("image_url"))  # optional
-            print(body.get("comment"))  # optional
-            print(body.get("people_affected"))
-            print(body.get("location_latitude"))
-            print(body.get("location_longitude"))
+            # print(body.get("disaster_id"))
+            # print(body.get("observer_id"))
+            # print(body.get("event_datetime"))
+            # print(body.get("severity"))  # optional
+            # print(body.get("image_url"))  # optional
+            # print(body.get("comment"))  # optional
+            # print(body.get("people_affected"))
+            # print(body.get("location_latitude"))
+            # print(body.get("location_longitude"))
 
-            # witness_report = WitnessReport(
-            #     body.get("disaster_id"),
-            #     body.get("observer_id"),
-            #     body.get("event_datetime"),
-            #     body.get("severity"),  # optional
-            #     body.get("image_url"),  # optional
-            #     body.get("comment"),  # optional
-            #     body.get("people_affected"),
-            #     body.get("location_latitude"),
-            #     body.get("location_longitude")
-            # )
-            # witness_report.insert()
-            # return jsonify({"id": witness_report.id})
-            return jsonify({"was success for witness report": True})
+            witness_report = WitnessReport(
+                body.get("disaster_id"),
+                body.get("observer_id"),
+                body.get("event_datetime"),
+                body.get("severity"),  # optional
+                body.get("image_url"),  # optional
+                body.get("comment"),  # optional
+                body.get("people_affected"),
+                body.get("location_latitude"),
+                body.get("location_longitude")
+            )
+            witness_report.insert()
+            return jsonify({"id": witness_report.id})
         except Exception as ex:
             flash("An error occurred.")
             print(sys.exc_info())
