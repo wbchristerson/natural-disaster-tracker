@@ -462,6 +462,34 @@ def create_app(test_config=None):
 
 
     '''
+    A GET endpoint to retrieve a witness report of the set of observers, 
+    including:
+        - witness report id
+        - disaster id
+        - observer id
+        - event datetime
+        - severity
+        - image URL
+        - comment
+        - number of peopl affected
+        - location (array of latitude and longitude)
+    
+    When an id (witness_report_id) is provided which does not correspond to an 
+    existing witness report, a 404 error is returned.
+    '''
+    @app.route('/api/witnessreports/<witness_report_id>', methods=["GET"])
+    def retrieve_witness_report_by_id(witness_report_id):
+        try:
+            witness_report = WitnessReport.query.filter(
+                WitnessReport.id == witness_report_id).first()
+            return jsonify(witness_report.format())
+        except Exception as ex:
+            flash("An error occurred.")
+            print(sys.exc_info())
+            abort(404)
+
+
+    '''
     A POST endpoint to insert a disaster into the database. The body for the
     request is a dictionary with the following keys:
 

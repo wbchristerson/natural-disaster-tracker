@@ -6,34 +6,18 @@ import {
   CCardFooter,
   CCardHeader,
   CCol,
-  CCollapse,
-  CDropdownItem,
-  CDropdownMenu,
-  CDropdownToggle,
-  CFade,
   CForm,
   CFormGroup,
   CFormText,
-  CValidFeedback,
   CInvalidFeedback,
-  CTextarea,
   CInput,
-  CInputFile,
-  CInputCheckbox,
-  CInputRadio,
-  CInputGroup,
-  CInputGroupAppend,
-  CInputGroupPrepend,
-  CDropdown,
-  CInputGroupText,
   CLabel,
   CSelect,
   CRow,
   CSwitch
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { DocsLink } from 'src/reusable'
-import { getCookieWithKey, USER_ACCESS_TOKEN_KEY, getBackEndHost, getFrontEndHost, isValidGeographicCoordinate } from 'src/Utilities';
+import { getCookieWithKey, USER_ACCESS_TOKEN_KEY, getBackEndHost, getFrontEndHost, isValidGeographicCoordinate, DISASTER_TYPES } from 'src/Utilities';
 
 
 class EditDisaster extends React.Component {
@@ -91,8 +75,6 @@ class EditDisaster extends React.Component {
     });
   }
 
-  static disasterTypes = ["Please select", "Earthquake", "Flood", "Wildfire", "Tornado", "Hurricane", "Tsunami", "Landslide", "Avalanche", "Volcano", "Other"];
-
   onInformalNameChange(evt) {
     this.setState({ informalName: evt.target.value });
   }
@@ -110,36 +92,14 @@ class EditDisaster extends React.Component {
   }
 
   onLatitudeChange(evt) {
-    // const latitudeRegExp = /^-?\d*\.?\d*$/;
-    // if (latitudeRegExp.test(evt.target.value) && parseFloat(evt.target.value) >= -180.0 && parseFloat(evt.target.value) <= 180.0) {
-    //   this.setState({ latitude: evt.target.value });
-    // } else if (evt.target.value == "") {
-    //   this.setState({ latitude: "" });
-    // } else if (evt.target.value == "-") {
-    //   this.setState({ latitude: "-" });
-    // }
-
     this.setState({ latitude: evt.target.value });
   }
 
   onLongitudeChange(evt) {
-    // const longitudeRegExp = /^-?\d*\.?\d*$/;
-    // if (longitudeRegExp.test(evt.target.value) && parseFloat(evt.target.value) >= -180.0 && parseFloat(evt.target.value) <= 180.0) {
-    //   this.setState({ longitude: evt.target.value });
-    // } else if (evt.target.value == "") {
-    //   this.setState({ longitude: "" });
-    // } else if (evt.target.value == "-") {
-    //   this.setState({ longitude: "-" });
-    // }
-
     this.setState({ longitude: evt.target.value });
   }
 
   onSubmit() {
-    console.log("in onSubmit");
-    console.log(this.state.latitude);
-    console.log(this.state.longitude);
-
     let
       isValidInformalName = true,
       isValidOfficialName = true,
@@ -284,7 +244,7 @@ class EditDisaster extends React.Component {
                     <CCol xs="12" md="9">
                       {isValidDisasterType && 
                         <CSelect custom name="select" id="select" value={this.state.disasterType} onChange={this.onDisasterTypeChange.bind(this)}>
-                          {EditDisaster.disasterTypes.map(disaster => <option key={disaster} value={disaster}>{disaster}</option>)}
+                          {DISASTER_TYPES.map(disaster => <option key={disaster} value={disaster}>{disaster}</option>)}
                         </CSelect>
                       }
                       {!isValidDisasterType &&

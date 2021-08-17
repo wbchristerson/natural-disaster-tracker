@@ -749,6 +749,24 @@ class SampleWillTestCase(unittest.TestCase):
         self.assertEqual(400, res.status_code)
 
 
+    def test_get_witness_report_success(self):
+        retrieval_id = self.witness_report_1_data["id"]
+        res = self.client().get('/api/witnessreports/' + str(retrieval_id))
+        self.assertEqual(res.status_code, 200)
+        data = json.loads(res.data)
+        matching_report = copy(self.witness_report_1_data)
+        data["location"] = tuple(data["location"])
+        data["event_datetime"] = datetime(
+            2018, 8, 23, 14, 31, 34, 0, psycopg2.tz.FixedOffsetTimezone(
+                offset=-240, name=None))
+        self.assertDictEqual(matching_report, data)
+
+
+    def test_get_witness_report_no_matching_id_failure(self):
+        res = self.client().get('/api/witnessreports/-1')
+        self.assertEqual(404, res.status_code)
+
+
     # Authorization tests
 
 

@@ -2,6 +2,9 @@ export const USER_ACCESS_TOKEN_KEY = "user_access_token";
 export const USER_ID_TOKEN_KEY = "user_id_token";
 export const DEFAULT_DISASTER_FIELD_TEXT = "No data available from witness reports";
 export const OBSERVER_DATABASE_ID_KEY = "observer_database_id";
+export const DISASTER_TYPES = ["Please select", "Earthquake", "Flood", "Wildfire", "Tornado", "Hurricane", "Tsunami", "Landslide", "Avalanche", "Volcano", "Other"];
+const MONTH_ABBREVIATIONS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
 
 export function getCookieWithKey(key) {
   const pairs = document.cookie.split(";");
@@ -124,4 +127,43 @@ export function getGeneralTimeFormat(timeString) {
   } else {
     return trimmedTimeString;
   }
+}
+
+
+function getDateObjectFromDateTimeString(dateTimeString) {
+  const [day, date, month, year, time, timeZone] = dateTimeString.split(' ');
+  const [hours, minutes, seconds] = time.split(':');
+  const formattedDate = (MONTH_ABBREVIATIONS.indexOf(month)+1).toString() + "/" + date + "/" + year;
+  const formattedTime = hours + ":" + minutes + ":" + seconds + " UTC";
+
+  return new Date(formattedDate + " " + formattedTime);
+}
+
+
+// assumed that num.string().length <= width
+function getPaddedStringRepresentation(num, width) {
+  const stringRepresentation = num.toString();
+  let result = stringRepresentation;
+  for (let i = 0; i < width - stringRepresentation.length; i++) {
+    result = "0" + result;
+  }
+  return result;
+}
+
+
+export function getLocalTimeFromGMTDateTime(dateTimeString) {
+  const givenDateTime = getDateObjectFromDateTimeString(dateTimeString);
+  const displayHours = getPaddedStringRepresentation(givenDateTime.getHours(), 2);
+  const displayMinutes = getPaddedStringRepresentation(givenDateTime.getMinutes(), 2);
+  const displaySeconds = getPaddedStringRepresentation(givenDateTime.getSeconds(), 2);
+  return displayHours + ":" + displayMinutes + ":" + displaySeconds;
+}
+
+
+export function getLocalDateFromGMTDateTime(dateTimeString) {
+  const givenDateTime = getDateObjectFromDateTimeString(dateTimeString);
+  const displayMonth = getPaddedStringRepresentation(givenDateTime.getMonth() + 1, 2);
+  const displayDay = getPaddedStringRepresentation(givenDateTime.getDate(), 2);
+  const displayYear = getPaddedStringRepresentation(givenDateTime.getFullYear(), 2);
+  return displayMonth + "/" + displayDay + "/" + displayYear;
 }

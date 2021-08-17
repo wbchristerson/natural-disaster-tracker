@@ -11,11 +11,9 @@ import {
   CProgress,
   CRow,
   CCallout,
-  // CLink
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { formatLatitudeLongitude, getBackEndHost, getCookieWithKey, getFrontEndHost, USER_ACCESS_TOKEN_KEY } from '../../Utilities'
-// import { DocsLink } from 'src/reusable'
 
 import MainChartExample from '../charts/MainChartExample.js'
 
@@ -43,7 +41,6 @@ class Dashboard extends React.Component {
     fetch(`${this.backEndHost}/api/disasters?page=${this.state.page}`, { headers: { 'Access-Control-Allow-Origin': '*' } })
     .then(response => response.json())
     .then(result => {
-        console.log(result);
         this.setState({
           totalDisasters: result.totalDisasters,
           disasterList: result.disasters,

@@ -38,7 +38,9 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { DocsLink } from 'src/reusable'
-import { DEFAULT_DISASTER_FIELD_TEXT, displayDisasterDataLine, formatLatitudeLongitude, getBackEndHost, getFrontEndHost, isValidGeographicCoordinate, isValidImageURL, isValidNonnegativeIntegerInRange, isValidNonnegativeInteger, isValidTime, getCookieWithKey, OBSERVER_DATABASE_ID_KEY, getGeneralTimeFormat, USER_ACCESS_TOKEN_KEY} from 'src/Utilities';
+import { DEFAULT_DISASTER_FIELD_TEXT, displayDisasterDataLine, formatLatitudeLongitude, getBackEndHost, getFrontEndHost, isValidGeographicCoordinate,
+        isValidImageURL, isValidNonnegativeIntegerInRange, isValidNonnegativeInteger, isValidTime, getCookieWithKey, OBSERVER_DATABASE_ID_KEY, 
+        getGeneralTimeFormat, USER_ACCESS_TOKEN_KEY} from 'src/Utilities';
 
 
 class SingleDisasterDisplay extends React.Component {
@@ -89,7 +91,6 @@ class SingleDisasterDisplay extends React.Component {
     fetch(`${this.backEndHost}/api/disasters/${disasterId}?page=${this.state.page}`)
     .then(response => response.json())
     .then(result => {
-        console.log(result);
         this.setState({
           average_severity: result.average_severity,
           disaster_type: result.disaster_type,
@@ -193,7 +194,6 @@ class SingleDisasterDisplay extends React.Component {
   }
 
   onNewWitnessReportSubmit() {
-    console.log("there");
     const {
       id,
       newWitnessedDate,
@@ -281,9 +281,7 @@ class SingleDisasterDisplay extends React.Component {
         }
       )
       .then(response => response.json())
-      .then(result => {
-        console.log(result);
-
+      .then(() => {
         this.clearWitnessReportForm();
         this.setState({
           witnessReportFormVisible: false,
@@ -313,13 +311,13 @@ class SingleDisasterDisplay extends React.Component {
             
             <CFormGroup row>
               <CCol md="3">
-                <CLabel htmlFor="date-input">Date Witnessed:</CLabel>
+                <CLabel htmlFor="date-input">Date Witnessed</CLabel>
               </CCol>
               <CCol xs="12" md="9">
                 {witnessedDateValid && <CInput type="date" id="date-input" name="date-input" placeholder="date" value={newWitnessedDate} onChange={this.onNewWitnessedDateChange.bind(this)} />}
                 {!witnessedDateValid && <CInput invalid type="date" id="date-input" name="date-input" placeholder="date" value={newWitnessedDate} onChange={this.onNewWitnessedDateChange.bind(this)} />}
                 <CInvalidFeedback>Date provided is blank</CInvalidFeedback>
-                <CFormText>Date of the disaster</CFormText>
+                <CFormText>Date of the report</CFormText>
               </CCol>
             </CFormGroup>
             
@@ -390,8 +388,8 @@ class SingleDisasterDisplay extends React.Component {
               <CCol xs="12" md="9">
                 {witnessedImageURLValid && <CInput id="image-url-text-input" name="image-url-text-input" placeholder="Text" onChange={this.onNewWitnessedImageURLChange.bind(this)} value={this.state.newWitnessedImageURL}/>}
                 {!witnessedImageURLValid && <CInput invalid id="image-url-text-input" name="image-url-text-input" placeholder="Text" onChange={this.onNewWitnessedImageURLChange.bind(this)} value={this.state.newWitnessedImageURL}/>}
-                <CInvalidFeedback>Houston, we have a problem...</CInvalidFeedback>
-                <CFormText>This is a help text</CFormText>
+                <CInvalidFeedback>Format of image URL is not recognized</CInvalidFeedback>
+                <CFormText>Image of disaster (must be hosted on Internet already)</CFormText>
               </CCol>
             </CFormGroup>
 
@@ -566,6 +564,16 @@ class SingleDisasterDisplay extends React.Component {
                     {/* <div className="auth0-box">
                       <a className="btn btn-primary" href={`${this.frontEndHost}/#/single-disaster-display?id=${disaster.id}`}>View Witness Reports</a>
                     </div> */}
+
+                    <div className="button-row">
+                      <div className="auth0-box">
+                        <a className="btn btn-primary" href={`${this.frontEndHost}/#/edit-witness-report?id=${report.id}`}>Edit Witness Report</a>
+                      </div>
+                      <div className="auth0-box">
+                        <a className="btn btn-primary" href={`${this.frontEndHost}/#/edit-disaster-event?id=${report.id}`}>Delete Witness Report</a>
+                      </div>
+                    </div>
+
                   </CCardBody>
                 </CCard>
               </CCol>

@@ -16,7 +16,7 @@ import {
   CSwitch
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { getCookieWithKey, USER_ACCESS_TOKEN_KEY, getBackEndHost, getFrontEndHost } from 'src/Utilities';
+import { getCookieWithKey, USER_ACCESS_TOKEN_KEY, getBackEndHost, getFrontEndHost, DISASTER_TYPES } from 'src/Utilities';
 
 
 class AddDisaster extends React.Component {
@@ -33,8 +33,6 @@ class AddDisaster extends React.Component {
     this.backEndHost = getBackEndHost();
     this.frontEndHost = getFrontEndHost();
   }
-
-  static disasterTypes = ["Please select", "Earthquake", "Flood", "Wildfire", "Tornado", "Hurricane", "Tsunami", "Landslide", "Avalanche", "Volcano", "Other"];
 
   onInformalNameChange(evt) {
     this.setState({ informalName: evt.target.value });
@@ -148,7 +146,7 @@ class AddDisaster extends React.Component {
                     </CCol>
                     <CCol xs="12" md="9">
                       <CSelect custom name="select" id="select" value={this.state.disasterType} onChange={this.onDisasterTypeChange.bind(this)}>
-                        {AddDisaster.disasterTypes.map(disaster => <option key={disaster} value={disaster}>{disaster}</option>)}
+                        {DISASTER_TYPES.map(disaster => <option key={disaster} value={disaster}>{disaster}</option>)}
                       </CSelect>
                     </CCol>
                   </CFormGroup>
