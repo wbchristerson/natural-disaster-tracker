@@ -573,17 +573,6 @@ def create_app(test_config=None):
     def send_witness_report(payload):
         try:
             body = request.get_json()
-
-            # print(body.get("disaster_id"))
-            # print(body.get("observer_id"))
-            # print(body.get("event_datetime"))
-            # print(body.get("severity"))  # optional
-            # print(body.get("image_url"))  # optional
-            # print(body.get("comment"))  # optional
-            # print(body.get("people_affected"))
-            # print(body.get("location_latitude"))
-            # print(body.get("location_longitude"))
-
             witness_report = WitnessReport(
                 body.get("disaster_id"),
                 body.get("observer_id"),
@@ -664,7 +653,7 @@ def create_app(test_config=None):
 
 
     '''
-    A PATCH endpoint to update a witness report of disaster. The body of the
+    A PATCH endpoint to update a witness report of a disaster. The body of the
     request is a dictionary with the following keys, all of which are optional
     except for id (all fields except for id represent fields which are being
     changed):
@@ -691,6 +680,7 @@ def create_app(test_config=None):
             if "id" not in body:
                 raise AttributeError(
                     "id is not present as a property in the sent data.")
+
             witness_report = WitnessReport.query.filter(
                 WitnessReport.id == body["id"]).first()
 
@@ -711,7 +701,7 @@ def create_app(test_config=None):
                 witness_report.location_latitude = body["location_latitude"]
             if "location_longitude" in body:
                 witness_report.location_longitude = body["location_longitude"]
-
+            
             witness_report.update()
             return jsonify(witness_report.format())
         except AttributeError as err:

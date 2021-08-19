@@ -165,5 +165,5 @@ export function getLocalDateFromGMTDateTime(dateTimeString) {
   const displayMonth = getPaddedStringRepresentation(givenDateTime.getMonth() + 1, 2);
   const displayDay = getPaddedStringRepresentation(givenDateTime.getDate(), 2);
   const displayYear = getPaddedStringRepresentation(givenDateTime.getFullYear(), 2);
-  return displayMonth + "/" + displayDay + "/" + displayYear;
+  return displayYear + "-" + displayMonth + "-" + displayDay;
 }

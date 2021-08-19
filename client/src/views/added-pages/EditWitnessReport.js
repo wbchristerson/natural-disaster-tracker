@@ -33,7 +33,7 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { DocsLink } from 'src/reusable'
-import { getCookieWithKey, USER_ACCESS_TOKEN_KEY, getBackEndHost, getFrontEndHost, isValidGeographicCoordinate, DISASTER_TYPES, getLocalTimeFromGMTDateTime, getLocalDateFromGMTDateTime } from 'src/Utilities';
+import { getCookieWithKey, USER_ACCESS_TOKEN_KEY, getBackEndHost, getFrontEndHost, isValidGeographicCoordinate, DISASTER_TYPES, getLocalTimeFromGMTDateTime, getLocalDateFromGMTDateTime, isValidTime, isValidNonnegativeIntegerInRange, isValidNonnegativeInteger, isValidImageURL, getGeneralTimeFormat } from 'src/Utilities';
 
 
 class EditWitnessReport extends React.Component {
@@ -51,11 +51,11 @@ class EditWitnessReport extends React.Component {
 
       isValidReportDate: true,
       isValidReportTime: true,
-      isValidSeverity: true,
-      isValidImageURL: true,
-      isValidPeopleAffected: true,
-      isValidLatitude: true,
-      isValidLongitude: true,
+      isValidReportSeverity: true,
+      isValidReportImageURL: true,
+      isValidReportPeopleAffected: true,
+      isValidReportLatitude: true,
+      isValidReportLongitude: true,
     };
     this.backEndHost = getBackEndHost();
     this.frontEndHost = getFrontEndHost();
@@ -157,113 +157,134 @@ class EditWitnessReport extends React.Component {
     let
       isValidReportDate = true,
       isValidReportTime = true,
-      isValidSeverity = true,
-      isValidImageURL = true,
-      isValidPeopleAffected = true,
-      isValidLatitude = true,
-      isValidLongitude = true;
+      isValidReportSeverity = true,
+      isValidReportImageURL = true,
+      isValidReportPeopleAffected = true,
+      isValidReportLatitude = true,
+      isValidReportLongitude = true;
 
 
     const {reportDate, reportTime, reportSeverity, reportImageURL, reportComment, reportPeopleAffected,
       reportLatitude, reportLongitude} = this.state;
     
-    // if (informalName == "") {
-    //   isValidInformalName = false;
-    // }
+    if (reportDate == "") {
+      isValidReportDate = false;
+    }
 
-    // if (officialName == "") {
-    //   isValidOfficialName = false;
-    // }
+    if (!isValidTime(reportTime)) {
+      isValidReportTime = false;
+    }
 
-    // if (disasterType == "Please select") {
-    //   isValidDisasterType = false;
-    // }
+    if (reportSeverity != "" && !isValidNonnegativeIntegerInRange(reportSeverity, 0, 10)) {
+      isValidReportSeverity = false;
+    }
 
-    // if (!isValidGeographicCoordinate(latitude)) {
-    //   isValidLatitude = false;
-    // }
+    if (reportImageURL != "" && !isValidImageURL(reportImageURL)) {
+      isValidReportImageURL = false;
+    }
 
-    // if (!isValidGeographicCoordinate(longitude)) {
-    //   isValidLongitude = false;
-    // }
+    if (!isValidNonnegativeInteger(reportPeopleAffected)) {
+      isValidReportPeopleAffected = false;
+    }
 
-    // if (isValidInformalName && isValidOfficialName && isValidDisasterType && isValidLatitude && isValidLongitude) {
-    //   const rawBody = { id: this.disasterId };
-    //   if (informalName.trim() != this.originalInformalName) {
-    //     rawBody.informal_name = informalName.trim();
-    //   }
-    //   if (officialName.trim() != this.originalOfficialName) {
-    //     rawBody.official_name = officialName.trim();
-    //   }
-    //   if (disasterType.trim() != this.originalDisasterType) {
-    //     rawBody.disaster_type = disasterType.charAt(0).toLowerCase() + disasterType.slice(1);
-    //   }
-    //   if (isOngoing != this.originalIsOngoing) {
-    //     rawBody.is_ongoing = isOngoing;
-    //   }
-    //   if (latitude != this.originalLatitude) {
-    //     rawBody.location_latitude = latitude;
-    //   }
-    //   if (longitude != this.originalLongitude) {
-    //     rawBody.location_longitude = longitude;
-    //   }
+    if (!isValidGeographicCoordinate(reportLatitude)) {
+      isValidReportLatitude = false;
+    }
 
-    //   fetch(`${this.backEndHost}/api/disasters`,
-    //     {
-    //       method: 'PATCH',
-    //       body: JSON.stringify(rawBody),
-    //       contentType: 'application/json',
-    //       headers: {
-    //         'Content-Type': 'application/json',
-    //         'Authorization': 'Bearer ' + getCookieWithKey(USER_ACCESS_TOKEN_KEY),
-    //       }
-    //     }
-    //   )
-    //   .then(response => response.json())
-    //   .then(result => {
-    //     console.log(result);
-    //     this.originalInformalName = result.informal_name;
-    //     this.originalOfficialName = result.official_name;
-    //     this.originalDisasterType = result.disaster_type.charAt(0).toUpperCase() + result.disaster_type.slice(1);
-    //     this.originalIsOngoing = result.is_ongoing;
-    //     this.originalLatitude = result.location[0].toString();
-    //     this.originalLongitude = result.location[1].toString();
-    //   })
-    //   .catch(e => {
-    //       console.log("Error fetching disaster with id ", this.disasterId);
-    //       console.log(e);
-    //   });
-    // }
+    if (!isValidGeographicCoordinate(reportLongitude)) {
+      isValidReportLongitude = false;
+    }
 
-    // this.setState({
-    //   isValidInformalName,
-    //   isValidOfficialName,
-    //   isValidDisasterType,
-    //   isValidLatitude,
-    //   isValidLongitude,
-    // });
+    if (isValidReportDate && isValidReportTime && isValidReportSeverity && isValidReportImageURL && 
+      isValidReportPeopleAffected && isValidReportLatitude && isValidReportLongitude) {
+
+      const rawBody = { id: this.witnessReportId };
+      if (reportDate != this.originalReportDate || reportTime.trim() != this.originalReportTime.trim()) {
+        rawBody.event_datetime = new Date(reportDate + "T" + getGeneralTimeFormat(reportTime));
+      }
+      if (reportSeverity.trim() != this.originalReportSeverity.trim()) {
+        rawBody.severity = parseInt(reportSeverity.trim());
+      }
+      if (reportImageURL.trim() != this.originalReportImageURL.trim()) {
+        rawBody.image_url = reportImageURL.trim();
+      }
+      if (reportComment.trim() != this.originalReportComment.trim()) {
+        rawBody.comment = reportComment.trim();
+      }
+      if (reportPeopleAffected.trim() != this.originalReportPeopleAffected.trim()) {
+        rawBody.people_affected = parseInt(reportPeopleAffected.trim());
+      }
+      if (reportLatitude.trim() != this.originalReportLatitude.trim()) {
+        rawBody.location_latitude = parseFloat(reportLatitude.trim());
+      }
+      if (reportLongitude.trim() != this.originalReportLongitude.trim()) {
+        rawBody.location_longitude = parseFloat(reportLongitude.trim());
+      }
+
+      fetch(`${this.backEndHost}/api/witnessreports`,
+        {
+          method: 'PATCH',
+          body: JSON.stringify(rawBody),
+          contentType: 'application/json',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + getCookieWithKey(USER_ACCESS_TOKEN_KEY),
+          }
+        }
+      )
+      .then(response => response.json())
+      .then(result => {
+        this.originalReportDate = getLocalDateFromGMTDateTime(result.event_datetime);
+        this.originalReportTime = getLocalTimeFromGMTDateTime(result.event_datetime);
+        this.originalReportSeverity = result.severity ? result.severity.toString() : "";
+        this.originalReportImageURL = result.image_url ? result.image_url : "";
+        this.originalReportComment = result.comment ? result.comment : "";
+        this.originalReportPeopleAffected = result.people_affected.toString();
+        this.originalReportLatitude = result.location[0].toString();
+        this.originalReportLongitude = result.location[1].toString();
+      })
+      .catch(e => {
+          console.log("Error fetching disaster with id ", this.disasterId);
+          console.log(e);
+      });
+    }
+
+    this.setState({
+      isValidReportDate,
+      isValidReportTime,
+      isValidReportSeverity,
+      isValidReportImageURL,
+      isValidReportPeopleAffected,
+      isValidReportLatitude,
+      isValidReportLongitude,
+    });
   }
 
   resetDisasterForm() {
     this.setState({
-      // informalName: this.originalInformalName,
-      // officialName: this.originalOfficialName,
-      // disasterType: this.originalDisasterType,
-      // isOngoing: this.originalIsOngoing,
-      // latitude: this.originalLatitude,
-      // longitude: this.originalLongitude,
-      // isValidInformalName: true,
-      // isValidOfficialName: true,
-      // isValidDisasterType: true,
-      // isValidLatitude: true,
-      // isValidLongitude: true,
+      reportDate: this.originalReportDate,
+      reportTime: this.originalReportTime,
+      reportSeverity: this.originalReportSeverity,
+      reportImageURL: this.originalReportImageURL,
+      reportComment: this.originalReportComment,
+      reportPeopleAffected: this.originalReportPeopleAffected,
+      reportLatitude: this.originalReportLatitude,
+      reportLongitude: this.originalReportLongitude,
+
+      isValidReportDate: true,
+      isValidReportTime: true,
+      isValidReportSeverity: true,
+      isValidReportImageURL: true,
+      isValidReportPeopleAffected: true,
+      isValidReportLatitude: true,
+      isValidReportLongitude: true,
     });
   }
 
   render() {
-    const {reportDate, isValidReportDate, reportTime, isValidReportTime, reportPeopleAffected, isValidPeopleAffected, reportLatitude,
-      isValidLatitude, reportLongitude, isValidLongitude, reportSeverity, isValidSeverity, reportImageURL, isValidImageURL,
-      reportComment} = this.state;
+    const {reportDate, isValidReportDate, reportTime, isValidReportTime, reportPeopleAffected, isValidReportPeopleAffected,
+      reportLatitude, isValidReportLatitude, reportLongitude, isValidReportLongitude, reportSeverity, isValidReportSeverity,
+      reportImageURL, isValidReportImageURL, reportComment} = this.state;
     return (
       <>
         <CRow>
@@ -281,8 +302,8 @@ class EditWitnessReport extends React.Component {
                       <CLabel htmlFor="good-date-input">Date Witnessed</CLabel>
                     </CCol>
                     <CCol xs="12" md="9">
-                      {isValidReportDate && <CInput id="good-date-input" name="good-date-input" placeholder="Text" value={reportDate} onChange={this.onReportDateChange.bind(this)}/>}
-                      {!isValidReportDate && <CInput id="bad-date-input" invalid name="bad-date-input" placeholder="Text" value={reportDate} onChange={this.onReportDateChange.bind(this)}/>}
+                      {isValidReportDate && <CInput type="date" id="good-date-input" name="good-date-input" placeholder="date" value={reportDate} onChange={this.onReportDateChange.bind(this)}/>}
+                      {!isValidReportDate && <CInput type="date" id="bad-date-input" invalid name="bad-date-input" placeholder="date" value={reportDate} onChange={this.onReportDateChange.bind(this)}/>}
                       <CInvalidFeedback>Date provided is blank</CInvalidFeedback>
                       <CFormText>Date of the report</CFormText>
                     </CCol>
@@ -293,8 +314,8 @@ class EditWitnessReport extends React.Component {
                       <CLabel htmlFor="time-input">Time Witnessed</CLabel>
                     </CCol>
                     <CCol xs="12" md="9">
-                      {isValidReportTime && <CInput id="time-input" name="time-input" placeholder="Text" value={reportTime} onChange={this.onReportTimeChange.bind(this)}/>}
-                      {!isValidReportTime && <CInput id="time-input" invalid name="time-input" placeholder="Text" value={reportTime} onChange={this.onReportTimeChange.bind(this)}/>}
+                      {isValidReportTime && <CInput id="good-time-input" name="good-time-input" placeholder="Text" value={reportTime} onChange={this.onReportTimeChange.bind(this)}/>}
+                      {!isValidReportTime && <CInput id="bad-time-input" invalid name="bad-time-input" placeholder="Text" value={reportTime} onChange={this.onReportTimeChange.bind(this)}/>}
                       <CInvalidFeedback>Time provided is blank or format is not recognized</CInvalidFeedback>
                       <CFormText>Time of the report</CFormText>
                     </CCol>
@@ -305,8 +326,8 @@ class EditWitnessReport extends React.Component {
                       <CLabel htmlFor="people-affected-input">Number Of People Affected</CLabel>
                     </CCol>
                     <CCol xs="12" md="9">
-                      {isValidPeopleAffected && <CInput id="people-affected-input" name="people-affected-input" placeholder="Text" value={reportPeopleAffected} onChange={this.onReportPeopleAffectedChange.bind(this)}/>}
-                      {!isValidPeopleAffected && <CInput id="people-affected-input" invalid name="people-affected-input" placeholder="Text" value={reportPeopleAffected} onChange={this.onReportPeopleAffectedChange.bind(this)}/>}
+                      {isValidReportPeopleAffected && <CInput id="people-affected-input" name="people-affected-input" placeholder="Text" value={reportPeopleAffected} onChange={this.onReportPeopleAffectedChange.bind(this)}/>}
+                      {!isValidReportPeopleAffected && <CInput id="people-affected-input" invalid name="people-affected-input" placeholder="Text" value={reportPeopleAffected} onChange={this.onReportPeopleAffectedChange.bind(this)}/>}
                       <CInvalidFeedback>Number of people affected is blank or format is not recognized</CInvalidFeedback>
                       <CFormText>Estimate of number of people affected</CFormText>
                     </CCol>
@@ -317,8 +338,8 @@ class EditWitnessReport extends React.Component {
                       <CLabel htmlFor="latitude-text-input">Location Latitude</CLabel>
                     </CCol>
                     <CCol xs="12" md="9">
-                      {isValidLatitude && <CInput id="latitude-text-input" name="latitude-text-input" placeholder="0.00" onChange={this.onReportLatitudeChange.bind(this)} value={reportLatitude} />}
-                      {!isValidLatitude && <CInput invalid id="latitude-text-input" name="latitude-text-input" placeholder="0.00" onChange={this.onReportLatitudeChange.bind(this)} value={reportLatitude} />}
+                      {isValidReportLatitude && <CInput id="latitude-text-input" name="latitude-text-input" placeholder="0.00" onChange={this.onReportLatitudeChange.bind(this)} value={reportLatitude} />}
+                      {!isValidReportLatitude && <CInput invalid id="latitude-text-input" name="latitude-text-input" placeholder="0.00" onChange={this.onReportLatitudeChange.bind(this)} value={reportLatitude} />}
                       <CInvalidFeedback>Location latitude is blank or format is not recognized</CInvalidFeedback>
                       <CFormText>Signed latitude of disaster</CFormText>
                     </CCol>
@@ -329,8 +350,8 @@ class EditWitnessReport extends React.Component {
                       <CLabel htmlFor="longitude-text-input">Location Longitude</CLabel>
                     </CCol>
                     <CCol xs="12" md="9">
-                      {isValidLongitude && <CInput id="longitude-text-input" name="longitude-text-input" placeholder="0.00" onChange={this.onReportLongitudeChange.bind(this)} value={reportLongitude}/>}
-                      {!isValidLongitude && <CInput invalid id="longitude-text-input" name="longitude-text-input" placeholder="0.00" onChange={this.onReportLongitudeChange.bind(this)} value={reportLongitude}/>}
+                      {isValidReportLongitude && <CInput id="longitude-text-input" name="longitude-text-input" placeholder="0.00" onChange={this.onReportLongitudeChange.bind(this)} value={reportLongitude}/>}
+                      {!isValidReportLongitude && <CInput invalid id="longitude-text-input" name="longitude-text-input" placeholder="0.00" onChange={this.onReportLongitudeChange.bind(this)} value={reportLongitude}/>}
                       <CInvalidFeedback>Location longitude is blank or format is not recognized</CInvalidFeedback>
                       <CFormText>Signed longitude of disaster</CFormText>
                     </CCol>
@@ -341,8 +362,8 @@ class EditWitnessReport extends React.Component {
                       <CLabel htmlFor="severity-text-input">Severity (optional)</CLabel>
                     </CCol>
                     <CCol xs="12" md="9">
-                      {isValidSeverity && <CInput id="severity-text-input" name="severity-text-input" placeholder="0" onChange={this.onReportSeverityChange.bind(this)} value={reportSeverity}/>}
-                      {!isValidSeverity && <CInput invalid id="severity-text-input" name="severity-text-input" placeholder="0" onChange={this.onReportSeverityChange.bind(this)} value={reportSeverity}/>}
+                      {isValidReportSeverity && <CInput id="severity-text-input" name="severity-text-input" placeholder="0" onChange={this.onReportSeverityChange.bind(this)} value={reportSeverity}/>}
+                      {!isValidReportSeverity && <CInput invalid id="severity-text-input" name="severity-text-input" placeholder="0" onChange={this.onReportSeverityChange.bind(this)} value={reportSeverity}/>}
                       <CInvalidFeedback>Format of severity is not recognized or out of range</CInvalidFeedback>
                       <CFormText>Severity of disaster on a scale of 0 to 10, integral values only</CFormText>
                     </CCol>
@@ -353,8 +374,8 @@ class EditWitnessReport extends React.Component {
                       <CLabel htmlFor="image-url-text-input">Image URL (optional)</CLabel>
                     </CCol>
                     <CCol xs="12" md="9">
-                      {isValidImageURL && <CInput id="image-url-text-input" name="image-url-text-input" placeholder="Text" onChange={this.onReportImageURLChange.bind(this)} value={reportImageURL}/>}
-                      {!isValidImageURL && <CInput invalid id="image-url-text-input" name="image-url-text-input" placeholder="Text" onChange={this.onReportImageURLChange.bind(this)} value={reportImageURL}/>}
+                      {isValidReportImageURL && <CInput id="image-url-text-input" name="image-url-text-input" placeholder="Text" onChange={this.onReportImageURLChange.bind(this)} value={reportImageURL}/>}
+                      {!isValidReportImageURL && <CInput invalid id="image-url-text-input" name="image-url-text-input" placeholder="Text" onChange={this.onReportImageURLChange.bind(this)} value={reportImageURL}/>}
                       <CInvalidFeedback>Format of image URL is not recognized</CInvalidFeedback>
                       <CFormText>Image of disaster (must be hosted on Internet already)</CFormText>
                     </CCol>

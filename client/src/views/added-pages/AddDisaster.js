@@ -13,7 +13,12 @@ import {
   CLabel,
   CSelect,
   CRow,
-  CSwitch
+  CSwitch,
+  CModal,
+  CModalHeader,
+  CModalTitle,
+  CModalBody,
+  CModalFooter
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { getCookieWithKey, USER_ACCESS_TOKEN_KEY, getBackEndHost, getFrontEndHost, DISASTER_TYPES } from 'src/Utilities';
@@ -29,6 +34,8 @@ class AddDisaster extends React.Component {
       isOngoing: false,
       latitude: "",
       longitude: "",
+
+      isModalOpen: false,
     };
     this.backEndHost = getBackEndHost();
     this.frontEndHost = getFrontEndHost();
@@ -73,10 +80,6 @@ class AddDisaster extends React.Component {
   }
 
   onSubmit() {
-    console.log("in onSubmit");
-    console.log(this.state.latitude);
-    console.log(this.state.longitude);
-
     fetch(`${this.backEndHost}/api/disasters`,
       {
         method: 'POST',
@@ -95,7 +98,14 @@ class AddDisaster extends React.Component {
         }
       }
     )
-    .then(data => console.log(data))
+    .then(data => {
+      if (data.status == 401 && data.statusText == "UNAUTHORIZED") {
+        this.setState({
+          isModalOpen: true,
+        });
+      }
+      console.log(data)
+    })
     .catch(error => console.log("error!!!: ", error));
   }
 
@@ -110,7 +120,14 @@ class AddDisaster extends React.Component {
     });
   }
 
+  onModalClose() {
+    this.setState({
+      isModalOpen: false,
+    });
+  }
+
   render() {
+    const {isModalOpen} = this.state;
     return (
       <>
         <CRow>
@@ -196,6 +213,21 @@ class AddDisaster extends React.Component {
             </CCard>
           </CCol>
         </CRow>
+        <CModal show={isModalOpen} onClose={this.onModalClose.bind(this)}>
+          <CModalHeader closeButton>
+            <CModalTitle>Failure To Create Disaster Listing</CModalTitle>
+          </CModalHeader>
+          <CModalBody>
+            {`A failure occurred when trying to create the disaster. It looks like you have not been granted permission to create new disaster listings. If you would like permission to do so, please email me at wbchristerson@gmail.com with`}
+          </CModalBody>
+          <CModalFooter>
+            {/* <CButton onClick={this.onConfirmedDelete.bind(this)} color="primary">Yes, delete it</CButton>{' '} */}
+            <CButton 
+              color="secondary" 
+              onClick={() => this.onModalClose()}
+            >Cancel</CButton>
+          </CModalFooter>
+        </CModal>
       </>
     );
   }

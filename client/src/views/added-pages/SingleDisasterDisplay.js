@@ -35,6 +35,11 @@ import {
   CListGroupItem,
   CButtonClose,
   CProgress,
+  CModal,
+  CModalHeader,
+  CModalBody,
+  CModalTitle,
+  CModalFooter
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { DocsLink } from 'src/reusable'
@@ -77,14 +82,17 @@ class SingleDisasterDisplay extends React.Component {
       witnessedLongitudeValid: true,
       witnessedSeverityValid: true,
       witnessedImageURLValid: true,
+
+      confirmationModalReportId: null,
+      isModalOpen: false,
     };
     this.backEndHost = getBackEndHost();
     this.frontEndHost = getFrontEndHost();
+    this.disasterId = parseInt(this.props.location.search.substring(4));
   }
 
   componentDidMount() {
-    const disasterId = parseInt(this.props.location.search.substring(4));
-    this.fetchDisasterInformation(disasterId);
+    this.fetchDisasterInformation(this.disasterId);
   }
 
   fetchDisasterInformation(disasterId) {
@@ -419,6 +427,43 @@ class SingleDisasterDisplay extends React.Component {
     );
   }
 
+  initiateDeleteConfirmation(reportId) {
+    this.setState({
+      confirmationModalReportId: reportId,
+      isModalOpen: true,
+    });
+  }
+
+  onModalClose() {
+    this.setState({
+      confirmationModalReportId: null,
+      isModalOpen: false,
+    });
+  }
+
+  onConfirmedDelete() {
+    fetch(`${this.backEndHost}/api/witnessreports/${this.state.confirmationModalReportId}`,
+        {
+          method: 'DELETE',
+          contentType: 'application/json',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + getCookieWithKey(USER_ACCESS_TOKEN_KEY),
+          }
+        }
+      )
+      .then(response => response.json())
+      .then(result => {
+        console.log(result);
+        this.fetchDisasterInformation(this.disasterId);
+      })
+      .catch(e => {
+          console.log("Error fetching disaster with id ", this.disasterId);
+          console.log(e);
+      });
+      this.onModalClose();
+  }
+
   render() {
     const {average_severity, disaster_type, first_observance, last_observance, is_ongoing, location, num_reports, people_affected, witnessReportFormVisible} = this.state;
     const disasterDisplayData = [
@@ -569,9 +614,7 @@ class SingleDisasterDisplay extends React.Component {
                       <div className="auth0-box">
                         <a className="btn btn-primary" href={`${this.frontEndHost}/#/edit-witness-report?id=${report.id}`}>Edit Witness Report</a>
                       </div>
-                      <div className="auth0-box">
-                        <a className="btn btn-primary" href={`${this.frontEndHost}/#/edit-disaster-event?id=${report.id}`}>Delete Witness Report</a>
-                      </div>
+                      <CButton color="primary" onClick={() => this.initiateDeleteConfirmation(report.id)}>Delete Witness Report</CButton>
                     </div>
 
                   </CCardBody>
@@ -580,6 +623,21 @@ class SingleDisasterDisplay extends React.Component {
             </CRow>
           )
         })}
+        <CModal show={this.state.isModalOpen} onClose={this.onModalClose.bind(this)}>
+          <CModalHeader closeButton>
+            <CModalTitle>Confirmation Of Deletion</CModalTitle>
+          </CModalHeader>
+          <CModalBody>
+            Are you sure that you want to delete this witness report? The operation cannot be undone.
+          </CModalBody>
+          <CModalFooter>
+            <CButton onClick={this.onConfirmedDelete.bind(this)} color="primary">Yes, delete it</CButton>{' '}
+            <CButton 
+              color="secondary" 
+              onClick={() => this.onModalClose()}
+            >Cancel</CButton>
+          </CModalFooter>
+        </CModal>
       </>
     );
   }
