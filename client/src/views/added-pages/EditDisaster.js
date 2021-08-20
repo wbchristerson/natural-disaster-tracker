@@ -14,10 +14,15 @@ import {
   CLabel,
   CSelect,
   CRow,
-  CSwitch
+  CSwitch,
+  CModal,
+  CModalHeader,
+  CModalTitle,
+  CModalBody,
+  CModalFooter
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { getCookieWithKey, USER_ACCESS_TOKEN_KEY, getBackEndHost, getFrontEndHost, isValidGeographicCoordinate, DISASTER_TYPES } from 'src/Utilities';
+import { getCookieWithKey, USER_ACCESS_TOKEN_KEY, getBackEndHost, getFrontEndHost, isValidGeographicCoordinate, DISASTER_TYPES, getAdminPrivilegeErrorMessage, getAdminPrivilegeWarningMessage } from 'src/Utilities';
 
 
 class EditDisaster extends React.Component {
@@ -36,6 +41,9 @@ class EditDisaster extends React.Component {
       isValidDisasterType: true,
       isValidLatitude: true,
       isValidLongitude: true,
+
+      isModalOpen: false,
+      authorizationFailure: null, // error code for authorization failure encountered
     };
     this.backEndHost = getBackEndHost();
     this.frontEndHost = getFrontEndHost();
@@ -164,12 +172,32 @@ class EditDisaster extends React.Component {
       .then(response => response.json())
       .then(result => {
         console.log(result);
-        this.originalInformalName = result.informal_name;
-        this.originalOfficialName = result.official_name;
-        this.originalDisasterType = result.disaster_type.charAt(0).toUpperCase() + result.disaster_type.slice(1);
-        this.originalIsOngoing = result.is_ongoing;
-        this.originalLatitude = result.location[0].toString();
-        this.originalLongitude = result.location[1].toString();
+        if (result.error == 401 && result.message == "authorization issue - 401 Unauthorized: " + 
+          "The server could not verify that you are authorized to access the URL requested. You " + 
+          "either supplied the wrong credentials (e.g. a bad password), or your browser doesn't " + 
+          "understand how to supply the credentials required." && !result.success) {
+          
+          this.setState({
+            isModalOpen: true,
+            authorizationFailure: 401,
+          });
+
+        } else if (result.error == 403 && result.message == "authorization incorrect permission " + 
+          "- 403 Forbidden: You don't have the permission to access the requested resource. It is " + 
+          "either read-protected or not readable by the server." && !result.success) {
+          
+          this.setState({
+            isModalOpen: true,
+            authorizationFailure: 403,
+          });
+        } else {
+          this.originalInformalName = result.informal_name;
+          this.originalOfficialName = result.official_name;
+          this.originalDisasterType = result.disaster_type.charAt(0).toUpperCase() + result.disaster_type.slice(1);
+          this.originalIsOngoing = result.is_ongoing;
+          this.originalLatitude = result.location[0].toString();
+          this.originalLongitude = result.location[1].toString();
+        }
       })
       .catch(e => {
           console.log("Error fetching disaster with id ", this.disasterId);
@@ -202,16 +230,24 @@ class EditDisaster extends React.Component {
     });
   }
 
+  onModalClose() {
+    this.setState({
+      isModalOpen: false,
+      authorizationFailure: null,
+    });
+  }
+
   render() {
-    const {isValidInformalName, isValidOfficialName, isValidDisasterType, isValidLatitude, isValidLongitude} = this.state;
+    const {isValidInformalName, isValidOfficialName, isValidDisasterType, isValidLatitude, isValidLongitude, isModalOpen,
+      authorizationFailure} = this.state;
     return (
       <>
         <CRow>
           <CCol xs="12">
             <CCard>
               <CCardHeader>
-                Basic Form
-                <small> Elements</small>
+                <h4>Edit Disaster</h4>
+                <div className="top-information-text">{getAdminPrivilegeWarningMessage("edit disaster listings")}</div>
               </CCardHeader>
               <CCardBody>
                 <CForm action="" method="post" encType="multipart/form-data" className="form-horizontal">
@@ -305,6 +341,22 @@ class EditDisaster extends React.Component {
             </CCard>
           </CCol>
         </CRow>
+
+        <CModal show={isModalOpen} onClose={this.onModalClose.bind(this)}>
+          <CModalHeader closeButton>
+            <CModalTitle>Failure To Edit Disaster Listing</CModalTitle>
+          </CModalHeader>
+          <CModalBody>
+            {getAdminPrivilegeErrorMessage("edit disaster listings", authorizationFailure)}
+          </CModalBody>
+          <CModalFooter>
+            {/* <CButton onClick={this.onConfirmedDelete.bind(this)} color="primary">Yes, delete it</CButton>{' '} */}
+            <CButton 
+              color="secondary" 
+              onClick={() => this.onModalClose()}
+            >OK</CButton>
+          </CModalFooter>
+        </CModal>
       </>
     );
   }

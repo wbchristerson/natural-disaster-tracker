@@ -45,7 +45,7 @@ import CIcon from '@coreui/icons-react'
 import { DocsLink } from 'src/reusable'
 import { DEFAULT_DISASTER_FIELD_TEXT, displayDisasterDataLine, formatLatitudeLongitude, getBackEndHost, getFrontEndHost, isValidGeographicCoordinate,
         isValidImageURL, isValidNonnegativeIntegerInRange, isValidNonnegativeInteger, isValidTime, getCookieWithKey, OBSERVER_DATABASE_ID_KEY, 
-        getGeneralTimeFormat, USER_ACCESS_TOKEN_KEY} from 'src/Utilities';
+        getGeneralTimeFormat, USER_ACCESS_TOKEN_KEY, getSignInRequirementWarningMessage, getSignInRequirementsErrorMessage, getAdminPrivilegeErrorMessage} from 'src/Utilities';
 
 
 class SingleDisasterDisplay extends React.Component {
@@ -85,6 +85,9 @@ class SingleDisasterDisplay extends React.Component {
 
       confirmationModalReportId: null,
       isModalOpen: false,
+      isWitnessReportModalOpen: false,
+      isDeletionModalOpen: false,
+      authorizationFailure: null,
     };
     this.backEndHost = getBackEndHost();
     this.frontEndHost = getFrontEndHost();
@@ -289,12 +292,23 @@ class SingleDisasterDisplay extends React.Component {
         }
       )
       .then(response => response.json())
-      .then(() => {
-        this.clearWitnessReportForm();
-        this.setState({
-          witnessReportFormVisible: false,
-        });
-        this.fetchDisasterInformation(this.state.id);
+      .then((result) => {
+        if (result.error == 401 && !result.success && result.message == "authorization issue - 401 Unauthorized: " +
+          "The server could not verify that you are authorized to access the URL requested. You either supplied " +
+          "the wrong credentials (e.g. a bad password), or your browser doesn't understand how to supply the " +
+          "credentials required.") {
+          
+          this.setState({
+            AuthorizationFailure: 401,
+            isWitnessReportModalOpen: true,
+          });
+        } else {
+          this.clearWitnessReportForm();
+          this.setState({
+            witnessReportFormVisible: false,
+          });
+          this.fetchDisasterInformation(this.state.id);
+        }
       })
       .catch(e => {
           console.log("Error fetching disaster with id ", id);
@@ -311,9 +325,13 @@ class SingleDisasterDisplay extends React.Component {
       witnessedLongitudeValid, witnessedSeverityValid, witnessedImageURLValid} = this.state;
     return (
       <CCard>
-        <CCardHeader className="individual-disaster-header-block">
-          <h4 className="with-no-bottom-margin">New Witness Report</h4>
-          <CButtonClose onClick={() => this.setWitnessReportFormVisible(false)}/></CCardHeader>
+        <CCardHeader>
+          <div className="individual-disaster-header-block">
+            <h4 className="with-no-bottom-margin">New Witness Report</h4>
+            <CButtonClose onClick={() => this.setWitnessReportFormVisible(false)}/>
+          </div>
+          <div className="top-information-text">{getSignInRequirementWarningMessage("add witness reports")}</div>
+        </CCardHeader>
         <CCardBody>
           <CForm action="" method="post" encType="multipart/form-data" className="form-horizontal">
             
@@ -441,6 +459,19 @@ class SingleDisasterDisplay extends React.Component {
     });
   }
 
+  onWitnessReportModalClose() {
+    this.setState({
+      isWitnessReportModalOpen: false,
+    });
+  }
+
+  onDeletionModalClose() {
+    this.setState({
+      isDeletionModalOpen: false,
+      authorizationFailure: null,
+    });
+  }
+
   onConfirmedDelete() {
     fetch(`${this.backEndHost}/api/witnessreports/${this.state.confirmationModalReportId}`,
         {
@@ -455,7 +486,29 @@ class SingleDisasterDisplay extends React.Component {
       .then(response => response.json())
       .then(result => {
         console.log(result);
-        this.fetchDisasterInformation(this.disasterId);
+
+        if (result.error == 401 && result.message == "authorization issue - 401 Unauthorized: " +
+          "The server could not verify that you are authorized to access the URL requested. You " + 
+          "either supplied the wrong credentials (e.g. a bad password), or your browser doesn't " + 
+          "understand how to supply the credentials required." && !result.success) {
+          
+          this.setState({
+            isDeletionModalOpen: true,
+            authorizationFailure: 401,
+          });
+        } else if (result.error == 403 && result.message == "authorization incorrect permission " +
+          "- 403 Forbidden: You don't have the permission to access the requested resource. It is " +
+          "either read-protected or not readable by the server." && !result.success) {
+          
+          this.setState({
+            isDeletionModalOpen: true,
+            authorizationFailure: 403,
+          });
+        } else {
+          this.onModalClose();
+          this.fetchDisasterInformation(this.disasterId);
+        }
+
       })
       .catch(e => {
           console.log("Error fetching disaster with id ", this.disasterId);
@@ -465,7 +518,8 @@ class SingleDisasterDisplay extends React.Component {
   }
 
   render() {
-    const {average_severity, disaster_type, first_observance, last_observance, is_ongoing, location, num_reports, people_affected, witnessReportFormVisible} = this.state;
+    const {average_severity, disaster_type, first_observance, last_observance, is_ongoing, location, num_reports,
+      people_affected, witnessReportFormVisible, authorizationFailure} = this.state;
     const disasterDisplayData = [
       { disasterField: "Average Severity", disasterValue: displayDisasterDataLine(average_severity) },
       { disasterField: "Disaster Type", disasterValue: disaster_type ? disaster_type.charAt(0).toUpperCase() + disaster_type.slice(1) : DEFAULT_DISASTER_FIELD_TEXT },
@@ -605,11 +659,6 @@ class SingleDisasterDisplay extends React.Component {
                     <h6>{`Report id: ${report.id}`}</h6>
                     <h6>{`Location: ${formatLatitudeLongitude(report.location)}`}</h6>
                     <h6>{`People affected: ${report.people_affected}`}</h6>
-
-                    {/* <div className="auth0-box">
-                      <a className="btn btn-primary" href={`${this.frontEndHost}/#/single-disaster-display?id=${disaster.id}`}>View Witness Reports</a>
-                    </div> */}
-
                     <div className="button-row">
                       <div className="auth0-box">
                         <a className="btn btn-primary" href={`${this.frontEndHost}/#/edit-witness-report?id=${report.id}`}>Edit Witness Report</a>
@@ -636,6 +685,36 @@ class SingleDisasterDisplay extends React.Component {
               color="secondary" 
               onClick={() => this.onModalClose()}
             >Cancel</CButton>
+          </CModalFooter>
+        </CModal>
+
+        <CModal show={this.state.isWitnessReportModalOpen} onClose={this.onWitnessReportModalClose.bind(this)}>
+          <CModalHeader closeButton>
+            <CModalTitle>Failure To Create Witness Report</CModalTitle>
+          </CModalHeader>
+          <CModalBody>
+            {getSignInRequirementsErrorMessage("create witness reports")}
+          </CModalBody>
+          <CModalFooter>
+            <CButton 
+              color="secondary" 
+              onClick={this.onWitnessReportModalClose.bind(this)}
+            >OK</CButton>
+          </CModalFooter>
+        </CModal>
+
+        <CModal show={this.state.isDeletionModalOpen} onClose={this.onDeletionModalClose.bind(this)}>
+          <CModalHeader closeButton>
+            <CModalTitle>Failure To Delete Witness Report</CModalTitle>
+          </CModalHeader>
+          <CModalBody>
+            {getAdminPrivilegeErrorMessage("delete witness reports", authorizationFailure)}
+          </CModalBody>
+          <CModalFooter>
+            <CButton 
+              color="secondary" 
+              onClick={this.onDeletionModalClose.bind(this)}
+            >OK</CButton>
           </CModalFooter>
         </CModal>
       </>

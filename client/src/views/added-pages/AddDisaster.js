@@ -21,7 +21,8 @@ import {
   CModalFooter
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { getCookieWithKey, USER_ACCESS_TOKEN_KEY, getBackEndHost, getFrontEndHost, DISASTER_TYPES } from 'src/Utilities';
+import { getCookieWithKey, USER_ACCESS_TOKEN_KEY, getBackEndHost, getFrontEndHost, DISASTER_TYPES, getAdminPrivilegeErrorMessage, getAdminPrivilegeWarningMessage } from 'src/Utilities';
+import { nominalTypeHack } from 'prop-types';
 
 
 class AddDisaster extends React.Component {
@@ -36,6 +37,7 @@ class AddDisaster extends React.Component {
       longitude: "",
 
       isModalOpen: false,
+      authorizationFailure: null, // an error code, either 401, 403, or null
     };
     this.backEndHost = getBackEndHost();
     this.frontEndHost = getFrontEndHost();
@@ -99,12 +101,13 @@ class AddDisaster extends React.Component {
       }
     )
     .then(data => {
-      if (data.status == 401 && data.statusText == "UNAUTHORIZED") {
+      if ((data.status == 401 && data.statusText == "UNAUTHORIZED") || (data.status == 403 && data.statusText == "FORBIDDEN")) {
         this.setState({
           isModalOpen: true,
+          authorizationFailure: data.status,
         });
       }
-      console.log(data)
+      console.log(data);
     })
     .catch(error => console.log("error!!!: ", error));
   }
@@ -123,21 +126,23 @@ class AddDisaster extends React.Component {
   onModalClose() {
     this.setState({
       isModalOpen: false,
+      authorizationFailure: null,
     });
   }
 
   render() {
-    const {isModalOpen} = this.state;
+    const {isModalOpen, authorizationFailure} = this.state;
     return (
       <>
         <CRow>
           <CCol xs="12">
             <CCard>
               <CCardHeader>
-                Basic Form
-                <small> Elements</small>
+                <h4>Add Disaster Listing</h4>
+                <div className="top-information-text">{getAdminPrivilegeWarningMessage("add disaster listings")}</div>
               </CCardHeader>
               <CCardBody>
+                
                 <CForm action="" method="post" encType="multipart/form-data" className="form-horizontal">
                   <CFormGroup row>
                     <CCol md="3">
@@ -218,14 +223,13 @@ class AddDisaster extends React.Component {
             <CModalTitle>Failure To Create Disaster Listing</CModalTitle>
           </CModalHeader>
           <CModalBody>
-            {`A failure occurred when trying to create the disaster. It looks like you have not been granted permission to create new disaster listings. If you would like permission to do so, please email me at wbchristerson@gmail.com with`}
+            {getAdminPrivilegeErrorMessage("add disaster listings", authorizationFailure)}
           </CModalBody>
           <CModalFooter>
-            {/* <CButton onClick={this.onConfirmedDelete.bind(this)} color="primary">Yes, delete it</CButton>{' '} */}
             <CButton 
               color="secondary" 
               onClick={() => this.onModalClose()}
-            >Cancel</CButton>
+            >OK</CButton>
           </CModalFooter>
         </CModal>
       </>

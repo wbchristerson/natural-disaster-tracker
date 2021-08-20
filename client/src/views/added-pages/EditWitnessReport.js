@@ -29,7 +29,12 @@ import {
   CLabel,
   CSelect,
   CRow,
-  CSwitch
+  CSwitch,
+  CModal,
+  CModalHeader,
+  CModalTitle,
+  CModalBody,
+  CModalFooter
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { DocsLink } from 'src/reusable'
@@ -56,6 +61,8 @@ class EditWitnessReport extends React.Component {
       isValidReportPeopleAffected: true,
       isValidReportLatitude: true,
       isValidReportLongitude: true,
+
+      isModalOpen: false,
     };
     this.backEndHost = getBackEndHost();
     this.frontEndHost = getFrontEndHost();
@@ -234,14 +241,24 @@ class EditWitnessReport extends React.Component {
       )
       .then(response => response.json())
       .then(result => {
-        this.originalReportDate = getLocalDateFromGMTDateTime(result.event_datetime);
-        this.originalReportTime = getLocalTimeFromGMTDateTime(result.event_datetime);
-        this.originalReportSeverity = result.severity ? result.severity.toString() : "";
-        this.originalReportImageURL = result.image_url ? result.image_url : "";
-        this.originalReportComment = result.comment ? result.comment : "";
-        this.originalReportPeopleAffected = result.people_affected.toString();
-        this.originalReportLatitude = result.location[0].toString();
-        this.originalReportLongitude = result.location[1].toString();
+        if (result.error == 401 && result.message == "authorization issue - 401 Unauthorized: " + 
+          "The server could not verify that you are authorized to access the URL requested. You " + 
+          "either supplied the wrong credentials (e.g. a bad password), or your browser doesn't " + 
+          "understand how to supply the credentials required." && !result.success) {
+          
+          this.setState({
+            isModalOpen: true,
+          });
+        } else {
+          this.originalReportDate = getLocalDateFromGMTDateTime(result.event_datetime);
+          this.originalReportTime = getLocalTimeFromGMTDateTime(result.event_datetime);
+          this.originalReportSeverity = result.severity ? result.severity.toString() : "";
+          this.originalReportImageURL = result.image_url ? result.image_url : "";
+          this.originalReportComment = result.comment ? result.comment : "";
+          this.originalReportPeopleAffected = result.people_affected.toString();
+          this.originalReportLatitude = result.location[0].toString();
+          this.originalReportLongitude = result.location[1].toString();
+        }
       })
       .catch(e => {
           console.log("Error fetching disaster with id ", this.disasterId);
@@ -281,10 +298,16 @@ class EditWitnessReport extends React.Component {
     });
   }
 
+  onModalClose() {
+    this.setState({
+      isModalOpen: false,
+    });
+  }
+
   render() {
     const {reportDate, isValidReportDate, reportTime, isValidReportTime, reportPeopleAffected, isValidReportPeopleAffected,
       reportLatitude, isValidReportLatitude, reportLongitude, isValidReportLongitude, reportSeverity, isValidReportSeverity,
-      reportImageURL, isValidReportImageURL, reportComment} = this.state;
+      reportImageURL, isValidReportImageURL, reportComment, isModalOpen} = this.state;
     return (
       <>
         <CRow>
@@ -405,6 +428,21 @@ class EditWitnessReport extends React.Component {
             </CCard>
           </CCol>
         </CRow>
+
+        <CModal show={isModalOpen} onClose={this.onModalClose.bind(this)}>
+          <CModalHeader closeButton>
+            <CModalTitle>Failure To Edit Witness Report</CModalTitle>
+          </CModalHeader>
+          <CModalBody>
+            A failure occurred. You must be logged in to create a witness report. You can create an account (for free!) by signing up.
+          </CModalBody>
+          <CModalFooter>
+            <CButton 
+              color="secondary" 
+              onClick={this.onModalClose.bind(this)}
+            >OK</CButton>
+          </CModalFooter>
+        </CModal>
       </>
     );
   }

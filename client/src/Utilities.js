@@ -3,8 +3,8 @@ export const USER_ID_TOKEN_KEY = "user_id_token";
 export const DEFAULT_DISASTER_FIELD_TEXT = "No data available from witness reports";
 export const OBSERVER_DATABASE_ID_KEY = "observer_database_id";
 export const DISASTER_TYPES = ["Please select", "Earthquake", "Flood", "Wildfire", "Tornado", "Hurricane", "Tsunami", "Landslide", "Avalanche", "Volcano", "Other"];
-const MONTH_ABBREVIATIONS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
+const MONTH_ABBREVIATIONS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 export function getCookieWithKey(key) {
   const pairs = document.cookie.split(";");
@@ -166,4 +166,34 @@ export function getLocalDateFromGMTDateTime(dateTimeString) {
   const displayDay = getPaddedStringRepresentation(givenDateTime.getDate(), 2);
   const displayYear = getPaddedStringRepresentation(givenDateTime.getFullYear(), 2);
   return displayYear + "-" + displayMonth + "-" + displayDay;
+}
+
+
+export function getAdminPrivilegeErrorMessage(actionString, errorCode) {
+  return `A failure occurred. The ability to ${actionString} requires admin 
+    privileges and it looks like those have not been granted to you. If you 
+    would like admin privileges, please ${errorCode == 401 ? 
+    "create an account by signing up (for free!) and" : ""} email me at 
+    wbchristerson@gmail.com with your username.`;
+}
+
+
+export function getAdminPrivilegeWarningMessage(actionString) {
+  const accessToken = getAccessToken();
+  return `Please note that the ability to ${actionString} requires admin privileges. If you do 
+    not have admin privileges and would like them, please ${accessToken ? "" : 
+    "create an account by signing up (for free!) and"} email me at wbchristerson@gmail.com with
+    your username.`;
+}
+
+
+export function getSignInRequirementWarningMessage(actionString) {
+  return `Note that you must be logged-in to ${actionString}. If you do not 
+    have an account, you can create one for free by signing up.`;
+}
+
+
+export function getSignInRequirementsErrorMessage(actionString) {
+  return `A failure occurred. You must be logged-in to ${actionString}. You can
+     create an account (for free!) by signing up.`
 }
