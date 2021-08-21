@@ -153,7 +153,8 @@ def create_app(test_config=None):
     @app.route('/my-logout')
     def logout():
         session.clear() # Clear session stored data
-        params = {'returnTo': f'{os.environ["FRONT_END_HOST"]}/#/404', 'client_id': os.environ["AUTH0_CLIENT_ID"]} # Redirect user to logout endpoint
+        # params = {'returnTo': f'{os.environ["FRONT_END_HOST"]}/#/404', 'client_id': os.environ["AUTH0_CLIENT_ID"]} # Redirect user to logout endpoint
+        params = {'returnTo': f'{os.environ["FRONT_END_HOST"]}', 'client_id': os.environ["AUTH0_CLIENT_ID"]} # Redirect user to logout endpoint
         response = make_response(redirect(auth0.api_base_url + '/v2/logout?' + urlencode(params)))
         response.delete_cookie(USER_ACCESS_TOKEN_KEY)
         response.delete_cookie(USER_ID_TOKEN_KEY)

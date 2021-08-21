@@ -112,8 +112,9 @@ export function isValidNonnegativeIntegerInRange(intString, loInclusive, HiInclu
 
 
 export function isValidImageURL(urlString) {
-  const regExp = /^\s*.*(\.jpg|\.jpeg|\.png)\s*$/;
-  return regExp.test(urlString);
+  return true;
+  // const regExp = /^\s*.*(\.jpg|\.jpeg|\.png)\s*$/;
+  // return regExp.test(urlString);
 }
 
 
