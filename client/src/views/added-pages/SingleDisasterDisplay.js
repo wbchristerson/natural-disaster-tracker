@@ -323,6 +323,8 @@ class SingleDisasterDisplay extends React.Component {
       newWitnessedDate, newWitnessedTime,
       witnessedDateValid, witnessedTimeValid, witnessedNumPeopleValid, witnessedLatitudeValid,
       witnessedLongitudeValid, witnessedSeverityValid, witnessedImageURLValid} = this.state;
+    const userAccessToken = getCookieWithKey(USER_ACCESS_TOKEN_KEY);
+    const isLoggedOut = !userAccessToken || userAccessToken == "";
     return (
       <CCard>
         <CCardHeader>
@@ -330,7 +332,7 @@ class SingleDisasterDisplay extends React.Component {
             <h4 className="with-no-bottom-margin">New Witness Report</h4>
             <CButtonClose onClick={() => this.setWitnessReportFormVisible(false)}/>
           </div>
-          <div className="top-information-text">{getSignInRequirementWarningMessage("add witness reports")}</div>
+          {isLoggedOut && <div className="top-information-text">{getSignInRequirementWarningMessage("add witness reports")}</div>}
         </CCardHeader>
         <CCardBody>
           <CForm action="" method="post" encType="multipart/form-data" className="form-horizontal">

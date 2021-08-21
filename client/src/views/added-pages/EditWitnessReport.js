@@ -38,7 +38,7 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { DocsLink } from 'src/reusable'
-import { getCookieWithKey, USER_ACCESS_TOKEN_KEY, getBackEndHost, getFrontEndHost, isValidGeographicCoordinate, DISASTER_TYPES, getLocalTimeFromGMTDateTime, getLocalDateFromGMTDateTime, isValidTime, isValidNonnegativeIntegerInRange, isValidNonnegativeInteger, isValidImageURL, getGeneralTimeFormat } from 'src/Utilities';
+import { getCookieWithKey, USER_ACCESS_TOKEN_KEY, getBackEndHost, getFrontEndHost, isValidGeographicCoordinate, DISASTER_TYPES, getLocalTimeFromGMTDateTime, getLocalDateFromGMTDateTime, isValidTime, isValidNonnegativeIntegerInRange, isValidNonnegativeInteger, isValidImageURL, getGeneralTimeFormat, getSignInRequirementWarningMessage, getSignInRequirementsErrorMessage } from 'src/Utilities';
 
 
 class EditWitnessReport extends React.Component {
@@ -308,14 +308,17 @@ class EditWitnessReport extends React.Component {
     const {reportDate, isValidReportDate, reportTime, isValidReportTime, reportPeopleAffected, isValidReportPeopleAffected,
       reportLatitude, isValidReportLatitude, reportLongitude, isValidReportLongitude, reportSeverity, isValidReportSeverity,
       reportImageURL, isValidReportImageURL, reportComment, isModalOpen} = this.state;
+    const userAccessToken = getCookieWithKey(USER_ACCESS_TOKEN_KEY);
+    const isLoggedOut = !userAccessToken || userAccessToken == "";
+
     return (
       <>
         <CRow>
           <CCol xs="12">
             <CCard>
               <CCardHeader>
-                Basic Form
-                <small> Elements</small>
+                <h4>Edit Witness Report</h4>
+                {isLoggedOut && <div className="top-information-text">{getSignInRequirementWarningMessage("edit witness reports")}</div>}
               </CCardHeader>
               <CCardBody>
                 <CForm action="" method="post" encType="multipart/form-data" className="form-horizontal">
@@ -434,7 +437,7 @@ class EditWitnessReport extends React.Component {
             <CModalTitle>Failure To Edit Witness Report</CModalTitle>
           </CModalHeader>
           <CModalBody>
-            A failure occurred. You must be logged in to create a witness report. You can create an account (for free!) by signing up.
+            {getSignInRequirementsErrorMessage("edit witness reports")}
           </CModalBody>
           <CModalFooter>
             <CButton 

@@ -179,7 +179,7 @@ export function getAdminPrivilegeErrorMessage(actionString, errorCode) {
 
 
 export function getAdminPrivilegeWarningMessage(actionString) {
-  const accessToken = getAccessToken();
+  const accessToken = getCookieWithKey(USER_ACCESS_TOKEN_KEY);
   return `Please note that the ability to ${actionString} requires admin privileges. If you do 
     not have admin privileges and would like them, please ${accessToken ? "" : 
     "create an account by signing up (for free!) and"} email me at wbchristerson@gmail.com with
