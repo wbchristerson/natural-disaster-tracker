@@ -13,7 +13,7 @@ import {
   CCallout,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { formatLatitudeLongitude, getBackEndHost, getCookieWithKey, getFrontEndHost, USER_ACCESS_TOKEN_KEY } from '../../Utilities'
+import { formatLatitudeLongitude, getBackEndHost, getFrontEndHost } from '../../Utilities'
 
 import MainChartExample from '../charts/MainChartExample.js'
 
@@ -52,49 +52,12 @@ class Dashboard extends React.Component {
   }
 
 
-  getUsers() {
-    fetch(`${this.backEndHost}/api/observers`,
-          {
-            headers: { 'Authorization': 'Bearer ' + getCookieWithKey(USER_ACCESS_TOKEN_KEY) },
-            method: 'GET',
-          })
-    .then(response => response.json())
-    .then(result => {
-      console.log(result);
-    })
-  }
-
-
   render() {
     const d = new Date();
     const seconds = d.getSeconds();
-    const isLoggedOut = getCookieWithKey(USER_ACCESS_TOKEN_KEY) == "";
 
     return (
       <>
-        {isLoggedOut &&
-          <div className="login-box auth0-box before">
-            {/* <img src="https://i.cloudup.com/StzWWrY34s.png" alt="Auth0 login"/> */}
-            {/* <h3>Auth0 Example</h3> */}
-            {/* <p>Zero friction identity infrastructure, built for developers</p> */}
-            {/* <a className="btn btn-primary btn-lg btn-login btn-block" href="https://sample-will.herokuapp.com/my-login">Log In</a> */}
-            <a className="btn btn-primary btn-lg btn-login btn-block" href={`${this.backEndHost}/my-login`}>Log In</a>
-          </div>
-        }
-
-        {!isLoggedOut &&
-          <div className="logged-in-box auth0-box logged-in">
-            {/* <h1 id="logo"><img src="//cdn.auth0.com/samples/auth0_logo_final_blue_RGB.png" alt="logo"/></h1> */}
-            {/* <img className="avatar" src="{{userinfo['picture']}}" alt="other auth0"/> */}
-            {/* <h2>{`Welcome ${userinfo ? userinfo['name'] : 'ABC!'}`}</h2> */}
-            {/* <a className="btn btn-primary btn-lg btn-logout btn-block" href="https://sample-will.herokuapp.com/my-logout">Logout</a> */}
-            <a className="btn btn-primary btn-lg btn-logout btn-block" href={`${this.backEndHost}/my-logout`}>Logout</a>
-            {/* <a className="btn btn-primary btn-lg btn-logout btn-block" href="/my-logout">Logout</a> */}
-          </div>
-        }
-
-        <CButton block color="primary" onClick={() => this.getUsers()}>Primary</CButton>
-
         <div className="logged-in-box auth0-box logged-in">
           <a className="btn btn-primary btn-lg btn-logout btn-block" href={`${this.frontEndHost}/#/add-disaster-event`}>Add Disaster Event</a>
         </div>
@@ -105,8 +68,6 @@ class Dashboard extends React.Component {
             <p className="main-bottom-text">See And Write Reports About Natural Disasters In Your Area</p>
           </div>
         </div>
-
-        
 
         {this.state.disasterList.map((disaster, index) => {
           return (

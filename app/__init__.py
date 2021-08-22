@@ -38,6 +38,8 @@ PAGE_SIZE = 10
 USER_ACCESS_TOKEN_KEY = "user_access_token"
 USER_ID_TOKEN_KEY = "user_id_token"
 OBSERVER_DATABASE_ID_KEY = "observer_database_id"
+USER_PICTURE_KEY = "user_picture"
+USER_NICKNAME_KEY = "user_nickname"
 
 
 def create_app(test_config=None):
@@ -105,6 +107,8 @@ def create_app(test_config=None):
         final_response.set_cookie(USER_ACCESS_TOKEN_KEY, access_token)
         final_response.set_cookie(USER_ID_TOKEN_KEY, id_token)
         final_response.set_cookie(OBSERVER_DATABASE_ID_KEY, str(matching_observer.id))
+        final_response.set_cookie(USER_PICTURE_KEY, session['profile']['picture'])
+        final_response.set_cookie(USER_NICKNAME_KEY, session['profile']['nickname'])
         return final_response
 
 
@@ -159,6 +163,8 @@ def create_app(test_config=None):
         response.delete_cookie(USER_ACCESS_TOKEN_KEY)
         response.delete_cookie(USER_ID_TOKEN_KEY)
         response.delete_cookie(OBSERVER_DATABASE_ID_KEY)
+        response.delete_cookie(USER_PICTURE_KEY)
+        response.delete_cookie(USER_NICKNAME_KEY)
         return response
 
 

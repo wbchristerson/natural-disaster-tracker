@@ -18,7 +18,11 @@ import {
   CModalHeader,
   CModalTitle,
   CModalBody,
-  CModalFooter
+  CModalFooter,
+  CToast,
+  CToastHeader,
+  CToastBody,
+  CToaster
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { getCookieWithKey, USER_ACCESS_TOKEN_KEY, getBackEndHost, getFrontEndHost, DISASTER_TYPES, getAdminPrivilegeErrorMessage, getAdminPrivilegeWarningMessage } from 'src/Utilities';
@@ -38,6 +42,7 @@ class AddDisaster extends React.Component {
 
       isModalOpen: false,
       authorizationFailure: null, // an error code, either 401, 403, or null
+      showToast: false,
     };
     this.backEndHost = getBackEndHost();
     this.frontEndHost = getFrontEndHost();
@@ -82,6 +87,9 @@ class AddDisaster extends React.Component {
   }
 
   onSubmit() {
+    this.setState({
+      showToast: false,
+    });
     fetch(`${this.backEndHost}/api/disasters`,
       {
         method: 'POST',
@@ -106,8 +114,11 @@ class AddDisaster extends React.Component {
           isModalOpen: true,
           authorizationFailure: data.status,
         });
+      } else if (data.status == 200) {
+        this.setState({
+          showToast: true,
+        });
       }
-      console.log(data);
     })
     .catch(error => console.log("error!!!: ", error));
   }
@@ -131,7 +142,7 @@ class AddDisaster extends React.Component {
   }
 
   render() {
-    const {isModalOpen, authorizationFailure} = this.state;
+    const {isModalOpen, authorizationFailure, showToast, informalName} = this.state;
     return (
       <>
         <CRow>
@@ -232,6 +243,25 @@ class AddDisaster extends React.Component {
             >OK</CButton>
           </CModalFooter>
         </CModal>
+        
+        <CToaster
+          position={'top-center'}
+          key={'toaster-top-center'}
+        >
+          <CToast
+            key={'toast'}
+            show={showToast}
+            autohide={5000}
+            fade={true}
+          >
+            <CToastHeader closeButton={true}>
+              Disaster Listing Added
+            </CToastHeader>
+            <CToastBody>
+              {`The disaster listing for ${informalName} has been added successfully!`}
+            </CToastBody>
+          </CToast>
+        </CToaster>
       </>
     );
   }

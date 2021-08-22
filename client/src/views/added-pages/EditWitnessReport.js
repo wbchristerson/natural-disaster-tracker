@@ -6,39 +6,26 @@ import {
   CCardFooter,
   CCardHeader,
   CCol,
-  CCollapse,
-  CDropdownItem,
-  CDropdownMenu,
-  CDropdownToggle,
-  CFade,
   CForm,
   CFormGroup,
   CFormText,
-  CValidFeedback,
   CInvalidFeedback,
   CTextarea,
   CInput,
-  CInputFile,
-  CInputCheckbox,
-  CInputRadio,
-  CInputGroup,
-  CInputGroupAppend,
-  CInputGroupPrepend,
-  CDropdown,
-  CInputGroupText,
   CLabel,
-  CSelect,
   CRow,
-  CSwitch,
   CModal,
   CModalHeader,
   CModalTitle,
   CModalBody,
-  CModalFooter
+  CModalFooter,
+  CToaster,
+  CToast,
+  CToastHeader,
+  CToastBody
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { DocsLink } from 'src/reusable'
-import { getCookieWithKey, USER_ACCESS_TOKEN_KEY, getBackEndHost, getFrontEndHost, isValidGeographicCoordinate, DISASTER_TYPES, getLocalTimeFromGMTDateTime, getLocalDateFromGMTDateTime, isValidTime, isValidNonnegativeIntegerInRange, isValidNonnegativeInteger, isValidImageURL, getGeneralTimeFormat, getSignInRequirementWarningMessage, getSignInRequirementsErrorMessage } from 'src/Utilities';
+import { getCookieWithKey, USER_ACCESS_TOKEN_KEY, getBackEndHost, getFrontEndHost, isValidGeographicCoordinate, getLocalTimeFromGMTDateTime, getLocalDateFromGMTDateTime, isValidTime, isValidNonnegativeIntegerInRange, isValidNonnegativeInteger, isValidImageURL, getGeneralTimeFormat, getSignInRequirementWarningMessage, getSignInRequirementsErrorMessage } from 'src/Utilities';
 
 
 class EditWitnessReport extends React.Component {
@@ -63,6 +50,7 @@ class EditWitnessReport extends React.Component {
       isValidReportLongitude: true,
 
       isModalOpen: false,
+      showToast: false,
     };
     this.backEndHost = getBackEndHost();
     this.frontEndHost = getFrontEndHost();
@@ -228,6 +216,10 @@ class EditWitnessReport extends React.Component {
         rawBody.location_longitude = parseFloat(reportLongitude.trim());
       }
 
+      this.setState({
+        showToast: false,
+      });
+
       fetch(`${this.backEndHost}/api/witnessreports`,
         {
           method: 'PATCH',
@@ -258,6 +250,9 @@ class EditWitnessReport extends React.Component {
           this.originalReportPeopleAffected = result.people_affected.toString();
           this.originalReportLatitude = result.location[0].toString();
           this.originalReportLongitude = result.location[1].toString();
+          this.setState({
+            showToast: true,
+          });
         }
       })
       .catch(e => {
@@ -307,7 +302,7 @@ class EditWitnessReport extends React.Component {
   render() {
     const {reportDate, isValidReportDate, reportTime, isValidReportTime, reportPeopleAffected, isValidReportPeopleAffected,
       reportLatitude, isValidReportLatitude, reportLongitude, isValidReportLongitude, reportSeverity, isValidReportSeverity,
-      reportImageURL, isValidReportImageURL, reportComment, isModalOpen} = this.state;
+      reportImageURL, isValidReportImageURL, reportComment, isModalOpen, showToast} = this.state;
     const userAccessToken = getCookieWithKey(USER_ACCESS_TOKEN_KEY);
     const isLoggedOut = !userAccessToken || userAccessToken == "";
 
@@ -446,6 +441,25 @@ class EditWitnessReport extends React.Component {
             >OK</CButton>
           </CModalFooter>
         </CModal>
+
+        <CToaster
+          position={'top-center'}
+          key={'toaster-top-center'}
+        >
+          <CToast
+            key={'toast'}
+            show={showToast}
+            autohide={5000}
+            fade={true}
+          >
+            <CToastHeader closeButton={true}>
+              Witness Report Updated
+            </CToastHeader>
+            <CToastBody>
+              {`The witness report has been updated successfully!`}
+            </CToastBody>
+          </CToast>
+        </CToaster>
       </>
     );
   }

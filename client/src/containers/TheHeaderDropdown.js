@@ -8,23 +8,28 @@ import {
   CImg
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
+import { getCookieWithKey, USER_ACCESS_TOKEN_KEY, USER_PICTURE_KEY } from 'src/Utilities'
 
 const TheHeaderDropdown = () => {
+  const isLoggedOut = getCookieWithKey(USER_ACCESS_TOKEN_KEY) == "";
+  console.log(getCookieWithKey(USER_PICTURE_KEY).slice(1,-1));
   return (
     <CDropdown
       inNav
       className="c-header-nav-items mx-2"
       direction="down"
     >
-      <CDropdownToggle className="c-header-nav-link" caret={false}>
-        <div className="c-avatar">
-          <CImg
-            src={'avatars/6.jpg'}
-            className="c-avatar-img"
-            alt="admin@bootstrapmaster.com"
-          />
-        </div>
-      </CDropdownToggle>
+      {!isLoggedOut && 
+        <CDropdownToggle className="c-header-nav-link" caret={false}>
+          <div className="c-avatar">
+            <CImg
+              src={getCookieWithKey(USER_PICTURE_KEY).slice(1,-1)}
+              className="c-avatar-img"
+              alt="admin@bootstrapmaster.com"
+            />
+          </div>
+        </CDropdownToggle>
+      }
       <CDropdownMenu className="pt-0" placement="bottom-end">
         <CDropdownItem
           header

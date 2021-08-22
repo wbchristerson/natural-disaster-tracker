@@ -22,6 +22,7 @@ import {
   TheHeaderDropdownNotif,
   TheHeaderDropdownTasks
 }  from './index'
+import { getBackEndHost, getCookieWithKey, USER_ACCESS_TOKEN_KEY, USER_NICKNAME_KEY } from 'src/Utilities'
 
 const TheHeader = () => {
   const dispatch = useDispatch()
@@ -36,6 +37,8 @@ const TheHeader = () => {
     const val = [false, 'responsive'].includes(sidebarShow) ? true : 'responsive'
     dispatch({type: 'set', sidebarShow: val})
   }
+
+  const isLoggedOut = getCookieWithKey(USER_ACCESS_TOKEN_KEY) == "";
 
   return (
     <CHeader withSubheader>
@@ -66,9 +69,22 @@ const TheHeader = () => {
       </CHeaderNav>
 
       <CHeaderNav className="px-3">
-        <TheHeaderDropdownNotif/>
-        <TheHeaderDropdownTasks/>
-        <TheHeaderDropdownMssg/>
+        {/* <TheHeaderDropdownNotif/> */}
+        {/* <TheHeaderDropdownTasks/> */}
+        {/* <TheHeaderDropdownMssg/> */}
+        {!isLoggedOut &&
+          <div className="top-log-in-greeting">{`Hello, ${getCookieWithKey(USER_NICKNAME_KEY)}!`}</div>
+        }
+        {isLoggedOut &&
+          <div className="login-box auth0-box before">
+            <a className="btn btn-primary btn-lg btn-login btn-block" href={`${getBackEndHost()}/my-login`}>Log In</a>
+          </div>
+        }
+        {!isLoggedOut &&
+          <div className="logged-in-box auth0-box logged-in">
+            <a className="btn btn-primary btn-lg btn-logout btn-block" href={`${getBackEndHost()}/my-logout`}>Logout</a>
+          </div>
+        }
         <TheHeaderDropdown/>
       </CHeaderNav>
 

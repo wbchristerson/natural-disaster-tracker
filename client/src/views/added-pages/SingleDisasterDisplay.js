@@ -8,29 +8,14 @@ import {
   CCardHeader,
   CCol,
   CCollapse,
-  CDropdownItem,
-  CDropdownMenu,
-  CDropdownToggle,
-  CFade,
   CForm,
   CFormGroup,
   CFormText,
-  CValidFeedback,
   CInvalidFeedback,
   CTextarea,
   CInput,
-  CInputFile,
-  CInputCheckbox,
-  CInputRadio,
-  CInputGroup,
-  CInputGroupAppend,
-  CInputGroupPrepend,
-  CDropdown,
-  CInputGroupText,
   CLabel,
-  CSelect,
   CRow,
-  CSwitch,
   CListGroup,
   CListGroupItem,
   CButtonClose,
@@ -39,10 +24,13 @@ import {
   CModalHeader,
   CModalBody,
   CModalTitle,
-  CModalFooter
+  CModalFooter,
+  CToaster,
+  CToast,
+  CToastHeader,
+  CToastBody
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { DocsLink } from 'src/reusable'
 import { DEFAULT_DISASTER_FIELD_TEXT, displayDisasterDataLine, formatLatitudeLongitude, getBackEndHost, getFrontEndHost, isValidGeographicCoordinate,
         isValidImageURL, isValidNonnegativeIntegerInRange, isValidNonnegativeInteger, isValidTime, getCookieWithKey, OBSERVER_DATABASE_ID_KEY, 
         getGeneralTimeFormat, USER_ACCESS_TOKEN_KEY, getSignInRequirementWarningMessage, getSignInRequirementsErrorMessage, getAdminPrivilegeErrorMessage} from 'src/Utilities';
@@ -88,6 +76,8 @@ class SingleDisasterDisplay extends React.Component {
       isWitnessReportModalOpen: false,
       isDeletionModalOpen: false,
       authorizationFailure: null,
+      showToast: false,
+      showDeleteToast: false,
     };
     this.backEndHost = getBackEndHost();
     this.frontEndHost = getFrontEndHost();
@@ -268,6 +258,10 @@ class SingleDisasterDisplay extends React.Component {
       witnessedDateValid && witnessedTimeValid && witnessedNumPeopleValid && 
       witnessedLatitudeValid && witnessedLongitudeValid && witnessedSeverityValid &&
       witnessedImageURLValid) {
+
+      this.setState({
+        showToast: false,
+      });
       
       // send creation request
       fetch(`${this.backEndHost}/api/witnessreports`,
@@ -306,6 +300,7 @@ class SingleDisasterDisplay extends React.Component {
           this.clearWitnessReportForm();
           this.setState({
             witnessReportFormVisible: false,
+            showToast: true,
           });
           this.fetchDisasterInformation(this.state.id);
         }
@@ -475,6 +470,9 @@ class SingleDisasterDisplay extends React.Component {
   }
 
   onConfirmedDelete() {
+    this.setState({
+      showDeleteToast: false,
+    });
     fetch(`${this.backEndHost}/api/witnessreports/${this.state.confirmationModalReportId}`,
         {
           method: 'DELETE',
@@ -487,8 +485,6 @@ class SingleDisasterDisplay extends React.Component {
       )
       .then(response => response.json())
       .then(result => {
-        console.log(result);
-
         if (result.error == 401 && result.message == "authorization issue - 401 Unauthorized: " +
           "The server could not verify that you are authorized to access the URL requested. You " + 
           "either supplied the wrong credentials (e.g. a bad password), or your browser doesn't " + 
@@ -509,6 +505,9 @@ class SingleDisasterDisplay extends React.Component {
         } else {
           this.onModalClose();
           this.fetchDisasterInformation(this.disasterId);
+          this.setState({
+            showDeleteToast: true,
+          });
         }
 
       })
@@ -521,9 +520,9 @@ class SingleDisasterDisplay extends React.Component {
 
   render() {
     const {average_severity, disaster_type, first_observance, last_observance, is_ongoing, location, num_reports,
-      people_affected, witnessReportFormVisible, authorizationFailure} = this.state;
+      people_affected, witnessReportFormVisible, authorizationFailure, showToast, showDeleteToast} = this.state;
     const disasterDisplayData = [
-      { disasterField: "Average Severity", disasterValue: displayDisasterDataLine(average_severity) },
+      { disasterField: "Average Severity", disasterValue: displayDisasterDataLine(average_severity ? average_severity.toFixed(2) : average_severity) },
       { disasterField: "Disaster Type", disasterValue: disaster_type ? disaster_type.charAt(0).toUpperCase() + disaster_type.slice(1) : DEFAULT_DISASTER_FIELD_TEXT },
       { disasterField: "First Observance", disasterValue: displayDisasterDataLine(first_observance) },
       { disasterField: "Last Observance", disasterValue: displayDisasterDataLine(last_observance) },
@@ -719,6 +718,44 @@ class SingleDisasterDisplay extends React.Component {
             >OK</CButton>
           </CModalFooter>
         </CModal>
+
+        <CToaster
+          position={'top-center'}
+          key={'toaster-top-center'}
+        >
+          <CToast
+            key={'toast'}
+            show={showToast}
+            autohide={5000}
+            fade={true}
+          >
+            <CToastHeader closeButton={true}>
+              Witness Report Added
+            </CToastHeader>
+            <CToastBody>
+              {`The witness report was added successfully!`}
+            </CToastBody>
+          </CToast>
+        </CToaster>
+
+        <CToaster
+          position={'top-center'}
+          key={'delete-toaster-top-center'}
+        >
+          <CToast
+            key={'delete-toast'}
+            show={showDeleteToast}
+            autohide={5000}
+            fade={true}
+          >
+            <CToastHeader closeButton={true}>
+              Witness Report Deleted
+            </CToastHeader>
+            <CToastBody>
+              {`The witness report was deleted successfully!`}
+            </CToastBody>
+          </CToast>
+        </CToaster>
       </>
     );
   }

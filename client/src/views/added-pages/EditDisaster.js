@@ -19,7 +19,11 @@ import {
   CModalHeader,
   CModalTitle,
   CModalBody,
-  CModalFooter
+  CModalFooter,
+  CToaster,
+  CToast,
+  CToastHeader,
+  CToastBody
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { getCookieWithKey, USER_ACCESS_TOKEN_KEY, getBackEndHost, getFrontEndHost, isValidGeographicCoordinate, DISASTER_TYPES, getAdminPrivilegeErrorMessage, getAdminPrivilegeWarningMessage } from 'src/Utilities';
@@ -44,6 +48,7 @@ class EditDisaster extends React.Component {
 
       isModalOpen: false,
       authorizationFailure: null, // error code for authorization failure encountered
+      showToast: false,
     };
     this.backEndHost = getBackEndHost();
     this.frontEndHost = getFrontEndHost();
@@ -158,6 +163,10 @@ class EditDisaster extends React.Component {
         rawBody.location_longitude = longitude;
       }
 
+      this.setState({
+        showToast: false,
+      });
+
       fetch(`${this.backEndHost}/api/disasters`,
         {
           method: 'PATCH',
@@ -197,6 +206,10 @@ class EditDisaster extends React.Component {
           this.originalIsOngoing = result.is_ongoing;
           this.originalLatitude = result.location[0].toString();
           this.originalLongitude = result.location[1].toString();
+
+          this.setState({
+            showToast: true,
+          });
         }
       })
       .catch(e => {
@@ -239,7 +252,7 @@ class EditDisaster extends React.Component {
 
   render() {
     const {isValidInformalName, isValidOfficialName, isValidDisasterType, isValidLatitude, isValidLongitude, isModalOpen,
-      authorizationFailure} = this.state;
+      authorizationFailure, informalName, showToast} = this.state;
     return (
       <>
         <CRow>
@@ -357,6 +370,25 @@ class EditDisaster extends React.Component {
             >OK</CButton>
           </CModalFooter>
         </CModal>
+
+        <CToaster
+          position={'top-center'}
+          key={'toaster-top-center'}
+        >
+          <CToast
+            key={'toast'}
+            show={showToast}
+            autohide={5000}
+            fade={true}
+          >
+            <CToastHeader closeButton={true}>
+              Disaster Listing Updated
+            </CToastHeader>
+            <CToastBody>
+              {`The disaster listing for ${informalName} has been updated successfully!`}
+            </CToastBody>
+          </CToast>
+        </CToaster>
       </>
     );
   }
