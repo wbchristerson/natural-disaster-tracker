@@ -250,9 +250,11 @@ class EditWitnessReport extends React.Component {
           this.originalReportPeopleAffected = result.people_affected.toString();
           this.originalReportLatitude = result.location[0].toString();
           this.originalReportLongitude = result.location[1].toString();
-          this.setState({
-            showToast: true,
-          });
+          if (!result.error) {
+            this.setState({
+              showToast: true,
+            });  
+          }
         }
       })
       .catch(e => {

@@ -21,7 +21,7 @@ from models import (
     NaturalDisasterEnum
 )
 from flask_cors import CORS
-from sqlalchemy import func, join
+from sqlalchemy import func, and_, or_, join
 from random import randrange
 from copy import copy
 from authentication_utils import requires_auth
@@ -296,6 +296,8 @@ def create_app(test_config=None):
     def disasters():
         page = int(request.args.get("page", "1"))
         disaster_type = request.args.get("disaster_type")
+        query_string = request.args.get("query")
+        use_inclusive_search = False
 
         try:
             if disaster_type is not None and disaster_type.upper(
@@ -303,9 +305,33 @@ def create_app(test_config=None):
                 raise AttributeError("Unrecognized natural disaster type.")
             formatted_disasters = []
 
-            disasters = Disaster.query.filter(
-                Disaster.disaster_type == disaster_type.upper()) \
-                .all() if disaster_type else Disaster.query.all()
+            if query_string is not None and disaster_type is None and query_string.upper() in NaturalDisasterEnum.__members__:
+                disaster_type = query_string
+                use_inclusive_search = True
+
+            if query_string is None and disaster_type is None:
+                disasters = Disaster.query.all()
+            elif query_string is None and disaster_type is not None:
+                disasters = Disaster.query.filter(Disaster.disaster_type == disaster_type.upper()).all()
+            elif query_string is not None and disaster_type is None:
+                disasters = Disaster.query.filter(or_(
+                    Disaster.informal_name.ilike('%' + query_string + '%'), 
+                    Disaster.official_name.ilike('%' + query_string + '%')
+                )).all()
+            elif query_string is not None and disaster_type is not None and not use_inclusive_search:
+                disasters = Disaster.query.filter(and_(
+                    or_(
+                        Disaster.informal_name.ilike('%' + query_string + '%'),
+                        Disaster.official_name.ilike('%' + query_string + '%'),
+                    ),
+                    Disaster.disaster_type == disaster_type.upper()
+                )).all()
+            else:
+                disasters = Disaster.query.filter(or_(
+                    Disaster.informal_name.ilike('%' + query_string + '%'),
+                    Disaster.official_name.ilike('%' + query_string + '%'),
+                    Disaster.disaster_type == disaster_type.upper()
+                )).all()
 
             total_disasters = len(disasters)
             formatted_disasters = get_page_of_resource(

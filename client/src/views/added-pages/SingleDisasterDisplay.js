@@ -34,6 +34,7 @@ import CIcon from '@coreui/icons-react'
 import { DEFAULT_DISASTER_FIELD_TEXT, displayDisasterDataLine, formatLatitudeLongitude, getBackEndHost, getFrontEndHost, isValidGeographicCoordinate,
         isValidImageURL, isValidNonnegativeIntegerInRange, isValidNonnegativeInteger, isValidTime, getCookieWithKey, OBSERVER_DATABASE_ID_KEY, 
         getGeneralTimeFormat, USER_ACCESS_TOKEN_KEY, getSignInRequirementWarningMessage, getSignInRequirementsErrorMessage, getAdminPrivilegeErrorMessage} from 'src/Utilities';
+import { TheSidebar } from 'src/containers';
 
 
 class SingleDisasterDisplay extends React.Component {
@@ -300,9 +301,13 @@ class SingleDisasterDisplay extends React.Component {
           this.clearWitnessReportForm();
           this.setState({
             witnessReportFormVisible: false,
-            showToast: true,
           });
           this.fetchDisasterInformation(this.state.id);
+          if (!result.error) {
+            this.setState({
+              showToast: true,
+            });
+          }
         }
       })
       .catch(e => {
@@ -505,9 +510,11 @@ class SingleDisasterDisplay extends React.Component {
         } else {
           this.onModalClose();
           this.fetchDisasterInformation(this.disasterId);
-          this.setState({
-            showDeleteToast: true,
-          });
+          if (!result.error) {
+            this.setState({
+              showDeleteToast: true,
+            });  
+          }
         }
 
       })

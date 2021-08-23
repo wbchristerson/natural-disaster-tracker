@@ -207,9 +207,11 @@ class EditDisaster extends React.Component {
           this.originalLatitude = result.location[0].toString();
           this.originalLongitude = result.location[1].toString();
 
-          this.setState({
-            showToast: true,
-          });
+          if (!result.error) {
+            this.setState({
+              showToast: true,
+            });
+          }
         }
       })
       .catch(e => {

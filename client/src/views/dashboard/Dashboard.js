@@ -11,6 +11,8 @@ import {
   CProgress,
   CRow,
   CCallout,
+  CForm,
+  CInput
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { formatLatitudeLongitude, getBackEndHost, getFrontEndHost } from '../../Utilities'
@@ -23,10 +25,14 @@ const WidgetsBrand = lazy(() => import('../widgets/WidgetsBrand.js'))
 class Dashboard extends React.Component {
   constructor(props) {
     super(props);
+    const d = new Date();
     this.state = {
       totalDisasters: 0,
       disasterList: [],
       page: 1,
+      recordedSeconds: d.getSeconds(),
+
+      searchString: "",
     };
 
     this.backEndHost = getBackEndHost();
@@ -38,6 +44,7 @@ class Dashboard extends React.Component {
   }
 
   fetchDisasters() {
+    // fetch(`${this.backEndHost}/api/disasters?page=${this.state.page}&query=Earthquake&disaster_type=flood`, { headers: { 'Access-Control-Allow-Origin': '*' } })
     fetch(`${this.backEndHost}/api/disasters?page=${this.state.page}`, { headers: { 'Access-Control-Allow-Origin': '*' } })
     .then(response => response.json())
     .then(result => {
@@ -51,25 +58,62 @@ class Dashboard extends React.Component {
     });
   }
 
+  onSearchStringChange(evt) {
+    this.setState({
+      searchString: evt.target.value,
+    })
+  }
+
+  onSearchClick() {
+    const {page, searchString} = this.state;
+    if (searchString == "") {
+      this.fetchDisasters();
+    } else {
+      fetch(`${this.backEndHost}/api/disasters?page=${page}&query=${searchString}`, { headers: { 'Access-Control-Allow-Origin': '*' } })
+      .then(response => response.json())
+      .then(result => {
+          this.setState({
+            totalDisasters: result.totalDisasters,
+            disasterList: result.disasters,
+          })
+      })
+      .catch(e => {
+          console.log(e);
+      });
+    }
+  }
 
   render() {
-    const d = new Date();
-    const seconds = d.getSeconds();
-
+    const {recordedSeconds, searchString, disasterList} = this.state;
     return (
       <>
-        <div className="logged-in-box auth0-box logged-in">
-          <a className="btn btn-primary btn-lg btn-logout btn-block" href={`${this.frontEndHost}/#/add-disaster-event`}>Add Disaster Event</a>
-        </div>
-
-        <div className={`my-test ${seconds % 3 === 0 ? "main-image-1" : seconds % 3 === 1 ? "main-image-2" : "main-image-3"}`}>
+        <div className={`my-test ${recordedSeconds % 3 === 0 ? "main-image-1" : recordedSeconds % 3 === 1 ? "main-image-2" : "main-image-3"}`}>
           <div className="card-overlay">
             <h1 className="display-3 main-top-text">Disaster Reporter</h1>
             <p className="main-bottom-text">See And Write Reports About Natural Disasters In Your Area</p>
           </div>
         </div>
 
-        {this.state.disasterList.map((disaster, index) => {
+        {/* <CForm inline className="search-entities"> */}
+        <div className="dashboard-search-container">
+          <CInput
+            className="top-search-field"
+            placeholder="Search"
+            size="lg"
+            value={searchString}
+            onChange={this.onSearchStringChange.bind(this)}
+          />
+          {/* <CButton color="light" className="my-2 my-sm-0 top-search-button" type="submit">Search</CButton> */}
+          <CButton color="primary" onClick={this.onSearchClick.bind(this)} className="btn btn-primary btn-block top-search-button" type="submit">Search</CButton>
+        </div>
+        {/* </CForm> */}
+        <div className="logged-in-box auth0-box logged-in add-disaster-button">
+          <a className="btn btn-primary btn-lg btn-logout btn-block" href={`${this.frontEndHost}/#/add-disaster-event`}>Add Disaster Event</a>
+        </div>
+
+        {disasterList.length == 0 && <h3 className="no-search-match-text">No matching disasters</h3>}
+
+        {disasterList.map((disaster, index) => {
           return (
             <CRow key={index}>
               <CCol xs="12" sm="12" md="12">
