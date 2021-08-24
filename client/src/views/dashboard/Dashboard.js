@@ -49,7 +49,6 @@ class Dashboard extends React.Component {
     fetch(`${this.backEndHost}/api/disasters?page=${page}`, { headers: { 'Access-Control-Allow-Origin': '*' } })
     .then(response => response.json())
     .then(result => {
-        console.log("result: ", result);
         this.setState({
           totalDisasters: result.total_disasters,
           disasterList: result.disasters,
@@ -66,43 +65,48 @@ class Dashboard extends React.Component {
     })
   }
 
-  onSearchClick(page) {
+  onSearchClick() {
     const {searchString} = this.state;
     if (searchString == "") {
       this.fetchDisasters(1);
       this.setState({
-        page: page,
+        page: 1,
       });
     } else {
-      fetch(`${this.backEndHost}/api/disasters?page=${page}&query=${searchString}`, { headers: { 'Access-Control-Allow-Origin': '*' } })
-      .then(response => response.json())
-      .then(result => {
-          this.setState({
-            totalDisasters: result.total_disasters,
-            disasterList: result.disasters,
-            page: page,
-          });
-      })
-      .catch(e => {
-          console.log(e);
-      });
+      this.fetchDisastersWithSearch(searchString, 1);
     }
   }
 
-  onSetCurrentPage(evt) {
-    console.log("\n\n\ncurrent page: ", Math.max(1, evt));
-    this.setState({
-      page: Math.max(1, evt),
+  fetchDisastersWithSearch(searchString, page) {
+    fetch(`${this.backEndHost}/api/disasters?page=${page}&query=${searchString}`, { headers: { 'Access-Control-Allow-Origin': '*' } })
+    .then(response => response.json())
+    .then(result => {
+        this.setState({
+          totalDisasters: result.total_disasters,
+          disasterList: result.disasters,
+          page: page,
+        });
+    })
+    .catch(e => {
+        console.log(e);
     });
-    // this.fetchDisasters(Math.max(1, evt));
-    this.onSearchClick(Math.max(1, evt));
+  }
+
+  onSetCurrentPage(evt) {
+    const newPage = Math.max(1, evt);
+    this.setState({
+      page: newPage,
+    });
+    const {searchString} = this.state;
+    if (searchString == "") {
+      this.fetchDisasters(newPage);
+    } else {
+      this.fetchDisastersWithSearch(searchString, newPage);
+    }
   }
 
   render() {
     const {recordedSeconds, searchString, disasterList, page, totalDisasters} = this.state;
-    console.log("total disasters: ", totalDisasters);
-    console.log("page size: ", PAGE_SIZE);
-    console.log("num pages: ", Math.ceil(totalDisasters / PAGE_SIZE));
     return (
       <>
         <div className={`my-test ${recordedSeconds % 3 === 0 ? "main-image-1" : recordedSeconds % 3 === 1 ? "main-image-2" : "main-image-3"}`}>
