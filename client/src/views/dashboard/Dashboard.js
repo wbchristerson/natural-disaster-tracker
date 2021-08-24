@@ -12,10 +12,11 @@ import {
   CRow,
   CCallout,
   CForm,
-  CInput
+  CInput,
+  CPagination
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { formatLatitudeLongitude, getBackEndHost, getFrontEndHost } from '../../Utilities'
+import { formatLatitudeLongitude, getBackEndHost, getFrontEndHost, PAGE_SIZE } from '../../Utilities'
 
 import MainChartExample from '../charts/MainChartExample.js'
 
@@ -40,16 +41,17 @@ class Dashboard extends React.Component {
   }
 
   componentDidMount() {
-    this.fetchDisasters();
+    this.fetchDisasters(1);
   }
 
-  fetchDisasters() {
+  fetchDisasters(page) {
     // fetch(`${this.backEndHost}/api/disasters?page=${this.state.page}&query=Earthquake&disaster_type=flood`, { headers: { 'Access-Control-Allow-Origin': '*' } })
-    fetch(`${this.backEndHost}/api/disasters?page=${this.state.page}`, { headers: { 'Access-Control-Allow-Origin': '*' } })
+    fetch(`${this.backEndHost}/api/disasters?page=${page}`, { headers: { 'Access-Control-Allow-Origin': '*' } })
     .then(response => response.json())
     .then(result => {
+        console.log("result: ", result);
         this.setState({
-          totalDisasters: result.totalDisasters,
+          totalDisasters: result.total_disasters,
           disasterList: result.disasters,
         })
     })
@@ -64,18 +66,22 @@ class Dashboard extends React.Component {
     })
   }
 
-  onSearchClick() {
-    const {page, searchString} = this.state;
+  onSearchClick(page) {
+    const {searchString} = this.state;
     if (searchString == "") {
-      this.fetchDisasters();
+      this.fetchDisasters(1);
+      this.setState({
+        page: page,
+      });
     } else {
       fetch(`${this.backEndHost}/api/disasters?page=${page}&query=${searchString}`, { headers: { 'Access-Control-Allow-Origin': '*' } })
       .then(response => response.json())
       .then(result => {
           this.setState({
-            totalDisasters: result.totalDisasters,
+            totalDisasters: result.total_disasters,
             disasterList: result.disasters,
-          })
+            page: page,
+          });
       })
       .catch(e => {
           console.log(e);
@@ -83,8 +89,20 @@ class Dashboard extends React.Component {
     }
   }
 
+  onSetCurrentPage(evt) {
+    console.log("\n\n\ncurrent page: ", Math.max(1, evt));
+    this.setState({
+      page: Math.max(1, evt),
+    });
+    // this.fetchDisasters(Math.max(1, evt));
+    this.onSearchClick(Math.max(1, evt));
+  }
+
   render() {
-    const {recordedSeconds, searchString, disasterList} = this.state;
+    const {recordedSeconds, searchString, disasterList, page, totalDisasters} = this.state;
+    console.log("total disasters: ", totalDisasters);
+    console.log("page size: ", PAGE_SIZE);
+    console.log("num pages: ", Math.ceil(totalDisasters / PAGE_SIZE));
     return (
       <>
         <div className={`my-test ${recordedSeconds % 3 === 0 ? "main-image-1" : recordedSeconds % 3 === 1 ? "main-image-2" : "main-image-3"}`}>
@@ -104,7 +122,7 @@ class Dashboard extends React.Component {
             onChange={this.onSearchStringChange.bind(this)}
           />
           {/* <CButton color="light" className="my-2 my-sm-0 top-search-button" type="submit">Search</CButton> */}
-          <CButton color="primary" onClick={this.onSearchClick.bind(this)} className="btn btn-primary btn-block top-search-button" type="submit">Search</CButton>
+          <CButton color="primary" onClick={() => this.onSearchClick(1)} className="btn btn-primary btn-block top-search-button" type="submit">Search</CButton>
         </div>
         {/* </CForm> */}
         <div className="logged-in-box auth0-box logged-in add-disaster-button">
@@ -215,8 +233,15 @@ class Dashboard extends React.Component {
           )
         })}
 
-        <WidgetsDropdown />
-        <CCard>
+        <CPagination
+          align="center"
+          activePage={page}
+          pages={Math.ceil(totalDisasters / PAGE_SIZE)}
+          onActivePageChange={this.onSetCurrentPage.bind(this)}
+        />
+
+        {/* <WidgetsDropdown /> */}
+        {/* <CCard>
           <CCardBody>
             <CRow>
               <CCol sm="5">
@@ -298,11 +323,11 @@ class Dashboard extends React.Component {
               </CCol>
             </CRow>
           </CCardFooter>
-        </CCard>
+        </CCard> */}
 
-        <WidgetsBrand withCharts/>
+        {/* <WidgetsBrand withCharts/> */}
 
-        <CRow>
+        {/* <CRow>
           <CCol>
             <CCard>
               <CCardHeader>
@@ -742,7 +767,7 @@ class Dashboard extends React.Component {
               </CCardBody>
             </CCard>
           </CCol>
-        </CRow>
+        </CRow> */}
       </>
     )
   }

@@ -28,12 +28,13 @@ import {
   CToaster,
   CToast,
   CToastHeader,
-  CToastBody
+  CToastBody,
+  CPagination,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { DEFAULT_DISASTER_FIELD_TEXT, displayDisasterDataLine, formatLatitudeLongitude, getBackEndHost, getFrontEndHost, isValidGeographicCoordinate,
         isValidImageURL, isValidNonnegativeIntegerInRange, isValidNonnegativeInteger, isValidTime, getCookieWithKey, OBSERVER_DATABASE_ID_KEY, 
-        getGeneralTimeFormat, USER_ACCESS_TOKEN_KEY, getSignInRequirementWarningMessage, getSignInRequirementsErrorMessage, getAdminPrivilegeErrorMessage} from 'src/Utilities';
+        getGeneralTimeFormat, USER_ACCESS_TOKEN_KEY, getSignInRequirementWarningMessage, getSignInRequirementsErrorMessage, getAdminPrivilegeErrorMessage, PAGE_SIZE} from 'src/Utilities';
 import { TheSidebar } from 'src/containers';
 
 
@@ -79,6 +80,7 @@ class SingleDisasterDisplay extends React.Component {
       authorizationFailure: null,
       showToast: false,
       showDeleteToast: false,
+      page: 1,
     };
     this.backEndHost = getBackEndHost();
     this.frontEndHost = getFrontEndHost();
@@ -86,11 +88,11 @@ class SingleDisasterDisplay extends React.Component {
   }
 
   componentDidMount() {
-    this.fetchDisasterInformation(this.disasterId);
+    this.fetchDisasterInformation(this.disasterId, this.state.page);
   }
 
-  fetchDisasterInformation(disasterId) {
-    fetch(`${this.backEndHost}/api/disasters/${disasterId}?page=${this.state.page}`)
+  fetchDisasterInformation(disasterId, page) {
+    fetch(`${this.backEndHost}/api/disasters/${disasterId}?page=${page}`)
     .then(response => response.json())
     .then(result => {
         this.setState({
@@ -294,7 +296,7 @@ class SingleDisasterDisplay extends React.Component {
           "credentials required.") {
           
           this.setState({
-            AuthorizationFailure: 401,
+            authorizationFailure: 401,
             isWitnessReportModalOpen: true,
           });
         } else {
@@ -302,10 +304,11 @@ class SingleDisasterDisplay extends React.Component {
           this.setState({
             witnessReportFormVisible: false,
           });
-          this.fetchDisasterInformation(this.state.id);
+          this.fetchDisasterInformation(this.state.id, 1);
           if (!result.error) {
             this.setState({
               showToast: true,
+              page: 1,
             });
           }
         }
@@ -525,9 +528,16 @@ class SingleDisasterDisplay extends React.Component {
       this.onModalClose();
   }
 
+  onSetCurrentPage(evt) {
+    this.setState({
+      page: Math.max(1, evt),
+    });
+    this.fetchDisasterInformation(this.disasterId, Math.max(1, evt));
+  }
+
   render() {
     const {average_severity, disaster_type, first_observance, last_observance, is_ongoing, location, num_reports,
-      people_affected, witnessReportFormVisible, authorizationFailure, showToast, showDeleteToast} = this.state;
+      people_affected, witnessReportFormVisible, authorizationFailure, showToast, showDeleteToast, page} = this.state;
     const disasterDisplayData = [
       { disasterField: "Average Severity", disasterValue: displayDisasterDataLine(average_severity ? average_severity.toFixed(2) : average_severity) },
       { disasterField: "Disaster Type", disasterValue: disaster_type ? disaster_type.charAt(0).toUpperCase() + disaster_type.slice(1) : DEFAULT_DISASTER_FIELD_TEXT },
@@ -763,6 +773,13 @@ class SingleDisasterDisplay extends React.Component {
             </CToastBody>
           </CToast>
         </CToaster>
+
+        <CPagination
+          align="center"
+          activePage={page}
+          pages={Math.ceil(num_reports / PAGE_SIZE)}
+          onActivePageChange={this.onSetCurrentPage.bind(this)}
+        />
       </>
     );
   }

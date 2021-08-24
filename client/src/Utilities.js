@@ -5,6 +5,7 @@ export const OBSERVER_DATABASE_ID_KEY = "observer_database_id";
 export const DISASTER_TYPES = ["Please select", "Earthquake", "Flood", "Wildfire", "Tornado", "Hurricane", "Tsunami", "Landslide", "Avalanche", "Volcano", "Other"];
 export const USER_PICTURE_KEY = "user_picture";
 export const USER_NICKNAME_KEY = "user_nickname";
+export const PAGE_SIZE = 10;
 
 const MONTH_ABBREVIATIONS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
