@@ -752,26 +752,42 @@ def create_app(test_config=None):
 
 
     '''
+    Verify that a user can delete a witness report. A user may only delete a 
+    witness report if he or she is an admin or the witness report was created
+    by the user. Otherwise, a 403 unauthorized error will be raised.
+    '''
+    def validate_delete_witness_report(witness_report, user_data_payload):
+        if "post:disasters" in user_data_payload["permissions"]: # user is an admin
+            return True
+        
+        author_observer = Observer.query.filter(Observer.id == witness_report.observer_id).first()
+
+        if author_observer is None:
+            abort(401)
+        
+        if author_observer.auth0_id == user_data_payload["sub"]:
+            return True
+        else:
+            abort(403)
+
+
+    '''
     A DELETE endpoint for deleting a witness report. If the listed id does not
     exist among witness reports, a 400 status error is returned.
     '''
     @app.route('/api/witnessreports/<witness_report_id>', methods=["DELETE"])
     @requires_auth('delete:witnessreports')
     def remove_witness_report(payload, witness_report_id):
-        try:
-            witness_report = WitnessReport.query.filter(
-                WitnessReport.id == witness_report_id).first()
-            if witness_report is None:
-                raise AttributeError("Entry not found")
-            witness_report.delete()
-            return jsonify({
-                "success": True,
-                "delete": witness_report_id,
-            })
-        except Exception as err:
-            flash(str(err))
-            print(sys.exc_info())
-            abort(400)
+        witness_report = WitnessReport.query.filter(
+            WitnessReport.id == witness_report_id).first()
+        if witness_report is None:
+            raise AttributeError("Entry not found")
+        validate_delete_witness_report(witness_report, payload)
+        witness_report.delete()
+        return jsonify({
+            "success": True,
+            "delete": witness_report_id,
+        })
 
 
     @app.errorhandler(400)

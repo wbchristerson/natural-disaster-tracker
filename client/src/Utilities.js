@@ -182,6 +182,15 @@ export function getAdminPrivilegeErrorMessage(actionString, errorCode) {
 }
 
 
+export function getAdminPrivilegeOrOwnerErrorMessage(actionString, errorCode) {
+  return `A failure occurred. The ability to ${actionString} requires either 
+    ownership of the entity or admin privileges and it looks like those have 
+    not been granted to you. If you would like admin privileges, please 
+    ${errorCode == 401 ? "create an account by signing up (for free!) and" : 
+    ""} email me at wbchristerson@gmail.com with your username.`;
+}
+
+
 export function getAdminPrivilegeWarningMessage(actionString) {
   const accessToken = getCookieWithKey(USER_ACCESS_TOKEN_KEY);
   return `Please note that the ability to ${actionString} requires admin privileges. If you do 

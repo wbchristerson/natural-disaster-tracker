@@ -34,7 +34,7 @@ import {
 import CIcon from '@coreui/icons-react'
 import { DEFAULT_DISASTER_FIELD_TEXT, displayDisasterDataLine, formatLatitudeLongitude, getBackEndHost, getFrontEndHost, isValidGeographicCoordinate,
         isValidImageURL, isValidNonnegativeIntegerInRange, isValidNonnegativeInteger, isValidTime, getCookieWithKey, OBSERVER_DATABASE_ID_KEY, 
-        getGeneralTimeFormat, USER_ACCESS_TOKEN_KEY, getSignInRequirementWarningMessage, getSignInRequirementsErrorMessage, getAdminPrivilegeErrorMessage, PAGE_SIZE} from 'src/Utilities';
+        getGeneralTimeFormat, USER_ACCESS_TOKEN_KEY, getSignInRequirementWarningMessage, getSignInRequirementsErrorMessage, getAdminPrivilegeErrorMessage, PAGE_SIZE, getAdminPrivilegeOrOwnerErrorMessage} from 'src/Utilities';
 import { TheSidebar } from 'src/containers';
 
 
@@ -512,7 +512,7 @@ class SingleDisasterDisplay extends React.Component {
           });
         } else {
           this.onModalClose();
-          this.fetchDisasterInformation(this.disasterId);
+          this.fetchDisasterInformation(this.disasterId, this.state.page);
           if (!result.error) {
             this.setState({
               showDeleteToast: true,
@@ -726,7 +726,7 @@ class SingleDisasterDisplay extends React.Component {
             <CModalTitle>Failure To Delete Witness Report</CModalTitle>
           </CModalHeader>
           <CModalBody>
-            {getAdminPrivilegeErrorMessage("delete witness reports", authorizationFailure)}
+            {getAdminPrivilegeOrOwnerErrorMessage("delete witness reports", authorizationFailure)}
           </CModalBody>
           <CModalFooter>
             <CButton 
