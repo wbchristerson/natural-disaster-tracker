@@ -80,9 +80,9 @@ export function isValidTime(timeString) {
     return false;
   }
   const listedTime = timeString.trim();
-  const hours = parseInt(timeString.charAt(1) == ':' ? timeString.slice(0, 1) : timeString.slice(0,2));
-  const minutes = parseInt(timeString.charAt(1) == ':' ? timeString.slice(2,4) : timeString.slice(3,5));
-  const seconds = timeString.length > 5 ? parseInt(timeString.charAt(1) == ":" ? timeString.slice(5,7) : timeString.slice(6,8)) : null;
+  const hours = parseInt(listedTime.charAt(1) == ':' ? listedTime.slice(0, 1) : listedTime.slice(0,2));
+  const minutes = parseInt(listedTime.charAt(1) == ':' ? listedTime.slice(2,4) : listedTime.slice(3,5));
+  const seconds = listedTime.length > 5 ? parseInt(listedTime.charAt(1) == ":" ? listedTime.slice(5,7) : listedTime.slice(6,8)) : null;
 
   return 0 <= hours && hours < 24 && 0 <= minutes && minutes < 60 && 0 <= seconds && seconds < 60;
 }
@@ -209,4 +209,33 @@ export function getSignInRequirementWarningMessage(actionString) {
 export function getSignInRequirementsErrorMessage(actionString) {
   return `A failure occurred. You must be logged-in to ${actionString}. You can
      create an account (for free!) by signing up.`
+}
+
+
+export function getDisasterDisplayDataList(disasterData) {
+  const displayDataList = new Array();
+  const {average_severity, disaster_type, first_observance, last_observance,
+      location, num_reports, people_affected} = disasterData;
+
+  if (average_severity != null) {
+    displayDataList.push(["Average Severity", average_severity]);
+  }
+  displayDataList.push(["Disaster Type", disaster_type.charAt(0).toUpperCase() + disaster_type.slice(1)]);
+
+  if (first_observance != null) {
+    displayDataList.push(["First Observance", first_observance]);
+  }
+
+  if (last_observance != null) {
+    displayDataList.push(["Last Observance", last_observance]);
+  }
+
+  displayDataList.push(["Location", formatLatitudeLongitude(location)]);
+  displayDataList.push(["Number Of Reports", num_reports]);
+
+  if (people_affected != null) {
+    displayDataList.push(["People Affected", people_affected]);
+  }
+
+  return displayDataList;
 }

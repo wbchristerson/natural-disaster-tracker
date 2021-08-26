@@ -131,3 +131,46 @@
     margin-top: 40px;
     margin-bottom: 40px;
 }
+
+.small-disaster-data {
+    font: medium;
+}
+
+.disaster-display {
+    display: flex;
+    flex-direction: row;
+}
+
+.disaster-details-block {
+    margin-top: 20px;
+}
+
+.disaster-button-block {
+    border-top: 1px solid;
+    border-color: #d8dbe0;
+    padding-top: 20px;
+}
+
+.disaster-card-body {
+    padding-top: 0;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.witness-quote-statement {
+    padding-left: 40px;
+    padding-right: 40px;
+    padding-top: 20px;
+}
+
+.witness-quote-author {
+    padding-left: 60px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid;
+    border-color: #d8dbe0;
+}
+
+.credits-sub-text {
+    margin-top: 20px;
+    max-width: 800px;
+}

@@ -42,6 +42,7 @@ const AddDisaster = React.lazy(() => import('./views/added-pages/AddDisaster'));
 const SingleDisasterDisplay = React.lazy(() => import('./views/added-pages/SingleDisasterDisplay'));
 const EditDisaster = React.lazy(() => import('./views/added-pages/EditDisaster'));
 const EditWitnessReport = React.lazy(() => import('./views/added-pages/EditWitnessReport'));
+const CoreUICredits = React.lazy(() => import('./views/added-pages/CoreUICredits'));
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
@@ -89,6 +90,7 @@ const routes = [
   { path: '/single-disaster-display', name: "Single Disaster Display", component: SingleDisasterDisplay },
   { path: '/edit-disaster-event', name: "Edit Disaster Event", component: EditDisaster },
   { path: '/edit-witness-report', name: "Edit Witness Report", component: EditWitnessReport },
+  { path: '/core-ui-credits', name: "Core UI Credits", component: CoreUICredits },
 
 ];
 
