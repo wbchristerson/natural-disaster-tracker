@@ -1,26 +1,20 @@
-import React, { lazy } from 'react'
+import React from 'react'
 import {
   CBadge,
   CButton,
-  CButtonGroup,
   CCard,
   CCardBody,
-  CCardFooter,
   CCardHeader,
   CCol,
-  CProgress,
   CRow,
-  CCallout,
   CForm,
   CInput,
   CPagination,
   CListGroup,
   CListGroupItem,
-  CFormGroup,
   CLabel,
 } from '@coreui/react'
-import CIcon from '@coreui/icons-react'
-import { formatLatitudeLongitude, getBackEndHost, getDisasterDisplayDataList, getFrontEndHost, PAGE_SIZE } from '../../Utilities'
+import { getBackEndHost, getDisasterDisplayDataList, getFrontEndHost, PAGE_SIZE } from '../../Utilities'
 
 class Dashboard extends React.Component {
   constructor(props) {
@@ -44,7 +38,6 @@ class Dashboard extends React.Component {
   }
 
   fetchDisasters(page) {
-    // fetch(`${this.backEndHost}/api/disasters?page=${this.state.page}&query=Earthquake&disaster_type=flood`, { headers: { 'Access-Control-Allow-Origin': '*' } })
     fetch(`${this.backEndHost}/api/disasters?page=${page}`, { headers: { 'Access-Control-Allow-Origin': '*' } })
     .then(response => response.json())
     .then(result => {
@@ -164,9 +157,7 @@ class Dashboard extends React.Component {
                       <div className="witness-quote-author">
                         <div className="c-avatar">
                           <img src={disaster.random_observer_url} className="c-avatar-img" alt={""} />
-                          {/* <span className="c-avatar-status bg-success"></span> */}
                         </div>
-                        {/* {disaster.random_observer_url && <img className="c-avatar-img" src={disaster.random_observer_url} alt=""/>} */}
                         {disaster.random_comment && <h5 className="disaster-author-text">{disaster.random_observer}</h5>}
                       </div>
                     }

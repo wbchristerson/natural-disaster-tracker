@@ -26,8 +26,8 @@ import {
   CInvalidFeedback,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { getCookieWithKey, USER_ACCESS_TOKEN_KEY, getBackEndHost, getFrontEndHost, DISASTER_TYPES, getAdminPrivilegeErrorMessage, getAdminPrivilegeWarningMessage, isValidGeographicCoordinate } from 'src/Utilities';
-import { nominalTypeHack } from 'prop-types';
+import { getCookieWithKey, USER_ACCESS_TOKEN_KEY, getBackEndHost, getFrontEndHost, DISASTER_TYPES, getAdminPrivilegeErrorMessage, 
+  getAdminPrivilegeWarningMessage, isValidGeographicCoordinate } from 'src/Utilities';
 
 
 class AddDisaster extends React.Component {

@@ -1,25 +1,4 @@
-import React, { lazy } from 'react'
-import {
-  CBadge,
-  CButton,
-  CButtonGroup,
-  CCard,
-  CCardBody,
-  CCardFooter,
-  CCardHeader,
-  CCol,
-  CProgress,
-  CRow,
-  CCallout,
-  CForm,
-  CInput,
-  CPagination,
-  CListGroup,
-  CListGroupItem,
-  CFormGroup,
-  CLabel,
-} from '@coreui/react'
-import CIcon from '@coreui/icons-react'
+import React from 'react'
 
 class CoreUICredits extends React.Component {
   constructor(props) {

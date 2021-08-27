@@ -26,7 +26,8 @@ import {
   CToastBody
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { getCookieWithKey, USER_ACCESS_TOKEN_KEY, getBackEndHost, getFrontEndHost, isValidGeographicCoordinate, DISASTER_TYPES, getAdminPrivilegeErrorMessage, getAdminPrivilegeWarningMessage } from 'src/Utilities';
+import { getCookieWithKey, USER_ACCESS_TOKEN_KEY, getBackEndHost, getFrontEndHost, isValidGeographicCoordinate, DISASTER_TYPES, getAdminPrivilegeErrorMessage,
+  getAdminPrivilegeWarningMessage } from 'src/Utilities';
 
 
 class EditDisaster extends React.Component {

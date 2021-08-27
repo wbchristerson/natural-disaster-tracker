@@ -19,7 +19,6 @@ import {
   CListGroup,
   CListGroupItem,
   CButtonClose,
-  CProgress,
   CModal,
   CModalHeader,
   CModalBody,
@@ -36,7 +35,6 @@ import { DEFAULT_DISASTER_FIELD_TEXT, displayDisasterDataLine, formatLatitudeLon
         isValidImageURL, isValidNonnegativeIntegerInRange, isValidNonnegativeInteger, isValidTime, getCookieWithKey, OBSERVER_DATABASE_ID_KEY, 
         getGeneralTimeFormat, USER_ACCESS_TOKEN_KEY, getSignInRequirementWarningMessage, getSignInRequirementsErrorMessage, PAGE_SIZE,
         getAdminPrivilegeOrOwnerErrorMessage} from 'src/Utilities';
-import { TheSidebar } from 'src/containers';
 
 
 class SingleDisasterDisplay extends React.Component {
