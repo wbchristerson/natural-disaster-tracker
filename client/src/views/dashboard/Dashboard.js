@@ -137,6 +137,7 @@ class Dashboard extends React.Component {
 
         {disasterList.map((disaster, index) => {
           const disasterDisplayData = getDisasterDisplayDataList(disaster);
+          console.log(disaster);
           return (
             <CRow key={index}>
               <CCol xs="12">
@@ -162,10 +163,19 @@ class Dashboard extends React.Component {
                   <CCardBody className="disaster-card-body">
                     {disaster.random_observer_url && <img className="d-block w-100 set-disaster-max-height" src={disaster.random_witness_image} alt="slide 1"/>}
                     {disaster.random_comment && <h3 className="witness-quote-statement">{`"${disaster.random_comment}"`}</h3>}
-                    {disaster.random_comment && <h5 className="witness-quote-author">{`- ${disaster.random_observer}`}</h5>}
+                    {disaster.random_comment && 
+                      <div className="witness-quote-author">
+                        <div className="c-avatar">
+                          <img src={disaster.random_observer_url} className="c-avatar-img" alt={""} />
+                          {/* <span className="c-avatar-status bg-success"></span> */}
+                        </div>
+                        {/* {disaster.random_observer_url && <img className="c-avatar-img" src={disaster.random_observer_url} alt=""/>} */}
+                        {disaster.random_comment && <h5 className="disaster-author-text">{disaster.random_observer}</h5>}
+                      </div>
+                    }
                     <CForm className="disaster-details-block">
-                      {disasterDisplayData.map(display => (
-                        <div className="disaster-display">
+                      {disasterDisplayData.map((display, subIndex) => (
+                        <div key={subIndex} className="disaster-display">
                           <CCol md="3" className="disaster-data-text">
                             <CLabel>{display[0]}</CLabel>
                           </CCol>

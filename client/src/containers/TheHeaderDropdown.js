@@ -12,7 +12,6 @@ import { getCookieWithKey, USER_ACCESS_TOKEN_KEY, USER_PICTURE_KEY } from 'src/U
 
 const TheHeaderDropdown = () => {
   const isLoggedOut = getCookieWithKey(USER_ACCESS_TOKEN_KEY) == "";
-  console.log(getCookieWithKey(USER_PICTURE_KEY).slice(1,-1));
   return (
     <CDropdown
       inNav

@@ -22,10 +22,11 @@ import {
   CToast,
   CToastHeader,
   CToastBody,
-  CToaster
+  CToaster,
+  CInvalidFeedback,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { getCookieWithKey, USER_ACCESS_TOKEN_KEY, getBackEndHost, getFrontEndHost, DISASTER_TYPES, getAdminPrivilegeErrorMessage, getAdminPrivilegeWarningMessage } from 'src/Utilities';
+import { getCookieWithKey, USER_ACCESS_TOKEN_KEY, getBackEndHost, getFrontEndHost, DISASTER_TYPES, getAdminPrivilegeErrorMessage, getAdminPrivilegeWarningMessage, isValidGeographicCoordinate } from 'src/Utilities';
 import { nominalTypeHack } from 'prop-types';
 
 
@@ -35,11 +36,17 @@ class AddDisaster extends React.Component {
     this.state = {
       informalName: "",
       officialName: "",
-      disasterType: "",
+      disasterType: DISASTER_TYPES[0],
       isOngoing: false,
       latitude: "",
       longitude: "",
 
+      isValidInformalName: true,
+      isValidOfficialName: true,
+      isValidDisasterType: true,
+      isValidLatitude: true,
+      isValidLongitude: true,
+      
       isModalOpen: false,
       authorizationFailure: null, // an error code, either 401, 403, or null
       showToast: false,
@@ -65,63 +72,93 @@ class AddDisaster extends React.Component {
   }
 
   onLatitudeChange(evt) {
-    const latitudeRegExp = /^-?\d*\.?\d*$/;
-    if (latitudeRegExp.test(evt.target.value) && parseFloat(evt.target.value) >= -180.0 && parseFloat(evt.target.value) <= 180.0) {
-      this.setState({ latitude: evt.target.value });
-    } else if (evt.target.value == "") {
-      this.setState({ latitude: "" });
-    } else if (evt.target.value == "-") {
-      this.setState({ latitude: "-" });
-    }
+    this.setState({ latitude: evt.target.value });
   }
 
   onLongitudeChange(evt) {
-    const longitudeRegExp = /^-?\d*\.?\d*$/;
-    if (longitudeRegExp.test(evt.target.value) && parseFloat(evt.target.value) >= -180.0 && parseFloat(evt.target.value) <= 180.0) {
-      this.setState({ longitude: evt.target.value });
-    } else if (evt.target.value == "") {
-      this.setState({ longitude: "" });
-    } else if (evt.target.value == "-") {
-      this.setState({ longitude: "-" });
-    }
+    this.setState({ longitude: evt.target.value });
   }
 
   onSubmit() {
-    this.setState({
-      showToast: false,
-    });
-    fetch(`${this.backEndHost}/api/disasters`,
-      {
-        method: 'POST',
-        body: JSON.stringify({
-          informal_name: this.state.informalName,
-          official_name: this.state.officialName,
-          disaster_type: this.state.disasterType,
-          is_ongoing: this.state.isOngoing,
-          location_latitude: this.state.latitude,
-          location_longitude: this.state.longitude,
-        }),
-        contentType: 'application/json',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + getCookieWithKey(USER_ACCESS_TOKEN_KEY),
+    let
+      isValidInformalName = true,
+      isValidOfficialName = true,
+      isValidDisasterType = true,
+      isValidLatitude = true,
+      isValidLongitude = true;
+
+    const {informalName, officialName, disasterType, isOngoing, latitude,
+      longitude} = this.state;
+
+    if (informalName == "") {
+      isValidInformalName = false;
+    }
+
+    if (officialName == "") {
+      isValidOfficialName = false;
+    }
+
+    if (disasterType == "Please select") {
+      isValidDisasterType = false;
+    }
+
+    if (!isValidGeographicCoordinate(latitude)) {
+      isValidLatitude = false;
+    }
+
+    if (!isValidGeographicCoordinate(longitude)) {
+      isValidLongitude = false;
+    }
+
+    if (isValidInformalName && isValidOfficialName && isValidDisasterType &&
+      isValidLatitude && isValidLongitude) {
+
+      this.setState({
+        showToast: false,
+      });
+      
+      fetch(`${this.backEndHost}/api/disasters`,
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            informal_name: informalName,
+            official_name: officialName,
+            disaster_type: disasterType,
+            is_ongoing: isOngoing,
+            location_latitude: latitude,
+            location_longitude: longitude,
+          }),
+          contentType: 'application/json',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + getCookieWithKey(USER_ACCESS_TOKEN_KEY),
+          }
         }
-      }
-    )
-    .then(data => {
-      if ((data.status == 401 && data.statusText == "UNAUTHORIZED") || (data.status == 403 && data.statusText == "FORBIDDEN")) {
-        this.setState({
-          isModalOpen: true,
-          authorizationFailure: data.status,
-        });
-      } else if (data.status == 200) {
-        this.setState({
-          showToast: true,
-        });
-      }
-    })
-    .catch(error => console.log("error!!!: ", error));
+      )
+      .then(data => {
+        if ((data.status == 401 && data.statusText == "UNAUTHORIZED") || (data.status == 403 && data.statusText == "FORBIDDEN")) {
+          this.setState({
+            isModalOpen: true,
+            authorizationFailure: data.status,
+          });
+        } else if (data.status == 200) {
+          this.setState({
+            showToast: true,
+          });
+        }
+      })
+      .catch(error => console.log("error!!!: ", error)); 
+    }
+
+    this.setState({
+      isValidInformalName,
+      isValidOfficialName,
+      isValidDisasterType,
+      isValidLatitude,
+      isValidLongitude,
+    });
   }
+
 
   resetDisasterForm() {
     this.setState({
@@ -131,8 +168,15 @@ class AddDisaster extends React.Component {
       isOngoing: false,
       latitude: "",
       longitude: "",
+
+      isValidInformalName: true,
+      isValidOfficialName: true,
+      isValidDisasterType: true,
+      isValidLatitude: true,
+      isValidLongitude: true,
     });
   }
+
 
   onModalClose() {
     this.setState({
@@ -141,8 +185,11 @@ class AddDisaster extends React.Component {
     });
   }
 
+
   render() {
-    const {isModalOpen, authorizationFailure, showToast, informalName} = this.state;
+    const {isModalOpen, authorizationFailure, showToast, informalName,
+      isValidInformalName, isValidOfficialName, isValidDisasterType,
+      isValidLatitude, isValidLongitude, isOngoing, disasterType, officialName, latitude, longitude} = this.state;
     return (
       <>
         <CRow>
@@ -157,19 +204,23 @@ class AddDisaster extends React.Component {
                 <CForm action="" method="post" encType="multipart/form-data" className="form-horizontal">
                   <CFormGroup row>
                     <CCol md="3">
-                      <CLabel htmlFor="text-input">Informal Name</CLabel>
+                      <CLabel htmlFor="informal-name-input">Informal Name</CLabel>
                     </CCol>
                     <CCol xs="12" md="9">
-                      <CInput id="text-input" name="text-input" placeholder="Text" value={this.state.informalName} onChange={this.onInformalNameChange.bind(this)}/>
+                      {isValidInformalName && <CInput id="informal-name-input" name="informal-name-input" placeholder="Text" value={informalName} onChange={this.onInformalNameChange.bind(this)}/>}
+                      {!isValidInformalName && <CInput id="informal-name-input" invalid name="informal-name-input" placeholder="Text" value={informalName} onChange={this.onInformalNameChange.bind(this)}/>}
+                      <CInvalidFeedback>Informal name is blank or format is not recognized</CInvalidFeedback>
                       <CFormText>The colloquial name of the disaster</CFormText>
                     </CCol>
                   </CFormGroup>
                   <CFormGroup row>
                     <CCol md="3">
-                      <CLabel htmlFor="text-input">Official Name</CLabel>
+                      <CLabel htmlFor="official-name-input">Official Name</CLabel>
                     </CCol>
                     <CCol xs="12" md="9">
-                      <CInput id="text-input" name="text-input" placeholder="Text" value={this.state.officialName} onChange={this.onOfficialNameChange.bind(this)}/>
+                      {isValidOfficialName && <CInput id="official-name-input" name="official-name-input" placeholder="Text" value={officialName} onChange={this.onOfficialNameChange.bind(this)}/>}
+                      {!isValidOfficialName && <CInput id="official-name-input" invalid name="official-name-input" placeholder="Text" value={officialName} onChange={this.onOfficialNameChange.bind(this)}/>}
+                      <CInvalidFeedback>Official name is blank or format is not recognized</CInvalidFeedback>
                       <CFormText>The identifying name of the disaster</CFormText>
                     </CCol>
                   </CFormGroup>
@@ -178,9 +229,17 @@ class AddDisaster extends React.Component {
                       <CLabel htmlFor="select">Disaster Type</CLabel>
                     </CCol>
                     <CCol xs="12" md="9">
-                      <CSelect custom name="select" id="select" value={this.state.disasterType} onChange={this.onDisasterTypeChange.bind(this)}>
-                        {DISASTER_TYPES.map(disaster => <option key={disaster} value={disaster}>{disaster}</option>)}
-                      </CSelect>
+                      {isValidDisasterType &&
+                        <CSelect custom name="select" id="select" value={disasterType} onChange={this.onDisasterTypeChange.bind(this)}>
+                          {DISASTER_TYPES.map(disaster => <option key={disaster} value={disaster}>{disaster}</option>)}
+                        </CSelect>
+                      }
+                      {!isValidDisasterType &&
+                        <CSelect invalid custom name="select" id="select" value={disasterType} onChange={this.onDisasterTypeChange.bind(this)}>
+                          {DISASTER_TYPES.map(disaster => <option key={disaster} value={disaster}>{disaster}</option>)}
+                        </CSelect>
+                      }
+                      <CInvalidFeedback>No disaster type is selected</CInvalidFeedback>
                     </CCol>
                   </CFormGroup>
                   <CFormGroup row>
@@ -194,12 +253,12 @@ class AddDisaster extends React.Component {
                         color="danger"
                         // defaultChecked
                         shape="pill"
-                        checked={this.state.isOngoing}
+                        checked={isOngoing}
                         onChange={this.onIsOngoingChange.bind(this)}
                       />
                     </CCol>
                     <CCol sm="3">
-                      <CLabel htmlFor="add-disaster-ongoing-switch">{this.state.isOngoing ? "Yes" : "No"}</CLabel>
+                      <CLabel htmlFor="add-disaster-ongoing-switch">{isOngoing ? "Yes" : "No"}</CLabel>
                     </CCol>
                   </CFormGroup>
                   <CFormGroup row>
@@ -207,7 +266,9 @@ class AddDisaster extends React.Component {
                       <CLabel htmlFor="email-input">Latitude</CLabel>
                     </CCol>
                     <CCol xs="12" md="9">
-                      <CInput type="email" id="email-input" name="email-input" placeholder="Disaster Latitude" value={this.state.latitude} onChange={this.onLatitudeChange.bind(this)}/>
+                    {isValidLatitude && <CInput id="latitude-input" name="latitude-input" placeholder="Disaster Latitude" value={latitude} onChange={this.onLatitudeChange.bind(this)}/>}
+                      {!isValidLatitude && <CInput invalid id="latitude-input" name="latitude-input" placeholder="Disaster Latitude" value={latitude} onChange={this.onLatitudeChange.bind(this)}/>}
+                      <CInvalidFeedback>Provided latitude is blank or format is not recognized</CInvalidFeedback>
                       <CFormText className="help-block">The latitude of the disaster</CFormText>
                     </CCol>
                   </CFormGroup>
@@ -216,7 +277,9 @@ class AddDisaster extends React.Component {
                       <CLabel htmlFor="email-input">Longitude</CLabel>
                     </CCol>
                     <CCol xs="12" md="9">
-                      <CInput type="email" id="email-input" name="email-input" placeholder="Disaster Latitude" value={this.state.longitude} onChange={this.onLongitudeChange.bind(this)}/>
+                      {isValidLongitude && <CInput name="longitude-input" placeholder="Disaster Latitude" value={longitude} onChange={this.onLongitudeChange.bind(this)}/>}
+                      {!isValidLongitude && <CInput invalid id="longitude-input" name="longitude-input" placeholder="Disaster Latitude" value={longitude} onChange={this.onLongitudeChange.bind(this)}/>}
+                      <CInvalidFeedback>Provided longitude is blank or format is not recognized</CInvalidFeedback>
                       <CFormText className="help-block">The longitude of the disaster</CFormText>
                     </CCol>
                   </CFormGroup>

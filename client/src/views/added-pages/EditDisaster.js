@@ -120,7 +120,8 @@ class EditDisaster extends React.Component {
       isValidLatitude = true,
       isValidLongitude = true;
 
-    const {informalName, officialName, disasterType, isOngoing, latitude, longitude} = this.state;
+    const {informalName, officialName, disasterType, isOngoing, latitude,
+      longitude} = this.state;
     
     if (informalName == "") {
       isValidInformalName = false;
@@ -142,7 +143,8 @@ class EditDisaster extends React.Component {
       isValidLongitude = false;
     }
 
-    if (isValidInformalName && isValidOfficialName && isValidDisasterType && isValidLatitude && isValidLongitude) {
+    if (isValidInformalName && isValidOfficialName && isValidDisasterType &&
+      isValidLatitude && isValidLongitude) {
       const rawBody = { id: this.disasterId };
       if (informalName.trim() != this.originalInformalName) {
         rawBody.informal_name = informalName.trim();
@@ -180,7 +182,6 @@ class EditDisaster extends React.Component {
       )
       .then(response => response.json())
       .then(result => {
-        console.log(result);
         if (result.error == 401 && result.message == "authorization issue - 401 Unauthorized: " + 
           "The server could not verify that you are authorized to access the URL requested. You " + 
           "either supplied the wrong credentials (e.g. a bad password), or your browser doesn't " + 
@@ -254,7 +255,8 @@ class EditDisaster extends React.Component {
 
   render() {
     const {isValidInformalName, isValidOfficialName, isValidDisasterType, isValidLatitude, isValidLongitude, isModalOpen,
-      authorizationFailure, informalName, showToast} = this.state;
+      authorizationFailure, informalName, showToast, disasterType, officialName, isOngoing, latitude,
+      longitude} = this.state;
     return (
       <>
         <CRow>
@@ -271,19 +273,19 @@ class EditDisaster extends React.Component {
                       <CLabel htmlFor="text-input">Informal Name</CLabel>
                     </CCol>
                     <CCol xs="12" md="9">
-                      {isValidInformalName && <CInput id="text-input" name="text-input" placeholder="Text" value={this.state.informalName} onChange={this.onInformalNameChange.bind(this)}/>}
-                      {!isValidInformalName && <CInput id="text-input" invalid name="text-input" placeholder="Text" value={this.state.informalName} onChange={this.onInformalNameChange.bind(this)}/>}
+                      {isValidInformalName && <CInput id="text-input" name="text-input" placeholder="Text" value={informalName} onChange={this.onInformalNameChange.bind(this)}/>}
+                      {!isValidInformalName && <CInput id="text-input" invalid name="text-input" placeholder="Text" value={informalName} onChange={this.onInformalNameChange.bind(this)}/>}
                       <CInvalidFeedback>Informal name is blank or format is not recognized</CInvalidFeedback>
                       <CFormText>The colloquial name of the disaster</CFormText>
                     </CCol>
                   </CFormGroup>
                   <CFormGroup row>
                     <CCol md="3">
-                      <CLabel htmlFor="text-input">Official Name</CLabel>
+                      <CLabel htmlFor="official-name-input">Official Name</CLabel>
                     </CCol>
                     <CCol xs="12" md="9">
-                      {isValidOfficialName && <CInput id="text-input" name="text-input" placeholder="Text" value={this.state.officialName} onChange={this.onOfficialNameChange.bind(this)}/>}
-                      {!isValidOfficialName && <CInput id="text-input" invalid name="text-input" placeholder="Text" value={this.state.officialName} onChange={this.onOfficialNameChange.bind(this)}/>}
+                      {isValidOfficialName && <CInput id="official-name-input" name="official-name-input" placeholder="Text" value={officialName} onChange={this.onOfficialNameChange.bind(this)}/>}
+                      {!isValidOfficialName && <CInput id="official-name-input" invalid name="official-name-input" placeholder="Text" value={officialName} onChange={this.onOfficialNameChange.bind(this)}/>}
                       <CInvalidFeedback>Official name is blank or format is not recognized</CInvalidFeedback>
                       <CFormText>The identifying name of the disaster</CFormText>
                     </CCol>
@@ -294,13 +296,13 @@ class EditDisaster extends React.Component {
                     </CCol>
                     <CCol xs="12" md="9">
                       {isValidDisasterType && 
-                        <CSelect custom name="select" id="select" value={this.state.disasterType} onChange={this.onDisasterTypeChange.bind(this)}>
+                        <CSelect custom name="select" id="select" value={disasterType} onChange={this.onDisasterTypeChange.bind(this)}>
                           {DISASTER_TYPES.map(disaster => <option key={disaster} value={disaster}>{disaster}</option>)}
                         </CSelect>
                       }
                       {!isValidDisasterType &&
-                        <CSelect invalid custom name="select" id="select" value={this.state.disasterType} onChange={this.onDisasterTypeChange.bind(this)}>
-                          {EditDisaster.disasterTypes.map(disaster => <option key={disaster} value={disaster}>{disaster}</option>)}
+                        <CSelect invalid custom name="select" id="select" value={disasterType} onChange={this.onDisasterTypeChange.bind(this)}>
+                          {DISASTER_TYPES.map(disaster => <option key={disaster} value={disaster}>{disaster}</option>)}
                         </CSelect>
                       }
                       <CInvalidFeedback>No disaster type is selected</CInvalidFeedback>
@@ -317,32 +319,32 @@ class EditDisaster extends React.Component {
                         color="danger"
                         // defaultChecked
                         shape="pill"
-                        checked={this.state.isOngoing}
+                        checked={isOngoing}
                         onChange={this.onIsOngoingChange.bind(this)}
                       />
                     </CCol>
                     <CCol sm="3">
-                      <CLabel htmlFor="add-disaster-ongoing-switch">{this.state.isOngoing ? "Yes" : "No"}</CLabel>
+                      <CLabel htmlFor="add-disaster-ongoing-switch">{isOngoing ? "Yes" : "No"}</CLabel>
                     </CCol>
                   </CFormGroup>
                   <CFormGroup row>
                     <CCol md="3">
-                      <CLabel htmlFor="email-input">Latitude</CLabel>
+                      <CLabel htmlFor="latitude-input">Latitude</CLabel>
                     </CCol>
                     <CCol xs="12" md="9">
-                      {isValidLatitude && <CInput type="email" id="email-input" name="email-input" placeholder="Disaster Latitude" value={this.state.latitude} onChange={this.onLatitudeChange.bind(this)}/>}
-                      {!isValidLatitude && <CInput invalid type="email" id="email-input" name="email-input" placeholder="Disaster Latitude" value={this.state.latitude} onChange={this.onLatitudeChange.bind(this)}/>}
+                      {isValidLatitude && <CInput id="latitude-input" name="latitude-input" placeholder="Disaster Latitude" value={latitude} onChange={this.onLatitudeChange.bind(this)}/>}
+                      {!isValidLatitude && <CInput invalid id="latitude-input" name="latitude-input" placeholder="Disaster Latitude" value={latitude} onChange={this.onLatitudeChange.bind(this)}/>}
                       <CInvalidFeedback>Provided latitude is blank or format is not recognized</CInvalidFeedback>
                       <CFormText className="help-block">The latitude of the disaster</CFormText>
                     </CCol>
                   </CFormGroup>
                   <CFormGroup row>
                     <CCol md="3">
-                      <CLabel htmlFor="email-input">Longitude</CLabel>
+                      <CLabel htmlFor="longitude-input">Longitude</CLabel>
                     </CCol>
                     <CCol xs="12" md="9">
-                      {isValidLongitude && <CInput type="email" id="email-input" name="email-input" placeholder="Disaster Latitude" value={this.state.longitude} onChange={this.onLongitudeChange.bind(this)}/>}
-                      {!isValidLongitude && <CInput invalid type="email" id="email-input" name="email-input" placeholder="Disaster Latitude" value={this.state.longitude} onChange={this.onLongitudeChange.bind(this)}/>}
+                      {isValidLongitude && <CInput name="longitude-input" placeholder="Disaster Latitude" value={longitude} onChange={this.onLongitudeChange.bind(this)}/>}
+                      {!isValidLongitude && <CInput invalid id="longitude-input" name="longitude-input" placeholder="Disaster Latitude" value={longitude} onChange={this.onLongitudeChange.bind(this)}/>}
                       <CInvalidFeedback>Provided longitude is blank or format is not recognized</CInvalidFeedback>
                       <CFormText className="help-block">The longitude of the disaster</CFormText>
                     </CCol>

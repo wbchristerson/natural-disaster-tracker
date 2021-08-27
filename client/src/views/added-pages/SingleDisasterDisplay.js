@@ -34,7 +34,8 @@ import {
 import CIcon from '@coreui/icons-react'
 import { DEFAULT_DISASTER_FIELD_TEXT, displayDisasterDataLine, formatLatitudeLongitude, getBackEndHost, getFrontEndHost, isValidGeographicCoordinate,
         isValidImageURL, isValidNonnegativeIntegerInRange, isValidNonnegativeInteger, isValidTime, getCookieWithKey, OBSERVER_DATABASE_ID_KEY, 
-        getGeneralTimeFormat, USER_ACCESS_TOKEN_KEY, getSignInRequirementWarningMessage, getSignInRequirementsErrorMessage, getAdminPrivilegeErrorMessage, PAGE_SIZE, getAdminPrivilegeOrOwnerErrorMessage} from 'src/Utilities';
+        getGeneralTimeFormat, USER_ACCESS_TOKEN_KEY, getSignInRequirementWarningMessage, getSignInRequirementsErrorMessage, PAGE_SIZE,
+        getAdminPrivilegeOrOwnerErrorMessage} from 'src/Utilities';
 import { TheSidebar } from 'src/containers';
 
 
@@ -550,8 +551,8 @@ class SingleDisasterDisplay extends React.Component {
 
     return (
       <>
-        <CRow>
-          <CCol xs="12">
+        <CRow className="single-disaster-container">
+          <CCol xs="12" className="single-disaster-card">
             <CCard>
               <CCardHeader className="disaster-header">
                 <CListGroup>
@@ -601,82 +602,73 @@ class SingleDisasterDisplay extends React.Component {
         </CRow>
 
         {this.state.reports.map((report, index) => {
+          console.log(report);
           return (
-            <CRow key={index}>
-              <CCol xs="12" sm="12" md="12">
+            <CRow key={index} className="single-disaster-container">
+              <CCol xs="12" sm="12" md="12" className="single-disaster-card">
                 <CCard>
-                  <CCardHeader>
-                    {/* <DocsLink name="CCard"/> */}
-                    
-                    {/* <div className="card-header-actions">
-                      <CBadge color="success" className="float-right">Success</CBadge>
-                    </div> */}
+                  <CCardBody className="witness-report-card-body">
+                    {report.image_url && <img className="d-block w-100 set-disaster-max-height" src={report.image_url} alt="disaster image"/>}
+                    {report.comment && <h3 className="witness-quote-statement">{`"${report.comment}"`}</h3>}
+                    {report.comment && 
+                      <div className="witness-quote-author">
+                        <div className="c-avatar">
+                          <img src={report.user_photograph_url} className="c-avatar-img" alt={""} />
+                        </div>
+                        {report.comment && <h5 className="disaster-author-text">{report.username}</h5>}
+                      </div>
+                    }
 
-                    {/* <div className="card-header-actions">
-                      <CLink className="card-header-action">
-                        <CIcon name="cil-settings" />
-                      </CLink>
-                      <CLink className="card-header-action" onClick={() => setCollapsed(!collapsed)}>
-                        <CIcon name={collapsed ? 'cil-chevron-bottom':'cil-chevron-top'} />
-                      </CLink>
-                      <CLink className="card-header-action" onClick={() => setShowCard(false)}>
-                        <CIcon name="cil-x-circle" />
-                      </CLink>
-                    </div> */}
-
-                    {/* <CBadge className="mr-1" color="danger">Danger</CBadge> */}
-
-                  </CCardHeader>
-                  {report.image_url && <img className="d-block w-100 set-disaster-max-height" src={report.image_url} alt="slide 1"/>}
-                  <CCardBody>
-
-                    <table className="table table-hover table-outline mb-0 d-none d-sm-table">
-                      <tbody>
-                        <tr>
-                          <td className="text-center">
+                    <CForm className="disaster-details-block">
+                      {!report.comment &&
+                        <div className="disaster-display">
+                          <CCol md="3" className="disaster-data-text">
+                            <CLabel>Observer</CLabel>
+                          </CCol>
+                          <CCol xs="12" md="9" className="observer-identifier-row">
                             <div className="c-avatar">
-                              <img src={report.user_photograph_url} className="c-avatar-img" alt={"" + report.username} />
-                              <span className="c-avatar-status bg-success"></span>
+                              <img src={report.user_photograph_url} className="c-avatar-img" alt={""} />
                             </div>
-                          </td>
-                          <td>
-                            <div>{report.username}</div>
-                            <div className="small text-muted">
-                              <span>New</span> | Registered: Jan 1, 2015
-                            </div>
-                          </td>
-                          <td className="text-center">
-                            <CIcon height={25} name="cif-us" title="us" id="us" />
-                          </td>
-                          <td>
-                            <div className="clearfix">
-                              <div className="float-left">
-                                <strong>50%</strong>
-                              </div>
-                              <div className="float-right">
-                                <small className="text-muted">Jun 11, 2015 - Jul 10, 2015</small>
-                              </div>
-                            </div>
-                            <CProgress className="progress-xs" color="success" value="50" />
-                          </td>
-                          <td className="text-center">
-                            <CIcon height={25} name="cib-cc-mastercard" />
-                          </td>
-                          <td>
-                            <div className="small text-muted">Last login</div>
-                            <strong>10 sec ago</strong>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
+                            <p className="witness-report-username-text">{report.username}</p>
+                          </CCol>
+                        </div>
+                      }
+                      {report.severity &&
+                        <div className="disaster-display">
+                          <CCol md="3" className="disaster-data-text">
+                            <CLabel>Severity</CLabel>
+                          </CCol>
+                          <CCol xs="12" md="9">
+                            <p className="disaster-data-text">{report.severity}</p>
+                          </CCol>
+                        </div>
+                      }
+                      <div className="disaster-display">
+                        <CCol md="3" className="disaster-data-text">
+                          <CLabel>Observance Time</CLabel>
+                        </CCol>
+                        <CCol xs="12" md="9">
+                          <p className="disaster-data-text">{report.event_datetime}</p>
+                        </CCol>
+                      </div>
+                      <div className="disaster-display">
+                        <CCol md="3" className="disaster-data-text">
+                          <CLabel>Location</CLabel>
+                        </CCol>
+                        <CCol xs="12" md="9">
+                          <p className="disaster-data-text">{formatLatitudeLongitude(report.location)}</p>
+                        </CCol>
+                      </div>
+                      <div className="disaster-display">
+                        <CCol md="3" className="disaster-data-text">
+                          <CLabel>People Affected</CLabel>
+                        </CCol>
+                        <CCol xs="12" md="9">
+                          <p className="disaster-data-text">{report.people_affected}</p>
+                        </CCol>
+                      </div>
+                    </CForm>
 
-                    {report.comment && <h5>{`"${report.comment}"`}</h5>}
-                    <h6>{`Observer: ${report.username}`}</h6>
-                    <h6>{`Severity: ${report.severity}`}</h6>
-                    <h6>{`Observance time: ${report.event_datetime}`}</h6>
-                    <h6>{`Report id: ${report.id}`}</h6>
-                    <h6>{`Location: ${formatLatitudeLongitude(report.location)}`}</h6>
-                    <h6>{`People affected: ${report.people_affected}`}</h6>
                     <div className="button-row">
                       <div className="auth0-box">
                         <a className="btn btn-primary" href={`${this.frontEndHost}/#/edit-witness-report?id=${report.id}`}>Edit Witness Report</a>
