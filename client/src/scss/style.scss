@@ -12,7 +12,8 @@
 
 
 .my-test {
-    height: 800px;
+    // height: 800px;
+    height: 100vh;
     width: 100%;
     background-repeat: no-repeat;
     background-size: cover;
@@ -31,8 +32,17 @@
     background: url("../assets/images/tornado-main.jpg"); // https://unsplash.com/photos/8hBPvS_bGkA
 }
 
+.landing-main-adjustments {
+    padding-top: 0;
+}
+
+.landing-container-adjustments {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
 .card-overlay {
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.2);
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -209,4 +219,9 @@
     font-size: large;
     margin-bottom: 0;
     margin-left: 10px;
+}
+
+.dashboard-centered-entity {
+    display: flex;
+    flex-direction: column;
 }

@@ -119,18 +119,20 @@ class Dashboard extends React.Component {
             <p className="main-bottom-text">See And Write Reports About Natural Disasters In Your Area</p>
           </div>
         </div>
-        <div className="dashboard-search-container">
-          <CInput
-            className="top-search-field"
-            placeholder="Search"
-            size="lg"
-            value={searchString}
-            onChange={this.onSearchStringChange.bind(this)}
-          />
-          <CButton color="primary" onClick={() => this.onSearchClick(1)} className="btn btn-primary btn-block top-search-button" type="submit">Search</CButton>
-        </div>
-        <div className="logged-in-box auth0-box logged-in add-disaster-button">
-          <a className="btn btn-primary btn-lg btn-logout btn-block" href={`${this.frontEndHost}/#/add-disaster-event`}>Add Disaster Event</a>
+        <div className="dashboard-centered-entity single-disaster-card">
+          <div className="dashboard-search-container">
+            <CInput
+              className="top-search-field"
+              placeholder="Search"
+              size="lg"
+              value={searchString}
+              onChange={this.onSearchStringChange.bind(this)}
+            />
+            <CButton color="primary" onClick={() => this.onSearchClick(1)} className="btn btn-primary btn-block top-search-button" type="submit">Search</CButton>
+          </div>
+          <div className="logged-in-box auth0-box logged-in add-disaster-button single-disaster-card">
+            <a className="btn btn-primary btn-lg btn-logout btn-block" href={`${this.frontEndHost}/#/add-disaster-event`}>Add Disaster Event</a>
+          </div>
         </div>
 
         {disasterList.length == 0 && <h3 className="no-search-match-text">No matching disasters</h3>}
@@ -139,8 +141,8 @@ class Dashboard extends React.Component {
           const disasterDisplayData = getDisasterDisplayDataList(disaster);
           console.log(disaster);
           return (
-            <CRow key={index}>
-              <CCol xs="12">
+            <CRow key={index} className="single-disaster-container">
+              <CCol xs="12" className="single-disaster-card">
                 <CCard>
                   <CCardHeader className="disaster-header">
                     <CListGroup>
