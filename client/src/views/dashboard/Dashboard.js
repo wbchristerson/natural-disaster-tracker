@@ -22,11 +22,6 @@ import {
 import CIcon from '@coreui/icons-react'
 import { formatLatitudeLongitude, getBackEndHost, getDisasterDisplayDataList, getFrontEndHost, PAGE_SIZE } from '../../Utilities'
 
-import MainChartExample from '../charts/MainChartExample.js'
-
-const WidgetsDropdown = lazy(() => import('../widgets/WidgetsDropdown.js'))
-const WidgetsBrand = lazy(() => import('../widgets/WidgetsBrand.js'))
-
 class Dashboard extends React.Component {
   constructor(props) {
     super(props);
