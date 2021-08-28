@@ -25,7 +25,6 @@ import {
   CToastHeader,
   CToastBody
 } from '@coreui/react'
-import CIcon from '@coreui/icons-react'
 import { getCookieWithKey, USER_ACCESS_TOKEN_KEY, getBackEndHost, getFrontEndHost, isValidGeographicCoordinate, DISASTER_TYPES, getAdminPrivilegeErrorMessage,
   getAdminPrivilegeWarningMessage } from 'src/Utilities';
 
@@ -260,8 +259,8 @@ class EditDisaster extends React.Component {
       longitude} = this.state;
     return (
       <>
-        <CRow>
-          <CCol xs="12">
+        <CRow className="single-disaster-container card-top-margin">
+          <CCol xs="12" className="single-disaster-card">
             <CCard>
               <CCardHeader>
                 <h4>Edit Disaster</h4>

@@ -222,7 +222,7 @@ export function getDisasterDisplayDataList(disasterData) {
       location, num_reports, people_affected} = disasterData;
 
   if (average_severity !== null) {
-    displayDataList.push(["Average Severity", average_severity]);
+    displayDataList.push(["Average Severity", average_severity.toFixed(2)]);
   }
   displayDataList.push(["Disaster Type", disaster_type.charAt(0).toUpperCase() + disaster_type.slice(1)]);
 

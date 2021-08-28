@@ -15,17 +15,16 @@ import {
   CLabel,
 } from '@coreui/react'
 import { getBackEndHost, getDisasterDisplayDataList, getFrontEndHost, PAGE_SIZE } from '../../Utilities'
+import Landing from '../added-pages/Landing';
+
 
 class Dashboard extends React.Component {
   constructor(props) {
     super(props);
-    const d = new Date();
     this.state = {
       totalDisasters: 0,
       disasterList: [],
       page: 1,
-      recordedSeconds: d.getSeconds(),
-
       searchString: "",
     };
 
@@ -98,16 +97,11 @@ class Dashboard extends React.Component {
   }
 
   render() {
-    const {recordedSeconds, searchString, disasterList, page, totalDisasters} = this.state;
+    const {searchString, disasterList, page, totalDisasters} = this.state;
     return (
       <>
-        <div className={`my-test main-image-${recordedSeconds % 9 + 1}`}>
-          <div className="card-overlay">
-            <h1 className="display-3 main-top-text">Disaster Reporter</h1>
-            <p className="main-bottom-text">See And Write Reports About Natural Disasters In Your Area</p>
-          </div>
-        </div>
-        <CRow className="single-disaster-container">
+        <Landing/>
+        <CRow id="display-section" className="single-disaster-container">
           <CCol className="single-disaster-card search-box">
             <CInput
               className="top-search-field"

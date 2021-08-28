@@ -24,7 +24,6 @@ import {
   CToastHeader,
   CToastBody
 } from '@coreui/react'
-import CIcon from '@coreui/icons-react'
 import { getCookieWithKey, USER_ACCESS_TOKEN_KEY, getBackEndHost, getFrontEndHost, isValidGeographicCoordinate, getLocalTimeFromGMTDateTime,
   getLocalDateFromGMTDateTime, isValidTime, isValidNonnegativeIntegerInRange, isValidNonnegativeInteger, isValidImageURL, getGeneralTimeFormat,
   getSignInRequirementWarningMessage, getSignInRequirementsErrorMessage } from 'src/Utilities';
@@ -312,8 +311,8 @@ class EditWitnessReport extends React.Component {
 
     return (
       <>
-        <CRow>
-          <CCol xs="12">
+        <CRow className="single-disaster-container card-top-margin">
+          <CCol xs="12" className="single-disaster-card">
             <CCard>
               <CCardHeader>
                 <h4>Edit Witness Report</h4>

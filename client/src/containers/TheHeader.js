@@ -13,6 +13,8 @@ import { getBackEndHost, getCookieWithKey, USER_ACCESS_TOKEN_KEY, USER_NICKNAME_
 const TheHeader = () => {
   const isLoggedOut = getCookieWithKey(USER_ACCESS_TOKEN_KEY) === "";
 
+  console.log(getCookieWithKey(USER_PICTURE_KEY).slice(1,-1));
+
   return (
     <CHeader withSubheader>
       <CHeaderBrand className="mx-auto d-lg-none" to="/">
@@ -37,7 +39,7 @@ const TheHeader = () => {
         }
         {isLoggedOut &&
           <div className="login-box auth0-box before">
-            <a className="btn btn-primary btn-md btn-login btn-block" href={`${getBackEndHost()}/my-login`}>Log In</a>
+            <a className="btn btn-primary btn-md btn-login btn-block" href={`${getBackEndHost()}/my-login`}>Log In / Sign Up</a>
           </div>
         }
         {!isLoggedOut &&

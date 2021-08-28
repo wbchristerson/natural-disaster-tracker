@@ -17,7 +17,6 @@
     width: 100%;
     background-repeat: no-repeat !important;
     background-size: cover !important;
-    margin-bottom: 40px;
 }
 
 .main-image-1 {
@@ -277,4 +276,25 @@
 
 .right-button-in-group {
     margin-left: 40px;
+}
+
+.card-top-margin {
+    margin-top: 20px;
+}
+
+.chevron {
+    height: 40px;
+    width: 40px;
+    margin-top: 160px;
+    filter: brightness(0) invert(1);
+}
+
+.chevron:hover {
+    position: relative; 
+    top: 5px;
+    cursor: pointer;
+}
+
+#display-section {
+    padding-top: 80px;
 }

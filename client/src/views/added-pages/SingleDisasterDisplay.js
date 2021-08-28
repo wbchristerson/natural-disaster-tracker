@@ -30,7 +30,6 @@ import {
   CToastBody,
   CPagination,
 } from '@coreui/react'
-import CIcon from '@coreui/icons-react'
 import { DEFAULT_DISASTER_FIELD_TEXT, displayDisasterDataLine, formatLatitudeLongitude, getBackEndHost, getFrontEndHost, isValidGeographicCoordinate,
         isValidImageURL, isValidNonnegativeIntegerInRange, isValidNonnegativeInteger, isValidTime, getCookieWithKey, OBSERVER_DATABASE_ID_KEY, 
         getGeneralTimeFormat, USER_ACCESS_TOKEN_KEY, getSignInRequirementWarningMessage, getSignInRequirementsErrorMessage, PAGE_SIZE,
@@ -548,7 +547,7 @@ class SingleDisasterDisplay extends React.Component {
 
     return (
       <>
-        <CRow className="single-disaster-container">
+        <CRow className="single-disaster-container card-top-margin">
           <CCol xs="12" className="single-disaster-card">
             <CCard>
               <CCardHeader className="disaster-header">
@@ -666,7 +665,7 @@ class SingleDisasterDisplay extends React.Component {
                       </div>
                     </CForm>
 
-                    <div className="button-row">
+                    <div className="button-row disaster-button-block">
                       <div className="auth0-box">
                         <a className="btn btn-primary" href={`${this.frontEndHost}/#/edit-witness-report?id=${report.id}`}>Edit Witness Report</a>
                       </div>

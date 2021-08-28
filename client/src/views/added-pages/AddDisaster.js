@@ -25,7 +25,6 @@ import {
   CToaster,
   CInvalidFeedback,
 } from '@coreui/react'
-import CIcon from '@coreui/icons-react'
 import { getCookieWithKey, USER_ACCESS_TOKEN_KEY, getBackEndHost, getFrontEndHost, DISASTER_TYPES, getAdminPrivilegeErrorMessage, 
   getAdminPrivilegeWarningMessage, isValidGeographicCoordinate } from 'src/Utilities';
 
@@ -192,8 +191,8 @@ class AddDisaster extends React.Component {
       isValidLatitude, isValidLongitude, isOngoing, disasterType, officialName, latitude, longitude} = this.state;
     return (
       <>
-        <CRow>
-          <CCol xs="12">
+        <CRow className="single-disaster-container card-top-margin">
+          <CCol xs="12" className="single-disaster-card">
             <CCard>
               <CCardHeader>
                 <h4>Add Disaster Listing</h4>
