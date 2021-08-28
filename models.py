@@ -89,7 +89,7 @@ class Disaster(DisasterData):
     is_ongoing = Column(Boolean, default=True)
     location_latitude = Column(Float, nullable=False)
     location_longitude = Column(Float, nullable=False)
-    last_update_datetime = Column(TIMESTAMP(True), nullable=True)
+    last_update_datetime = Column(TIMESTAMP(True), nullable=False)
 
     def __init__(self, informal_name, official_name, disaster_type, is_ongoing,
                  location_latitude, location_longitude):
@@ -174,7 +174,7 @@ class WitnessReport(DisasterData):
     people_affected = Column(Integer, default=0)
     location_latitude = Column(Float, nullable=True)
     location_longitude = Column(Float, nullable=True)
-    last_update_datetime = Column(TIMESTAMP(True), nullable=True)
+    last_update_datetime = Column(TIMESTAMP(True), nullable=False)
 
     def __init__(self, disaster_id, observer_id, event_datetime, severity,
                  image_url, comment, people_affected, location_latitude,
