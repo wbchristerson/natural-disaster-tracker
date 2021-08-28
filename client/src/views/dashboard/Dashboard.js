@@ -107,7 +107,6 @@ class Dashboard extends React.Component {
             <p className="main-bottom-text">See And Write Reports About Natural Disasters In Your Area</p>
           </div>
         </div>
-        {/* <div className="dashboard-centered-entity single-disaster-card"> */}
         <CRow className="single-disaster-container">
           <CCol className="single-disaster-card search-box">
             <CInput
