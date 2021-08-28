@@ -48,6 +48,14 @@
     background: url("../assets/images/main-image-7.jpeg"); // https://pixabay.com/photos/new-zealand-volcano-crater-3018634/
 }
 
+.main-image-8 {
+    background: url("../assets/images/main-image-8.jpeg"); // https://unsplash.com/photos/-iretlQZEU4
+}
+
+.main-image-9 {
+    background: url("../assets/images/main-image-9.jpeg"); // https://unsplash.com/photos/BsAzhHIIwxg
+}
+
 .landing-main-adjustments {
     padding-top: 0;
 }
@@ -202,6 +210,7 @@
 .credits-sub-text {
     margin-top: 20px;
     max-width: 800px;
+    margin-left: 40px;
 }
 
 .single-disaster-card {
@@ -259,4 +268,13 @@
     max-width: 600px;
     margin-top: 30px;
     margin-bottom: 30px;
+}
+
+.credits-header {
+    margin-top: 40px;
+    margin-left: 40px;
+}
+
+.right-button-in-group {
+    margin-left: 40px;
 }

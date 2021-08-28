@@ -441,8 +441,8 @@ class SingleDisasterDisplay extends React.Component {
           </CForm>
         </CCardBody>
         <CCardFooter>
-          <CButton type="submit" size="sm" color="primary" onClick={this.onNewWitnessReportSubmit.bind(this)}><CIcon name="cil-scrubber" /> Submit</CButton>
-          <CButton type="reset" size="sm" color="danger" onClick={this.clearWitnessReportForm.bind(this)}><CIcon name="cil-ban" /> Reset</CButton>
+          <CButton type="submit" size="md" color="primary" onClick={this.onNewWitnessReportSubmit.bind(this)}>Submit</CButton>
+          <CButton className="right-button-in-group" type="reset" size="md" color="danger" onClick={this.clearWitnessReportForm.bind(this)}>Reset</CButton>
         </CCardFooter>
       </CCard>
     );

@@ -263,7 +263,7 @@ class AddDisaster extends React.Component {
                   </CFormGroup>
                   <CFormGroup row>
                     <CCol md="3">
-                      <CLabel htmlFor="email-input">Latitude</CLabel>
+                      <CLabel htmlFor="latitude-input">Latitude</CLabel>
                     </CCol>
                     <CCol xs="12" md="9">
                     {isValidLatitude && <CInput id="latitude-input" name="latitude-input" placeholder="Disaster Latitude" value={latitude} onChange={this.onLatitudeChange.bind(this)}/>}
@@ -274,7 +274,7 @@ class AddDisaster extends React.Component {
                   </CFormGroup>
                   <CFormGroup row>
                     <CCol md="3">
-                      <CLabel htmlFor="email-input">Longitude</CLabel>
+                      <CLabel htmlFor="longitude-input">Longitude</CLabel>
                     </CCol>
                     <CCol xs="12" md="9">
                       {isValidLongitude && <CInput name="longitude-input" placeholder="Disaster Latitude" value={longitude} onChange={this.onLongitudeChange.bind(this)}/>}
@@ -286,8 +286,8 @@ class AddDisaster extends React.Component {
                 </CForm>
               </CCardBody>
               <CCardFooter>
-                <CButton type="submit" size="sm" color="primary" onClick={this.onSubmit.bind(this)}><CIcon name="cil-scrubber" /> Submit</CButton>
-                <CButton type="reset" size="sm" color="danger" onClick={this.resetDisasterForm.bind(this)}><CIcon name="cil-ban" /> Reset</CButton>
+                <CButton type="submit" size="md" color="primary" onClick={this.onSubmit.bind(this)}>Submit</CButton>
+                <CButton className="right-button-in-group" type="reset" size="md" color="danger" onClick={this.resetDisasterForm.bind(this)}>Reset</CButton>
               </CCardFooter>
             </CCard>
           </CCol>

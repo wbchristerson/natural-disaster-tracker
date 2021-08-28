@@ -424,8 +424,8 @@ class EditWitnessReport extends React.Component {
                 </CForm>
               </CCardBody>
               <CCardFooter>
-                <CButton type="submit" size="sm" color="primary" onClick={this.onSubmit.bind(this)}><CIcon name="cil-scrubber" /> Submit</CButton>
-                <CButton type="reset" size="sm" color="danger" onClick={this.resetDisasterForm.bind(this)}><CIcon name="cil-ban" /> Reset</CButton>
+                <CButton type="submit" size="md" color="primary" onClick={this.onSubmit.bind(this)}>Submit</CButton>
+                <CButton type="reset" className="right-button-in-group" size="md" color="danger" onClick={this.resetDisasterForm.bind(this)}>Reset</CButton>
               </CCardFooter>
             </CCard>
           </CCol>
