@@ -107,8 +107,9 @@ class Dashboard extends React.Component {
             <p className="main-bottom-text">See And Write Reports About Natural Disasters In Your Area</p>
           </div>
         </div>
-        <div className="dashboard-centered-entity single-disaster-card">
-          <div className="dashboard-search-container">
+        {/* <div className="dashboard-centered-entity single-disaster-card"> */}
+        <CRow className="single-disaster-container">
+          <CCol className="single-disaster-card search-box">
             <CInput
               className="top-search-field"
               placeholder="Search"
@@ -117,11 +118,11 @@ class Dashboard extends React.Component {
               onChange={this.onSearchStringChange.bind(this)}
             />
             <CButton color="primary" onClick={() => this.onSearchClick(1)} className="btn btn-primary btn-block top-search-button" type="submit">Search</CButton>
-          </div>
-          <div className="logged-in-box auth0-box logged-in add-disaster-button single-disaster-card">
+          </CCol>
+          <CCol className="logged-in-box auth0-box logged-in add-disaster-button">
             <a className="btn btn-primary btn-lg btn-logout btn-block" href={`${this.frontEndHost}/#/add-disaster-event`}>Add Disaster Event</a>
-          </div>
-        </div>
+          </CCol>
+        </CRow>
 
         {disasterList.length === 0 && <h3 className="no-search-match-text">No matching disasters</h3>}
 
