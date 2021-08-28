@@ -799,20 +799,25 @@ def create_app(test_config=None):
     @app.route('/api/witnessreports/<witness_report_id>', methods=["DELETE"])
     @requires_auth('delete:witnessreports')
     def remove_witness_report(payload, witness_report_id):
-        witness_report = WitnessReport.query.filter(
-            WitnessReport.id == witness_report_id).first()
-        if witness_report is None:
-            raise AttributeError("Entry not found")
-        validate_delete_witness_report(witness_report, payload)
+        try:
+            witness_report = WitnessReport.query.filter(
+                WitnessReport.id == witness_report_id).first()
+            if witness_report is None:
+                raise AttributeError("Entry not found")
+            validate_delete_witness_report(witness_report, payload)
 
-        # update most recent update datetime of corresponding disaster
-        update_parent_disaster_of_witness_report(witness_report.disaster_id)
+            # update most recent update datetime of corresponding disaster
+            update_parent_disaster_of_witness_report(witness_report.disaster_id)
 
-        witness_report.delete()
-        return jsonify({
-            "success": True,
-            "delete": witness_report_id,
-        })
+            witness_report.delete()
+            return jsonify({
+                "success": True,
+                "delete": witness_report_id,
+            })
+        except AttributeError as err:
+            flash(str(err))
+            print(sys.exc_info())
+            abort(400)
 
 
     @app.errorhandler(400)

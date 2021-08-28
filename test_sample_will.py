@@ -76,19 +76,21 @@ class SampleWillTestCase(unittest.TestCase):
                 "The bad hurricane", "Hurricane-XYZ",
                 NaturalDisasterEnum.HURRICANE, True, 0.0, 0.0
             )
-            disaster_1.insert()
 
             disaster_2 = Disaster(
                 "The really bad hurricane", "Hurricane-123",
                 NaturalDisasterEnum.HURRICANE, True, -76.0, 42.0
             )
-            disaster_2.insert()
 
             disaster_3 = Disaster(
                 "A terrible tornado", "Tornado-987",
                 NaturalDisasterEnum.TORNADO, False, -80.0, 38.8
             )
+
+            # insert backwards so that when ordered, disaster_1 comes first and disaster_3 last
             disaster_3.insert()
+            disaster_2.insert()
+            disaster_1.insert()
 
             self.disaster_1_data = {
                 "id": disaster_1.id,
@@ -157,7 +159,6 @@ class SampleWillTestCase(unittest.TestCase):
                 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgWBU' +
                 'S6RY8tdH1KgycMUKVY8HhvI7C6m_HkQ&usqp=CAU',
                 "The wind speed is quite severe!", 1200, -80.0, 32.8)
-            witness_report_1.insert()
 
             witness_report_2 = WitnessReport(
                 self.disaster_2_data["id"],
@@ -168,7 +169,10 @@ class SampleWillTestCase(unittest.TestCase):
                 '200827_1598555060545_hpMain_2_4x3_608.jpg',
                 "Many people's homes are destroyed. There is devastation.",
                 8000, -80.8, 32.6)
+            
+            # insert reports backwards so that witness_report_1 is most recently updated
             witness_report_2.insert()
+            witness_report_1.insert()
 
             self.witness_report_1_data = witness_report_1.format()
             self.witness_report_2_data = witness_report_2.format()
