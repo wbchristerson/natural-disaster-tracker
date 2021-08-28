@@ -50,7 +50,6 @@ const TheHeader = () => {
         </CHeaderNavItem>
         <CHeaderNavItem className="px-3">
           <a className="nav-github-link-text" href="https://github.com/wbchristerson/natural-disaster-tracker" target="_blank">GitHub Repository</a>
-          {/* <CHeaderNavLink to="https://github.com/wbchristerson/natural-disaster-tracker">GitHub Repository</CHeaderNavLink> */}
         </CHeaderNavItem>
         <CHeaderNavItem className="px-3">
           <CHeaderNavLink to="/core-ui-credits">Credits</CHeaderNavLink>
@@ -63,7 +62,7 @@ const TheHeader = () => {
         }
         {isLoggedOut &&
           <div className="login-box auth0-box before">
-            <a className="btn btn-primary btn-lg btn-login btn-block" href={`${getBackEndHost()}/my-login`}>Log In</a>
+            <a className="btn btn-primary btn-md btn-login btn-block" href={`${getBackEndHost()}/my-login`}>Log In</a>
           </div>
         }
         {!isLoggedOut &&
@@ -77,7 +76,7 @@ const TheHeader = () => {
         }
         {!isLoggedOut &&
           <div className="logged-in-box auth0-box logged-in">
-            <a className="btn btn-primary btn-lg btn-logout btn-block" href={`${getBackEndHost()}/my-logout`}>Logout</a>
+            <a className="btn btn-primary btn-md btn-logout btn-block" href={`${getBackEndHost()}/my-logout`}>Logout</a>
           </div>
         }
       </CHeaderNav>
