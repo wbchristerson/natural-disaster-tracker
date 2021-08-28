@@ -90,15 +90,15 @@ class AddDisaster extends React.Component {
     const {informalName, officialName, disasterType, isOngoing, latitude,
       longitude} = this.state;
 
-    if (informalName == "") {
+    if (informalName === "") {
       isValidInformalName = false;
     }
 
-    if (officialName == "") {
+    if (officialName === "") {
       isValidOfficialName = false;
     }
 
-    if (disasterType == "Please select") {
+    if (disasterType === "Please select") {
       isValidDisasterType = false;
     }
 
@@ -136,12 +136,12 @@ class AddDisaster extends React.Component {
         }
       )
       .then(data => {
-        if ((data.status == 401 && data.statusText == "UNAUTHORIZED") || (data.status == 403 && data.statusText == "FORBIDDEN")) {
+        if ((data.status === 401 && data.statusText === "UNAUTHORIZED") || (data.status === 403 && data.statusText === "FORBIDDEN")) {
           this.setState({
             isModalOpen: true,
             authorizationFailure: data.status,
           });
-        } else if (data.status == 200) {
+        } else if (data.status === 200) {
           this.setState({
             showToast: true,
           });

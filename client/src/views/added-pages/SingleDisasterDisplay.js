@@ -79,7 +79,6 @@ class SingleDisasterDisplay extends React.Component {
       authorizationFailure: null,
       showToast: false,
       showDeleteToast: false,
-      page: 1,
     };
     this.backEndHost = getBackEndHost();
     this.frontEndHost = getFrontEndHost();
@@ -218,7 +217,7 @@ class SingleDisasterDisplay extends React.Component {
       witnessedSeverityValid = true,
       witnessedImageURLValid = true;
 
-    if (newWitnessedDate == "") {
+    if (newWitnessedDate === "") {
       witnessedDateValid = false;
     }
 
@@ -238,11 +237,11 @@ class SingleDisasterDisplay extends React.Component {
       witnessedLongitudeValid = false;
     }
 
-    if (newWitnessedSeverity != "" && !isValidNonnegativeIntegerInRange(newWitnessedSeverity, 0, 10)) {
+    if (newWitnessedSeverity !== "" && !isValidNonnegativeIntegerInRange(newWitnessedSeverity, 0, 10)) {
       witnessedSeverityValid = false;
     }
 
-    if (newWitnessedImageURL != "" && !isValidImageURL(newWitnessedImageURL)) {
+    if (newWitnessedImageURL !== "" && !isValidImageURL(newWitnessedImageURL)) {
       witnessedImageURLValid = false;
     }
 
@@ -289,7 +288,7 @@ class SingleDisasterDisplay extends React.Component {
       )
       .then(response => response.json())
       .then((result) => {
-        if (result.error == 401 && !result.success && result.message == "authorization issue - 401 Unauthorized: " +
+        if (result.error === 401 && !result.success && result.message === "authorization issue - 401 Unauthorized: " +
           "The server could not verify that you are authorized to access the URL requested. You either supplied " +
           "the wrong credentials (e.g. a bad password), or your browser doesn't understand how to supply the " +
           "credentials required.") {
@@ -326,7 +325,7 @@ class SingleDisasterDisplay extends React.Component {
       witnessedDateValid, witnessedTimeValid, witnessedNumPeopleValid, witnessedLatitudeValid,
       witnessedLongitudeValid, witnessedSeverityValid, witnessedImageURLValid} = this.state;
     const userAccessToken = getCookieWithKey(USER_ACCESS_TOKEN_KEY);
-    const isLoggedOut = !userAccessToken || userAccessToken == "";
+    const isLoggedOut = !userAccessToken || userAccessToken === "";
     return (
       <CCard>
         <CCardHeader>
@@ -492,7 +491,7 @@ class SingleDisasterDisplay extends React.Component {
       )
       .then(response => response.json())
       .then(result => {
-        if (result.error == 401 && result.message == "authorization issue - 401 Unauthorized: " +
+        if (result.error === 401 && result.message === "authorization issue - 401 Unauthorized: " +
           "The server could not verify that you are authorized to access the URL requested. You " + 
           "either supplied the wrong credentials (e.g. a bad password), or your browser doesn't " + 
           "understand how to supply the credentials required." && !result.success) {
@@ -501,7 +500,7 @@ class SingleDisasterDisplay extends React.Component {
             isDeletionModalOpen: true,
             authorizationFailure: 401,
           });
-        } else if (result.error == 403 && result.message == "authorization incorrect permission " +
+        } else if (result.error === 403 && result.message === "authorization incorrect permission " +
           "- 403 Forbidden: You don't have the permission to access the requested resource. It is " +
           "either read-protected or not readable by the server." && !result.success) {
           
@@ -606,7 +605,7 @@ class SingleDisasterDisplay extends React.Component {
               <CCol xs="12" sm="12" md="12" className="single-disaster-card">
                 <CCard>
                   <CCardBody className="witness-report-card-body">
-                    {report.image_url && <img className="d-block w-100 set-disaster-max-height" src={report.image_url} alt="disaster image"/>}
+                    {report.image_url && <img className="d-block w-100 set-disaster-max-height" src={report.image_url} alt="disaster"/>}
                     {report.comment && <h3 className="witness-quote-statement">{`"${report.comment}"`}</h3>}
                     {report.comment && 
                       <div className="witness-quote-author">

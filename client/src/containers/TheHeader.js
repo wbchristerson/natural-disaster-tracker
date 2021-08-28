@@ -49,7 +49,7 @@ const TheHeader = () => {
           <CHeaderNavLink to="/dashboard">Dashboard</CHeaderNavLink>
         </CHeaderNavItem>
         <CHeaderNavItem className="px-3">
-          <a className="nav-github-link-text" href="https://github.com/wbchristerson/natural-disaster-tracker" target="_blank">GitHub Repository</a>
+          <a className="nav-github-link-text" href="https://github.com/wbchristerson/natural-disaster-tracker" target="_blank" rel="noreferrer">GitHub Repository</a>
         </CHeaderNavItem>
         <CHeaderNavItem className="px-3">
           <CHeaderNavLink to="/core-ui-credits">Credits</CHeaderNavLink>

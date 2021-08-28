@@ -59,7 +59,7 @@ class Dashboard extends React.Component {
 
   onSearchClick() {
     const {searchString} = this.state;
-    if (searchString == "") {
+    if (searchString === "") {
       this.fetchDisasters(1);
       this.setState({
         page: 1,
@@ -90,7 +90,7 @@ class Dashboard extends React.Component {
       page: newPage,
     });
     const {searchString} = this.state;
-    if (searchString == "") {
+    if (searchString === "") {
       this.fetchDisasters(newPage);
     } else {
       this.fetchDisastersWithSearch(searchString, newPage);
@@ -123,7 +123,7 @@ class Dashboard extends React.Component {
           </div>
         </div>
 
-        {disasterList.length == 0 && <h3 className="no-search-match-text">No matching disasters</h3>}
+        {disasterList.length === 0 && <h3 className="no-search-match-text">No matching disasters</h3>}
 
         {disasterList.map((disaster, index) => {
           const disasterDisplayData = getDisasterDisplayDataList(disaster);

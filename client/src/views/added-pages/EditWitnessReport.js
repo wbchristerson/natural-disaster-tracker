@@ -164,7 +164,7 @@ class EditWitnessReport extends React.Component {
     const {reportDate, reportTime, reportSeverity, reportImageURL, reportComment, reportPeopleAffected,
       reportLatitude, reportLongitude} = this.state;
     
-    if (reportDate == "") {
+    if (reportDate === "") {
       isValidReportDate = false;
     }
 
@@ -172,11 +172,11 @@ class EditWitnessReport extends React.Component {
       isValidReportTime = false;
     }
 
-    if (reportSeverity != "" && !isValidNonnegativeIntegerInRange(reportSeverity, 0, 10)) {
+    if (reportSeverity !== "" && !isValidNonnegativeIntegerInRange(reportSeverity, 0, 10)) {
       isValidReportSeverity = false;
     }
 
-    if (reportImageURL != "" && !isValidImageURL(reportImageURL)) {
+    if (reportImageURL !== "" && !isValidImageURL(reportImageURL)) {
       isValidReportImageURL = false;
     }
 
@@ -196,25 +196,25 @@ class EditWitnessReport extends React.Component {
       isValidReportPeopleAffected && isValidReportLatitude && isValidReportLongitude) {
 
       const rawBody = { id: this.witnessReportId };
-      if (reportDate != this.originalReportDate || reportTime.trim() != this.originalReportTime.trim()) {
+      if (reportDate !== this.originalReportDate || reportTime.trim() !== this.originalReportTime.trim()) {
         rawBody.event_datetime = new Date(reportDate + "T" + getGeneralTimeFormat(reportTime));
       }
-      if (reportSeverity.trim() != this.originalReportSeverity.trim()) {
+      if (reportSeverity.trim() !== this.originalReportSeverity.trim()) {
         rawBody.severity = parseInt(reportSeverity.trim());
       }
-      if (reportImageURL.trim() != this.originalReportImageURL.trim()) {
+      if (reportImageURL.trim() !== this.originalReportImageURL.trim()) {
         rawBody.image_url = reportImageURL.trim();
       }
-      if (reportComment.trim() != this.originalReportComment.trim()) {
+      if (reportComment.trim() !== this.originalReportComment.trim()) {
         rawBody.comment = reportComment.trim();
       }
-      if (reportPeopleAffected.trim() != this.originalReportPeopleAffected.trim()) {
+      if (reportPeopleAffected.trim() !== this.originalReportPeopleAffected.trim()) {
         rawBody.people_affected = parseInt(reportPeopleAffected.trim());
       }
-      if (reportLatitude.trim() != this.originalReportLatitude.trim()) {
+      if (reportLatitude.trim() !== this.originalReportLatitude.trim()) {
         rawBody.location_latitude = parseFloat(reportLatitude.trim());
       }
-      if (reportLongitude.trim() != this.originalReportLongitude.trim()) {
+      if (reportLongitude.trim() !== this.originalReportLongitude.trim()) {
         rawBody.location_longitude = parseFloat(reportLongitude.trim());
       }
 
@@ -235,7 +235,7 @@ class EditWitnessReport extends React.Component {
       )
       .then(response => response.json())
       .then(result => {
-        if (result.error == 401 && result.message == "authorization issue - 401 Unauthorized: " + 
+        if (result.error === 401 && result.message === "authorization issue - 401 Unauthorized: " + 
           "The server could not verify that you are authorized to access the URL requested. You " + 
           "either supplied the wrong credentials (e.g. a bad password), or your browser doesn't " + 
           "understand how to supply the credentials required." && !result.success) {
@@ -308,7 +308,7 @@ class EditWitnessReport extends React.Component {
       reportLatitude, isValidReportLatitude, reportLongitude, isValidReportLongitude, reportSeverity, isValidReportSeverity,
       reportImageURL, isValidReportImageURL, reportComment, isModalOpen, showToast} = this.state;
     const userAccessToken = getCookieWithKey(USER_ACCESS_TOKEN_KEY);
-    const isLoggedOut = !userAccessToken || userAccessToken == "";
+    const isLoggedOut = !userAccessToken || userAccessToken === "";
 
     return (
       <>

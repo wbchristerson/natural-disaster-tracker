@@ -124,15 +124,15 @@ class EditDisaster extends React.Component {
     const {informalName, officialName, disasterType, isOngoing, latitude,
       longitude} = this.state;
     
-    if (informalName == "") {
+    if (informalName === "") {
       isValidInformalName = false;
     }
 
-    if (officialName == "") {
+    if (officialName === "") {
       isValidOfficialName = false;
     }
 
-    if (disasterType == "Please select") {
+    if (disasterType === "Please select") {
       isValidDisasterType = false;
     }
 
@@ -147,22 +147,22 @@ class EditDisaster extends React.Component {
     if (isValidInformalName && isValidOfficialName && isValidDisasterType &&
       isValidLatitude && isValidLongitude) {
       const rawBody = { id: this.disasterId };
-      if (informalName.trim() != this.originalInformalName) {
+      if (informalName.trim() !== this.originalInformalName) {
         rawBody.informal_name = informalName.trim();
       }
-      if (officialName.trim() != this.originalOfficialName) {
+      if (officialName.trim() !== this.originalOfficialName) {
         rawBody.official_name = officialName.trim();
       }
-      if (disasterType.trim() != this.originalDisasterType) {
+      if (disasterType.trim() !== this.originalDisasterType) {
         rawBody.disaster_type = disasterType.charAt(0).toLowerCase() + disasterType.slice(1);
       }
-      if (isOngoing != this.originalIsOngoing) {
+      if (isOngoing !== this.originalIsOngoing) {
         rawBody.is_ongoing = isOngoing;
       }
-      if (latitude != this.originalLatitude) {
+      if (latitude !== this.originalLatitude) {
         rawBody.location_latitude = latitude;
       }
-      if (longitude != this.originalLongitude) {
+      if (longitude !== this.originalLongitude) {
         rawBody.location_longitude = longitude;
       }
 
@@ -183,7 +183,7 @@ class EditDisaster extends React.Component {
       )
       .then(response => response.json())
       .then(result => {
-        if (result.error == 401 && result.message == "authorization issue - 401 Unauthorized: " + 
+        if (result.error === 401 && result.message === "authorization issue - 401 Unauthorized: " + 
           "The server could not verify that you are authorized to access the URL requested. You " + 
           "either supplied the wrong credentials (e.g. a bad password), or your browser doesn't " + 
           "understand how to supply the credentials required." && !result.success) {
@@ -193,7 +193,7 @@ class EditDisaster extends React.Component {
             authorizationFailure: 401,
           });
 
-        } else if (result.error == 403 && result.message == "authorization incorrect permission " + 
+        } else if (result.error === 403 && result.message === "authorization incorrect permission " + 
           "- 403 Forbidden: You don't have the permission to access the requested resource. It is " + 
           "either read-protected or not readable by the server." && !result.success) {
           
