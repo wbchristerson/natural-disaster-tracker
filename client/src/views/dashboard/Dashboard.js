@@ -101,7 +101,7 @@ class Dashboard extends React.Component {
     const {recordedSeconds, searchString, disasterList, page, totalDisasters} = this.state;
     return (
       <>
-        <div className={`my-test ${recordedSeconds % 3 === 0 ? "main-image-1" : recordedSeconds % 3 === 1 ? "main-image-2" : "main-image-3"}`}>
+        <div className={`my-test main-image-${recordedSeconds % 7 + 1}`}>
           <div className="card-overlay">
             <h1 className="display-3 main-top-text">Disaster Reporter</h1>
             <p className="main-bottom-text">See And Write Reports About Natural Disasters In Your Area</p>

@@ -15,21 +15,37 @@
     // height: 800px;
     height: 100vh;
     width: 100%;
-    background-repeat: no-repeat;
-    background-size: cover;
+    background-repeat: no-repeat !important;
+    background-size: cover !important;
     margin-bottom: 40px;
 }
 
 .main-image-1 {
-    background: url("../assets/images/hurricane-main.jpg"); // https://pixabay.com/photos/key-west-florida-hurricane-dennis-81664/
+    background: url("../assets/images/main-image-1.jpg"); // https://pixabay.com/photos/key-west-florida-hurricane-dennis-81664/
 }
 
 .main-image-2 {
-    background: url("../assets/images/wildfire-main.jpg"); // https://pixabay.com/illustrations/forest-fire-forest-climate-change-3836834/
-}
+    background: url("../assets/images/main-image-2.jpeg"); // https://pixabay.com/illustrations/forest-fire-forest-climate-change-3836834/
+} // https://pixabay.com/photos/flow-water-ship-barge-bridge-4885328/
 
 .main-image-3 {
-    background: url("../assets/images/tornado-main.jpg"); // https://unsplash.com/photos/8hBPvS_bGkA
+    background: url("../assets/images/main-image-3.jpg"); // https://unsplash.com/photos/8hBPvS_bGkA
+}
+
+.main-image-4 {
+    background: url("../assets/images/main-image-4.jpeg"); // https://pixabay.com/illustrations/berlin-potsdamer-platz-flood-1156844/
+}
+
+.main-image-5 {
+    background: url("../assets/images/main-image-5.jpeg"); // https://pixabay.com/photos/tornado-wind-shear-ocean-clouds-3189351/
+}
+
+.main-image-6 {
+    background: url("../assets/images/main-image-6.jpeg"); // https://pixabay.com/photos/tornado-wind-shear-ocean-clouds-3189351/
+}
+
+.main-image-7 {
+    background: url("../assets/images/main-image-7.jpeg"); // https://pixabay.com/photos/new-zealand-volcano-crater-3018634/
 }
 
 .landing-main-adjustments {
