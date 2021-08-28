@@ -79,14 +79,14 @@ class Disaster(DisasterData):
     __tablename__ = 'disasters'
 
     id = Column(Integer, primary_key=True)
-    informal_name = Column(String(50))
+    informal_name = Column(String(50), nullable=False)
     official_name = Column(String(100), unique=True, nullable=False)
     disaster_type = Column('disaster_type', Enum(
         NaturalDisasterEnum), nullable=False)
     witness_reports = relationship(
         'WitnessReport', backref="witness_report_disaster",
         cascade="all, delete, delete-orphan")
-    is_ongoing = Column(Boolean, default=True)
+    is_ongoing = Column(Boolean, default=True, nullable=False)
     location_latitude = Column(Float, nullable=False)
     location_longitude = Column(Float, nullable=False)
     last_update_datetime = Column(TIMESTAMP(True), nullable=False)
