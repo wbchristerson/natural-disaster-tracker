@@ -80,9 +80,9 @@ export function isValidTime(timeString) {
     return false;
   }
   const listedTime = timeString.trim();
-  const hours = parseInt(listedTime.charAt(1) == ':' ? listedTime.slice(0, 1) : listedTime.slice(0,2));
-  const minutes = parseInt(listedTime.charAt(1) == ':' ? listedTime.slice(2,4) : listedTime.slice(3,5));
-  const seconds = listedTime.length > 5 ? parseInt(listedTime.charAt(1) == ":" ? listedTime.slice(5,7) : listedTime.slice(6,8)) : null;
+  const hours = parseInt(listedTime.charAt(1) === ':' ? listedTime.slice(0, 1) : listedTime.slice(0,2));
+  const minutes = parseInt(listedTime.charAt(1) === ':' ? listedTime.slice(2,4) : listedTime.slice(3,5));
+  const seconds = listedTime.length > 5 ? parseInt(listedTime.charAt(1) === ":" ? listedTime.slice(5,7) : listedTime.slice(6,8)) : null;
 
   return 0 <= hours && hours < 24 && 0 <= minutes && minutes < 60 && 0 <= seconds && seconds < 60;
 }
@@ -121,12 +121,12 @@ export function isValidImageURL(urlString) {
 }
 
 
+// assumed that isValidTime(timeString) == true
 export function getGeneralTimeFormat(timeString) {
-  // assumed that isValidTime(timeString) == true
   const trimmedTimeString = timeString.trim();
-  if (trimmedTimeString.length == 4) {
+  if (trimmedTimeString.length === 4) {
     return "0" + trimmedTimeString + ":00";
-  } else if (trimmedTimeString.length == 5) {
+  } else if (trimmedTimeString.length === 5) {
     return trimmedTimeString + ":00";
   } else {
     return trimmedTimeString;
@@ -135,7 +135,11 @@ export function getGeneralTimeFormat(timeString) {
 
 
 function getDateObjectFromDateTimeString(dateTimeString) {
-  const [day, date, month, year, time, timeZone] = dateTimeString.split(' ');
+  const splitDateTime = dateTimeString.split(' ');
+  const date = splitDateTime[1];
+  const month = splitDateTime[2];
+  const year = splitDateTime[3];
+  const time = splitDateTime[4];
   const [hours, minutes, seconds] = time.split(':');
   const formattedDate = (MONTH_ABBREVIATIONS.indexOf(month)+1).toString() + "/" + date + "/" + year;
   const formattedTime = hours + ":" + minutes + ":" + seconds + " UTC";
@@ -176,7 +180,7 @@ export function getLocalDateFromGMTDateTime(dateTimeString) {
 export function getAdminPrivilegeErrorMessage(actionString, errorCode) {
   return `A failure occurred. The ability to ${actionString} requires admin 
     privileges and it looks like those have not been granted to you. If you 
-    would like admin privileges, please ${errorCode == 401 ? 
+    would like admin privileges, please ${errorCode === 401 ? 
     "create an account by signing up (for free!) and" : ""} email me at 
     wbchristerson@gmail.com with your username.`;
 }
@@ -186,7 +190,7 @@ export function getAdminPrivilegeOrOwnerErrorMessage(actionString, errorCode) {
   return `A failure occurred. The ability to ${actionString} requires either 
     ownership of the entity or admin privileges and it looks like those have 
     not been granted to you. If you would like admin privileges, please 
-    ${(errorCode == 401 || errorCode == 400) ? "create an account by signing up (for free!) and" : 
+    ${(errorCode === 401 || errorCode === 400) ? "create an account by signing up (for free!) and" : 
     ""} email me at wbchristerson@gmail.com with your username.`;
 }
 
@@ -213,27 +217,27 @@ export function getSignInRequirementsErrorMessage(actionString) {
 
 
 export function getDisasterDisplayDataList(disasterData) {
-  const displayDataList = new Array();
+  const displayDataList = [];
   const {average_severity, disaster_type, first_observance, last_observance,
       location, num_reports, people_affected} = disasterData;
 
-  if (average_severity != null) {
+  if (average_severity !== null) {
     displayDataList.push(["Average Severity", average_severity]);
   }
   displayDataList.push(["Disaster Type", disaster_type.charAt(0).toUpperCase() + disaster_type.slice(1)]);
 
-  if (first_observance != null) {
+  if (first_observance !== null) {
     displayDataList.push(["First Observance", first_observance]);
   }
 
-  if (last_observance != null) {
+  if (last_observance !== null) {
     displayDataList.push(["Last Observance", last_observance]);
   }
 
   displayDataList.push(["Location", formatLatitudeLongitude(location)]);
   displayDataList.push(["Number Of Reports", num_reports]);
 
-  if (people_affected != null) {
+  if (people_affected !== null) {
     displayDataList.push(["People Affected", people_affected]);
   }
 

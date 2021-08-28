@@ -7,22 +7,10 @@ import {
   CHeaderNav,
   CHeaderNavItem,
   CHeaderNavLink,
-  CSubheader,
-  CBreadcrumbRouter,
-  CLink
+  CImg,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-
-// routes config
-import routes from '../routes'
-
-import { 
-  TheHeaderDropdown,
-  TheHeaderDropdownMssg,
-  TheHeaderDropdownNotif,
-  TheHeaderDropdownTasks
-}  from './index'
-import { getBackEndHost, getCookieWithKey, USER_ACCESS_TOKEN_KEY, USER_NICKNAME_KEY } from 'src/Utilities'
+import { getBackEndHost, getCookieWithKey, USER_ACCESS_TOKEN_KEY, USER_NICKNAME_KEY, USER_PICTURE_KEY } from 'src/Utilities'
 
 const TheHeader = () => {
   const dispatch = useDispatch()
@@ -38,7 +26,7 @@ const TheHeader = () => {
     dispatch({type: 'set', sidebarShow: val})
   }
 
-  const isLoggedOut = getCookieWithKey(USER_ACCESS_TOKEN_KEY) == "";
+  const isLoggedOut = getCookieWithKey(USER_ACCESS_TOKEN_KEY) === "";
 
   return (
     <CHeader withSubheader>
@@ -60,11 +48,9 @@ const TheHeader = () => {
         <CHeaderNavItem className="px-3" >
           <CHeaderNavLink to="/dashboard">Dashboard</CHeaderNavLink>
         </CHeaderNavItem>
-        <CHeaderNavItem  className="px-3">
-          <CHeaderNavLink to="/users">Users</CHeaderNavLink>
-        </CHeaderNavItem>
         <CHeaderNavItem className="px-3">
-          <CHeaderNavLink>Settings</CHeaderNavLink>
+          <a className="nav-github-link-text" href="https://github.com/wbchristerson/natural-disaster-tracker" target="_blank">GitHub Repository</a>
+          {/* <CHeaderNavLink to="https://github.com/wbchristerson/natural-disaster-tracker">GitHub Repository</CHeaderNavLink> */}
         </CHeaderNavItem>
         <CHeaderNavItem className="px-3">
           <CHeaderNavLink to="/core-ui-credits">Credits</CHeaderNavLink>
@@ -72,9 +58,6 @@ const TheHeader = () => {
       </CHeaderNav>
 
       <CHeaderNav className="px-3">
-        {/* <TheHeaderDropdownNotif/> */}
-        {/* <TheHeaderDropdownTasks/> */}
-        {/* <TheHeaderDropdownMssg/> */}
         {!isLoggedOut &&
           <div className="top-log-in-greeting">{`Hello, ${getCookieWithKey(USER_NICKNAME_KEY)}!`}</div>
         }
@@ -84,34 +67,20 @@ const TheHeader = () => {
           </div>
         }
         {!isLoggedOut &&
+          <div className="c-avatar upper-right-avatar-icon">
+            <CImg
+              src={getCookieWithKey(USER_PICTURE_KEY).slice(1,-1)}
+              className="c-avatar-img"
+              alt="admin@bootstrapmaster.com"
+            />
+          </div>
+        }
+        {!isLoggedOut &&
           <div className="logged-in-box auth0-box logged-in">
             <a className="btn btn-primary btn-lg btn-logout btn-block" href={`${getBackEndHost()}/my-logout`}>Logout</a>
           </div>
         }
-        <TheHeaderDropdown/>
       </CHeaderNav>
-
-      {/* <CSubheader className="px-3 justify-content-between">
-        <CBreadcrumbRouter 
-          className="border-0 c-subheader-nav m-0 px-0 px-md-3" 
-          routes={routes} 
-        />
-          <div className="d-md-down-none mfe-2 c-subheader-nav">
-            <CLink className="c-subheader-nav-link"href="#">
-              <CIcon name="cil-speech" alt="Settings" />
-            </CLink>
-            <CLink 
-              className="c-subheader-nav-link" 
-              aria-current="page" 
-              to="/dashboard"
-            >
-              <CIcon name="cil-graph" alt="Dashboard" />&nbsp;Dashboard
-            </CLink>
-            <CLink className="c-subheader-nav-link" href="#">
-              <CIcon name="cil-settings" alt="Settings" />&nbsp;Settings
-            </CLink>
-          </div>
-      </CSubheader> */}
     </CHeader>
   )
 }
