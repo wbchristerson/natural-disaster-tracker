@@ -16,6 +16,8 @@ from flask_sqlalchemy import SQLAlchemy
 import json
 import os
 import enum
+import datetime
+import pytz
 
 
 database_path = os.environ['DATABASE_URL']
@@ -87,6 +89,7 @@ class Disaster(DisasterData):
     is_ongoing = Column(Boolean, default=True)
     location_latitude = Column(Float, nullable=False)
     location_longitude = Column(Float, nullable=False)
+    last_update_datetime = Column(TIMESTAMP(True), nullable=True)
 
     def __init__(self, informal_name, official_name, disaster_type, is_ongoing,
                  location_latitude, location_longitude):
@@ -97,6 +100,20 @@ class Disaster(DisasterData):
         self.is_ongoing = is_ongoing
         self.location_latitude = location_latitude
         self.location_longitude = location_longitude
+
+    def insert(self):
+        d = datetime.datetime.now()
+        timezone = pytz.timezone("UTC")
+        d_aware = timezone.localize(d)
+        self.last_update_datetime = d_aware
+        super(Disaster, self).insert()
+
+    def update(self):
+        d = datetime.datetime.now()
+        timezone = pytz.timezone("UTC")
+        d_aware = timezone.localize(d)
+        self.last_update_datetime = d_aware
+        super(Disaster, self).update()
 
     def format(self):
         return {
@@ -157,6 +174,7 @@ class WitnessReport(DisasterData):
     people_affected = Column(Integer, default=0)
     location_latitude = Column(Float, nullable=True)
     location_longitude = Column(Float, nullable=True)
+    last_update_datetime = Column(TIMESTAMP(True), nullable=True)
 
     def __init__(self, disaster_id, observer_id, event_datetime, severity,
                  image_url, comment, people_affected, location_latitude,
@@ -183,6 +201,20 @@ class WitnessReport(DisasterData):
             'people_affected': self.people_affected,
             'location': (self.location_latitude, self.location_longitude),
         }
+    
+    def insert(self):
+        d = datetime.datetime.now()
+        timezone = pytz.timezone("UTC")
+        d_aware = timezone.localize(d)
+        self.last_update_datetime = d_aware
+        super(WitnessReport, self).insert()
+    
+    def update(self):
+        d = datetime.datetime.now()
+        timezone = pytz.timezone("UTC")
+        d_aware = timezone.localize(d)
+        self.last_update_datetime = d_aware
+        super(WitnessReport, self).update()
 
     @staticmethod
     def observer_join(disaster_id):
