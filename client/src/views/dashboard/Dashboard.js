@@ -127,7 +127,6 @@ class Dashboard extends React.Component {
 
         {disasterList.map((disaster, index) => {
           const disasterDisplayData = getDisasterDisplayDataList(disaster);
-          console.log(disaster);
           return (
             <CRow key={index} className="single-disaster-container">
               <CCol xs="12" className="single-disaster-card">

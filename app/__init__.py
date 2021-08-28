@@ -149,6 +149,16 @@ def create_app(test_config=None):
         return json_data["access_token"]
 
 
+    # update most recent update datetime of corresponding disaster
+    def update_parent_disaster_of_witness_report(disaster_id):
+        disaster_match = Disaster.query.filter(
+            Disaster.id == disaster_id
+        ).first()
+        if disaster_match is None:
+            raise ValueError(f"No matching disaster id: {body.get('disaster_id')}")
+        disaster_match.update()
+
+
     @app.route('/my-login')
     def login():
         return auth0.authorize_redirect(redirect_uri=f"{os.environ['BACK_END_HOST']}/callback", audience=os.environ["API_AUDIENCE"])
@@ -285,6 +295,9 @@ def create_app(test_config=None):
     the paginated page to use. The current default for the size of a page is
     10. If the page is non-positive, then a 422 error occurs.
 
+    The endpoint has another optional parameter: query. This is to match
+    informal_name or official_name.
+
     This endpoint does not return any of the witness reports associated with a
     specific disaster. For each disaster, the data in the disaster table is
     returned along with a random comment and the author of that comment from a
@@ -310,14 +323,14 @@ def create_app(test_config=None):
                 use_inclusive_search = True
 
             if query_string is None and disaster_type is None:
-                disasters = Disaster.query.all()
+                disasters = Disaster.query.order_by(Disaster.last_update_datetime.desc()).all()
             elif query_string is None and disaster_type is not None:
-                disasters = Disaster.query.filter(Disaster.disaster_type == disaster_type.upper()).all()
+                disasters = Disaster.query.filter(Disaster.disaster_type == disaster_type.upper()).order_by(Disaster.last_update_datetime.desc()).all()
             elif query_string is not None and disaster_type is None:
                 disasters = Disaster.query.filter(or_(
                     Disaster.informal_name.ilike('%' + query_string + '%'), 
                     Disaster.official_name.ilike('%' + query_string + '%')
-                )).all()
+                )).order_by(Disaster.last_update_datetime.desc()).all()
             elif query_string is not None and disaster_type is not None and not use_inclusive_search:
                 disasters = Disaster.query.filter(and_(
                     or_(
@@ -325,13 +338,13 @@ def create_app(test_config=None):
                         Disaster.official_name.ilike('%' + query_string + '%'),
                     ),
                     Disaster.disaster_type == disaster_type.upper()
-                )).all()
+                )).order_by(Disaster.last_update_datetime.desc()).all()
             else:
                 disasters = Disaster.query.filter(or_(
                     Disaster.informal_name.ilike('%' + query_string + '%'),
                     Disaster.official_name.ilike('%' + query_string + '%'),
                     Disaster.disaster_type == disaster_type.upper()
-                )).all()
+                )).order_by(Disaster.last_update_datetime.desc()).all()
 
             total_disasters = len(disasters)
             formatted_disasters = get_page_of_resource(
@@ -429,13 +442,13 @@ def create_app(test_config=None):
 
             additional_data = WitnessReport.query.filter(
                 WitnessReport.disaster_id == disaster_id).with_entities(
-                WitnessReport.disaster_id, func.max(
-                    WitnessReport.people_affected), func.avg(
-                    WitnessReport.severity), func.min(
-                    WitnessReport.event_datetime), func.max(
-                        WitnessReport.event_datetime), func.count(
-                            WitnessReport.disaster_id), ).group_by(
-                                WitnessReport.disaster_id).first()
+                        WitnessReport.disaster_id,
+                        func.max(WitnessReport.people_affected),
+                        func.avg(WitnessReport.severity),
+                        func.min(WitnessReport.event_datetime),
+                        func.max(WitnessReport.event_datetime),
+                        func.count(WitnessReport.disaster_id),
+                    ).group_by(WitnessReport.disaster_id).first()
 
             if additional_data:
                 formatted_additional_data = (
@@ -618,6 +631,10 @@ def create_app(test_config=None):
                 body.get("location_longitude")
             )
             witness_report.insert()
+
+            # update most recent update datetime of corresponding disaster
+            update_parent_disaster_of_witness_report(body.get('disaster_id'))
+
             return jsonify({"id": witness_report.id})
         except Exception as ex:
             flash("An error occurred.")
@@ -736,6 +753,10 @@ def create_app(test_config=None):
                 witness_report.location_longitude = body["location_longitude"]
             
             witness_report.update()
+
+            # update most recent update datetime of corresponding disaster
+            update_parent_disaster_of_witness_report(witness_report.disaster_id)
+
             return jsonify(witness_report.format())
         except AttributeError as err:
             flash(str(err))
@@ -783,6 +804,10 @@ def create_app(test_config=None):
         if witness_report is None:
             raise AttributeError("Entry not found")
         validate_delete_witness_report(witness_report, payload)
+
+        # update most recent update datetime of corresponding disaster
+        update_parent_disaster_of_witness_report(witness_report.disaster_id)
+
         witness_report.delete()
         return jsonify({
             "success": True,

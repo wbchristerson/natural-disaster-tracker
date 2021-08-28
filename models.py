@@ -103,14 +103,14 @@ class Disaster(DisasterData):
 
     def insert(self):
         d = datetime.datetime.now()
-        timezone = pytz.timezone("UTC")
+        timezone = pytz.timezone("America/New_York")
         d_aware = timezone.localize(d)
         self.last_update_datetime = d_aware
         super(Disaster, self).insert()
 
     def update(self):
         d = datetime.datetime.now()
-        timezone = pytz.timezone("UTC")
+        timezone = pytz.timezone("America/New_York")
         d_aware = timezone.localize(d)
         self.last_update_datetime = d_aware
         super(Disaster, self).update()
@@ -204,14 +204,14 @@ class WitnessReport(DisasterData):
     
     def insert(self):
         d = datetime.datetime.now()
-        timezone = pytz.timezone("UTC")
+        timezone = pytz.timezone("America/New_York")
         d_aware = timezone.localize(d)
         self.last_update_datetime = d_aware
         super(WitnessReport, self).insert()
     
     def update(self):
         d = datetime.datetime.now()
-        timezone = pytz.timezone("UTC")
+        timezone = pytz.timezone("America/New_York")
         d_aware = timezone.localize(d)
         self.last_update_datetime = d_aware
         super(WitnessReport, self).update()
@@ -221,7 +221,7 @@ class WitnessReport(DisasterData):
         reports = \
             db.session.query(WitnessReport).join(
                 Observer, Observer.id == WitnessReport.observer_id).filter(
-                    WitnessReport.disaster_id == disaster_id).all()
+                    WitnessReport.disaster_id == disaster_id).order_by(WitnessReport.last_update_datetime.desc()).all()
         observers = db.session.query(Observer).join(
             WitnessReport, Observer.id == WitnessReport.observer_id).filter(
                 WitnessReport.disaster_id == disaster_id).all()
